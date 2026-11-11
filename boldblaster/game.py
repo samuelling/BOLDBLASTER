@@ -1,0 +1,417 @@
+"""Sandboxed first-person game: a vectorized numpy raycaster with textured walls,
+floor/ceiling, wandering NPC sprites, 'tag' events with explosions + screen flashes,
+a static weapon sprite and crosshair, a scripted player trajectory, and a
+fixation/saccade gaze model.
+
+Screen: 192 x 144 px = 24 x 18 deg of visual angle (8 px/deg), 10 Hz.
+Rows run top->bottom, so screen y (deg, up positive) = (H/2 - row - 0.5)/PX_PER_DEG.
+"""
+import numpy as np
+from collections import deque
+
+W, H = 192, 144
+PX_PER_DEG = 8.0
+FPS = 10
+FOV = np.deg2rad(70.0)          # in-game horizontal field of view
+K = np.tan(FOV / 2)
+SCALE = (W / 2) / K              # px per world unit at unit depth
+TS = 64                          # texture size
+SCREEN_HALF = (W / 2 / PX_PER_DEG, H / 2 / PX_PER_DEG)  # (12, 9) deg
+
+
+# ----------------------------------------------------------------- textures
+def _bandnoise(rng, f0, bw=0.35, size=TS):
+    n = rng.standard_normal((size, size))
+    fx = np.fft.fftfreq(size)[None, :]
+    fy = np.fft.fftfreq(size)[:, None]
+    fr = np.hypot(fx, fy)
+    fr[0, 0] = 1e-6
+    filt = np.exp(-(np.log(fr / f0)) ** 2 / (2 * bw ** 2))
+    filt[0, 0] = 0
+    out = np.real(np.fft.ifft2(np.fft.fft2(n) * filt))
+    return out / out.std()
+
+
+def make_textures(rng):
+    yy, xx = np.mgrid[0:TS, 0:TS]
+    tex = np.zeros((7, TS, TS), np.float32)
+    brick = 0.6 + 0.06 * _bandnoise(rng, 1 / 4)
+    mortar = (yy % 8 == 0) | (((xx + 8 * ((yy // 8) % 2)) % 16) == 0)
+    brick[mortar] = 0.28
+    tex[1] = brick                                           # mid SF, oriented
+    tex[2] = 0.5 + 0.17 * _bandnoise(rng, 1 / 16)            # low SF blobs
+    tex[3] = 0.5 + 0.17 * _bandnoise(rng, 1 / 5)             # high SF noise
+    tex[4] = 0.55 + 0.12 * np.sign(np.sin(2 * np.pi * (xx + 0.5) / 16)) \
+        + 0.05 * _bandnoise(rng, 1 / 3)                      # vertical panels
+    tex[5] = 0.42 + 0.12 * (((xx // 32) + (yy // 32)) % 2) + 0.05 * _bandnoise(rng, 1 / 6)  # floor
+    tex[6] = 0.68 + 0.05 * _bandnoise(rng, 1 / 20)           # ceiling
+    return np.clip(tex, 0, 1)
+
+
+# ----------------------------------------------------------------- map
+def make_map(rng, n=40, n_rooms=12):
+    m = np.ones((n, n), np.int8)
+    rooms = []
+    tries = 0
+    while len(rooms) < n_rooms and tries < 1000:
+        tries += 1
+        w, h = rng.integers(4, 10, size=2)
+        x, y = rng.integers(1, n - w - 1), rng.integers(1, n - h - 1)
+        if all(x + w + 1 < rx or rx + rw + 1 < x or y + h + 1 < ry or ry + rh + 1 < y
+               for rx, ry, rw, rh in rooms):
+            rooms.append((x, y, w, h))
+            m[y:y + h, x:x + w] = 0
+    centers = [(x + w // 2, y + h // 2) for x, y, w, h in rooms]
+    order = rng.permutation(len(centers))
+    pairs = [(order[i], order[i + 1]) for i in range(len(order) - 1)]
+    pairs += [tuple(rng.choice(len(centers), 2, replace=False)) for _ in range(3)]
+    for a, b in pairs:
+        (x1, y1), (x2, y2) = centers[a], centers[b]
+        if rng.random() < 0.5:
+            m[y1:y1 + 2, min(x1, x2):max(x1, x2) + 2] = 0
+            m[min(y1, y2):max(y1, y2) + 2, x2:x2 + 2] = 0
+        else:
+            m[min(y1, y2):max(y1, y2) + 2, x1:x1 + 2] = 0
+            m[y2:y2 + 2, min(x1, x2):max(x1, x2) + 2] = 0
+    m[0, :] = m[-1, :] = m[:, 0] = m[:, -1] = 1
+    yy, xx = np.mgrid[0:n, 0:n]
+    types = 1 + ((xx // 7 + 2 * (yy // 7)) % 4)
+    m = np.where(m > 0, types, 0).astype(np.int8)
+    return m, centers
+
+
+def _bfs(m, start, goal):
+    n = m.shape[0]
+    prev = {start: None}
+    q = deque([start])
+    while q:
+        c = q.popleft()
+        if c == goal:
+            break
+        x, y = c
+        for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+            if 0 <= nx < n and 0 <= ny < n and m[ny, nx] == 0 and (nx, ny) not in prev:
+                prev[(nx, ny)] = c
+                q.append((nx, ny))
+    if goal not in prev:
+        return [start]
+    path, c = [], goal
+    while c is not None:
+        path.append(c)
+        c = prev[c]
+    return path[::-1]
+
+
+def _gsmooth(x, sigma_frames, axis=0):
+    from scipy.ndimage import gaussian_filter1d
+    return gaussian_filter1d(x, sigma_frames, axis=axis, mode='nearest')
+
+
+def make_trajectory(rng, m, centers, duration, speed=1.8):
+    nf = int(duration * FPS)
+    t = np.arange(nf) / FPS
+    cur = centers[rng.integers(len(centers))]
+    cells = [cur]
+    while len(cells) < duration * speed * 1.5:
+        goal = centers[rng.integers(len(centers))]
+        if goal == cur:
+            continue
+        p = _bfs(m, cur, goal)
+        cells += p[1:]
+        cur = goal
+    pts = np.array(cells, float) + 0.5
+    seg = np.r_[0, np.cumsum(np.hypot(*np.diff(pts, axis=0).T))]
+    v = speed * (0.75 + 0.25 * np.sin(2 * np.pi * t / 11 + rng.uniform(0, 6.3)))
+    stop = np.zeros(nf, bool)
+    tt = rng.exponential(25)
+    while tt < duration:
+        d = rng.uniform(1.5, 3.0)
+        stop[(t >= tt) & (t < tt + d)] = True
+        tt += d + rng.exponential(25)
+    v[stop] = 0
+    s = np.cumsum(v) / FPS
+    raw = np.c_[np.interp(s, seg, pts[:, 0]), np.interp(s, seg, pts[:, 1])]
+    pos = _gsmooth(raw, 6)
+    bad = m[pos[:, 1].astype(int), pos[:, 0].astype(int)] > 0
+    pos[bad] = raw[bad]
+    vel = np.gradient(_gsmooth(raw, 3), axis=0)
+    ang = np.arctan2(vel[:, 1], vel[:, 0])
+    moving = np.hypot(*vel.T) > 1e-4
+    for i in range(1, nf):                       # hold heading while stopped
+        if not moving[i]:
+            ang[i] = ang[i - 1]
+    ang = _gsmooth(np.unwrap(ang), 8)
+    look = np.deg2rad(28) * np.sin(2 * np.pi * t / 9 + rng.uniform(0, 6.3)) \
+        * (0.5 + 0.5 * np.sin(2 * np.pi * t / 23 + rng.uniform(0, 6.3)))
+    pan = _gsmooth(np.where(stop, np.deg2rad(45) * np.sin(2 * np.pi * t / 4), 0.0), 4)
+    return pos, ang + look + pan, v
+
+
+# ----------------------------------------------------------------- renderer
+_COLS = np.arange(W)
+_CAMX = 2 * (_COLS + 0.5) / W - 1
+_ROWS = np.arange(H)[:, None]
+
+
+def render_world(m, tex, px, py, ang, fog=9.0):
+    n = m.shape[0]
+    dx, dy = np.cos(ang), np.sin(ang)
+    plx, ply = dy * K, -dx * K                 # camera plane: right column = right side
+    rdx = dx + plx * _CAMX
+    rdy = dy + ply * _CAMX
+    rdx = np.where(np.abs(rdx) < 1e-9, 1e-9, rdx)
+    rdy = np.where(np.abs(rdy) < 1e-9, 1e-9, rdy)
+    mapx = np.full(W, int(np.floor(px)))
+    mapy = np.full(W, int(np.floor(py)))
+    ddx, ddy = np.abs(1 / rdx), np.abs(1 / rdy)
+    stx = np.where(rdx < 0, -1, 1)
+    sty = np.where(rdy < 0, -1, 1)
+    sdx = np.where(rdx < 0, (px - mapx) * ddx, (mapx + 1 - px) * ddx)
+    sdy = np.where(rdy < 0, (py - mapy) * ddy, (mapy + 1 - py) * ddy)
+    hit = np.zeros(W, bool)
+    side = np.zeros(W, np.int8)
+    for _ in range(4 * n):
+        nh = ~hit
+        if not nh.any():
+            break
+        gx = nh & (sdx < sdy)
+        gy = nh & ~(sdx < sdy)
+        sdx[gx] += ddx[gx]; mapx[gx] += stx[gx]; side[gx] = 0
+        sdy[gy] += ddy[gy]; mapy[gy] += sty[gy]; side[gy] = 1
+        cx, cy = np.clip(mapx, 0, n - 1), np.clip(mapy, 0, n - 1)
+        hit |= nh & (m[cy, cx] > 0)
+    perp = np.maximum(np.where(side == 0, sdx - ddx, sdy - ddy), 1e-3)
+    wt = m[np.clip(mapy, 0, n - 1), np.clip(mapx, 0, n - 1)]
+    wallx = np.where(side == 0, py + perp * rdy, px + perp * rdx)
+    wallx = wallx - np.floor(wallx)
+    tu = (wallx * TS).astype(int) % TS
+    lh = SCALE / perp
+    tv = (_ROWS + 0.5 - (H / 2 - lh / 2)) / lh                 # (H, W)
+    wall = (tv >= 0) & (tv < 1)
+    tvi = np.clip((tv * TS).astype(int), 0, TS - 1)
+    img = tex[wt[None, :], tvi, tu[None, :]]
+    img = np.where(side[None, :] == 1, img * 0.85, img)
+    dist = np.broadcast_to(perp[None, :], (H, W)).copy()
+    # floor / ceiling
+    yoff = np.abs(_ROWS + 0.5 - H / 2)
+    rowd = (SCALE * 0.5) / yoff                                 # (H,1)
+    fx = px + rowd * rdx[None, :]
+    fy = py + rowd * rdy[None, :]
+    fu = ((fx - np.floor(fx)) * TS).astype(int) % TS
+    fv = ((fy - np.floor(fy)) * TS).astype(int) % TS
+    lower = (_ROWS + 0.5 > H / 2)
+    fc = np.where(lower, tex[5][fv, fu], tex[6][fv, fu])
+    img = np.where(wall, img, fc)
+    dist = np.where(wall, dist, np.broadcast_to(rowd, (H, W)))
+    img = 0.5 + (img - 0.5) * np.exp(-dist / fog)
+    return img.astype(np.float32), perp, (dx, dy, plx, ply)
+
+
+def project(px, py, cam, sx, sy):
+    dx, dy, plx, ply = cam
+    rx, ry = sx - px, sy - py
+    inv = 1.0 / (plx * dy - dx * ply)
+    tx = inv * (dy * rx - dx * ry)
+    ty = inv * (-ply * rx + plx * ry)
+    return tx, ty
+
+
+def _bbox(cx, cy, hw, hh):
+    x0, x1 = int(max(0, np.floor(cx - hw))), int(min(W, np.ceil(cx + hw)))
+    y0, y1 = int(max(0, np.floor(cy - hh))), int(min(H, np.ceil(cy + hh)))
+    return x0, x1, y0, y1
+
+
+def draw_npc(img, zbuf, tx, ty):
+    """Returns screen-deg position of the NPC if any part is visible, else None."""
+    if ty < 0.2:
+        return None
+    scrx = (W / 2) * (1 + tx / ty)
+    hpx, wpx = SCALE * 0.75 / ty, SCALE * 0.42 / ty
+    top = H / 2 + SCALE * (0.5 - 0.75) / ty
+    x0, x1, y0, y1 = _bbox(scrx, top + hpx / 2, wpx / 2, hpx / 2)
+    if x0 >= x1 or y0 >= y1:
+        return None
+    cols, rows = np.arange(x0, x1), np.arange(y0, y1)
+    U = ((cols + 0.5 - scrx) / wpx)[None, :]
+    V = ((rows + 0.5 - top) / hpx)[:, None]
+    head = (U / 0.22) ** 2 + ((V - 0.17) / 0.16) ** 2 < 1
+    eyes = (((np.abs(U) - 0.08) / 0.04) ** 2 + ((V - 0.15) / 0.035) ** 2) < 1
+    body = (U / 0.45) ** 2 + ((V - 0.62) / 0.36) ** 2 < 1
+    belt = body & (V > 0.56) & (V < 0.63)
+    lum = np.full(head.shape, np.nan, np.float32)
+    lum[body] = 0.16
+    lum[belt] = 0.88
+    lum[head] = 0.9
+    lum[head & eyes] = 0.08
+    vis = (ty < zbuf[cols])[None, :] & ~np.isnan(lum)
+    if not vis.any():
+        return None
+    sub = img[y0:y1, x0:x1]
+    sub[vis] = lum[vis]
+    ccol = int(np.clip(scrx, 0, W - 1))
+    center_visible = (0 <= scrx < W) and ty < zbuf[ccol]
+    return ((scrx - W / 2) / PX_PER_DEG, (H / 2 - (top + 0.45 * hpx)) / PX_PER_DEG,
+            ty, center_visible)
+
+
+def draw_explosion(img, zbuf, tx, ty, age, rng, life=0.8):
+    if ty < 0.2:
+        return None
+    fade = max(0.0, 1 - age / life)
+    r = 0.15 + 0.9 * age / life
+    scrx = (W / 2) * (1 + tx / ty)
+    scry = H / 2 + SCALE * (0.5 - 0.35) / ty
+    rpx = SCALE * r / ty
+    x0, x1, y0, y1 = _bbox(scrx, scry, rpx, rpx)
+    if x0 >= x1 or y0 >= y1:
+        return None
+    cols, rows = np.arange(x0, x1), np.arange(y0, y1)
+    D = np.hypot((cols + 0.5 - scrx)[None, :], (rows + 0.5 - scry)[:, None]) / rpx
+    inside = (D < 1) & (ty < zbuf[cols])[None, :]
+    core = D < 0.45
+    spark = rng.random(D.shape) > 0.5
+    lum = np.where(core, 0.5 + 0.5 * fade, 0.5 + 0.48 * fade * np.where(spark, 1, -1))
+    sub = img[y0:y1, x0:x1]
+    sub[inside] = lum[inside]
+    return ((scrx - W / 2) / PX_PER_DEG, (H / 2 - scry) / PX_PER_DEG)
+
+
+def draw_hud(img, bob):
+    c = W // 2
+    img[H // 2, c - 4:c + 5] = 0.95
+    img[H // 2 - 4:H // 2 + 5, c] = 0.95
+    b = int(round(bob))
+    for r in range(112 + b, H):
+        half = 6 + (r - 112 - b) * 0.45
+        x0, x1 = int(c + 22 - half), int(c + 22 + half)
+        img[r, x0:x1] = 0.22
+        img[r, x0:x0 + 2] = 0.7
+
+
+# ----------------------------------------------------------------- NPCs
+class NPCs:
+    def __init__(self, rng, m, n=8):
+        self.rng, self.m = rng, m
+        self.open = np.argwhere(m == 0)[:, ::-1] + 0.5
+        self.pos = self.open[rng.integers(len(self.open), size=n)].copy()
+        self.dir = rng.uniform(0, 2 * np.pi, n)
+        self.alive = np.ones(n, bool)
+        self.timer = np.zeros(n)
+
+    def step(self, dt, player):
+        rng = self.rng
+        for i in range(len(self.pos)):
+            if not self.alive[i]:
+                self.timer[i] -= dt
+                if self.timer[i] <= 0:
+                    for _ in range(50):
+                        p = self.open[rng.integers(len(self.open))]
+                        if np.hypot(*(p - player)) > 5:
+                            break
+                    self.pos[i] = p
+                    self.alive[i] = True
+                continue
+            if rng.random() < 0.02:
+                self.dir[i] = rng.uniform(0, 2 * np.pi)
+            nxt = self.pos[i] + 0.5 * dt * np.array([np.cos(self.dir[i]), np.sin(self.dir[i])])
+            if self.m[int(nxt[1]), int(nxt[0])] == 0:
+                self.pos[i] = nxt
+            else:
+                self.dir[i] = rng.uniform(0, 2 * np.pi)
+
+    def kill(self, i):
+        self.alive[i] = False
+        self.timer[i] = self.rng.uniform(3, 6)
+
+
+# ----------------------------------------------------------------- gaze
+class GazeModel:
+    """Fixation/saccade sampler at frame rate. Targets: crosshair (most often),
+    visible NPCs, explosion onsets, and broad 'salient' scene locations."""
+
+    def __init__(self, rng):
+        self.rng = rng
+        self.target = np.zeros(2)
+        self.left = 0
+
+    def step(self, npcs_vis, onset):
+        rng = self.rng
+        if onset is not None and rng.random() < 0.85:
+            self._set(np.array(onset[:2]) + rng.normal(0, 0.3, 2))
+        elif self.left <= 0:
+            r = rng.random()
+            vis = [v for v in npcs_vis if v[3]]
+            if r < 0.5:
+                tgt = rng.normal(0, 0.6, 2)
+            elif r < 0.78 and vis:
+                v = min(vis, key=lambda v: abs(v[0]))
+                tgt = np.array(v[:2]) + rng.normal(0, 0.4, 2)
+            else:
+                tgt = np.array([rng.normal(0, 5.0), rng.normal(-0.5, 3.5)])
+            self._set(tgt)
+        self.left -= 1
+        g = self.target + self.rng.normal(0, 0.08, 2)
+        return np.clip(g, [-SCREEN_HALF[0] + 0.3, -SCREEN_HALF[1] + 0.3],
+                       [SCREEN_HALF[0] - 0.3, SCREEN_HALF[1] - 0.3])
+
+    def _set(self, tgt):
+        self.target = tgt
+        self.left = max(1, int(round(self.rng.gamma(2.5, 0.13) * FPS)))
+
+
+# ----------------------------------------------------------------- run
+def simulate_run(seed, duration=300.0, frame_sink=None, keep_frames=0):
+    """Play one run. frame_sink(chunk) is called with (n,H,W) float32 frames.
+    Returns dict with gaze (true, screen deg), events, and optional kept frames."""
+    rng = np.random.default_rng(seed)
+    tex = make_textures(rng)
+    m, centers = make_map(rng)
+    pos, ang, speed = make_trajectory(rng, m, centers, duration)
+    npcs = NPCs(rng, m)
+    gm = GazeModel(rng)
+    nf = len(pos)
+    gaze = np.zeros((nf, 2), np.float32)
+    events, explosions, kept = [], [], []
+    buf = []
+    for f in range(nf):
+        px, py = pos[f]
+        img, zbuf, cam = render_world(m, tex, px, py, ang[f])
+        npcs.step(1 / FPS, pos[f])
+        vis = []
+        for i in np.where(npcs.alive)[0]:
+            tx, ty = project(px, py, cam, *npcs.pos[i])
+            r = draw_npc(img, zbuf, tx, ty)
+            if r is not None:
+                vis.append(r + (i,))
+        flash = 0.0
+        for e in explosions:
+            age = (f - e['f0']) / FPS
+            if age <= 0.8:
+                tx, ty = project(px, py, cam, *e['xy'])
+                draw_explosion(img, zbuf, tx, ty, age, rng)
+                if age < 0.3:
+                    flash = max(flash, 0.45 * (1 - age / 0.3))
+        explosions = [e for e in explosions if (f - e['f0']) / FPS <= 0.8]
+        onset = None
+        for v in vis:
+            if v[3] and abs(v[0]) < 2.5 and abs(v[1]) < 4 and v[2] < 9 and rng.random() < 0.3:
+                npcs.kill(v[4])
+                explosions.append(dict(f0=f, xy=npcs.pos[v[4]].copy()))
+                events.append((f / FPS, v[0], v[1]))
+                onset = v
+                flash = 0.45
+                break
+        draw_hud(img, 1.5 * np.sin(2 * np.pi * f / FPS * 1.6) * (speed[f] > 0))
+        if flash > 0:
+            img = img + flash * (1 - img)
+        gaze[f] = gm.step(vis, onset)
+        if f < keep_frames:
+            kept.append(img.copy())
+        buf.append(img)
+        if len(buf) == 50 or f == nf - 1:
+            if frame_sink is not None:
+                frame_sink(np.stack(buf))
+            buf = []
+    return dict(gaze=gaze, events=np.array(events).reshape(-1, 3), frames=np.array(kept),
+                map=m, pos=pos, ang=ang)
