@@ -71,8 +71,9 @@ def retinal(maps, gaze):
     r0, c0 = CANVAS // 2 - MH // 2, CANVAS // 2 - MW // 2
     cv[:, :, r0:r0 + MH, c0:c0 + MW] = maps
     out = np.empty((n, K, RET, RET), np.float32)
-    gx = np.round(gaze[:, 0] / 0.5).astype(int)
-    gy = np.round(gaze[:, 1] / 0.5).astype(int)
+    lim = (CANVAS - RET) // 2                # keep the retinal window inside the canvas
+    gx = np.clip(np.round(gaze[:, 0] / 0.5).astype(int), -lim, lim)
+    gy = np.clip(np.round(gaze[:, 1] / 0.5).astype(int), -lim, lim)
     base = CANVAS // 2 - RET // 2
     for i in range(n):
         out[i] = cv[i, :, base - gy[i]:base - gy[i] + RET, base + gx[i]:base + gx[i] + RET]

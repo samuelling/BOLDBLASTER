@@ -103,8 +103,25 @@ With 2 h of play: pSFT peak 0.47 → 0.64 (dedicated 0.72; 0.79 with oracle gaze
 attention gain 0.22 → 0.33 (dedicated 0.50), CRF exponent 0.26 → 0.37.
 `python run_v2.py data3 && python run_v2.py fit levers_1h levers_2h levers_2h_oracle`.
 
-## Round 4 (in progress): 20 h across ten themed levels
+## Round 4: 20 h across ten themed levels
 
 `run_long.py`: ten 2 h sessions (Warehouse, Night ops, Open arena, Cathedral, Sprint,
 Treasure hunt, Fog bank, Mixed day, Boss rush, Dusk maze) with session-specific gain and
-noise; fits at 2/5/10/20 h and a 4 h varied-vs-single-level comparison.
+noise (one gain per session in the fit); 120 V1 voxels. Spearman r (dedicated scored on
+the same voxels):
+
+| Parameter | Dedicated 10 min | 2 h | 5 h | 10 h | 20 h |
+|---|---|---|---|---|---|
+| pSFT peak | 0.69 | 0.37 | 0.55 | 0.78 | 0.77 |
+| pSFT bandwidth | 0.26 | 0.14 | 0.07 | 0.18 | 0.32 |
+| pCRF effective c50 | 0.45 | 0.35 | 0.55 | 0.61 | 0.61 |
+| pCRF exponent | 0.17 | 0.23 | 0.36 | 0.44 | 0.49 |
+| Surround k | 0.18 | 0.48 | 0.57 | 0.60 | 0.60 |
+| Transient τ | 0.14 | 0.65 | 0.70 | 0.82 | 0.84 |
+| Attention gain | 0.58 | 0.41 | 0.54 | 0.63 | 0.70 |
+
+At equal time (4 h), varied levels vs one level type: all differences within ±0.08, all
+bootstrap CIs span zero. `python run_long.py data && python run_long.py fit && python long_summary.py`.
+
+Results JSON for every round is in `results/`; the built report is in `docs/`
+(enable GitHub Pages from `main` / `/docs` to serve it).

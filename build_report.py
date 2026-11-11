@@ -103,6 +103,34 @@ if os.path.exists(R2) and 'levers_2h' in r2:
 """
 
 v4_section = ''
+SL = os.path.join(ROOT, 'data_long', 'summary.json')
+if os.path.exists(SL):
+    S4 = json.load(open(SL))
+
+    def g4(name, prm):
+        x = S4[name][prm]
+        return f"{x['r']:.2f} [{x['lo']:.2f}, {x['hi']:.2f}]"
+
+    rows4 = ''.join(
+        f"<tr><td>{lab}</td><td>{S4['dedicated_10min'][p]['r']:.2f}</td>" +
+        ''.join(f"<td>{S4[n][p]['r']:.2f}</td>" for n in ('long_2h', 'long_5h', 'long_10h', 'long_20h')) + '</tr>'
+        for p, lab in (('mu', 'pSFT peak'), ('sig', 'pSFT bandwidth'), ('c50_eff', 'pCRF effective c50'),
+                       ('q', 'pCRF exponent'), ('k', 'Surround k'), ('tau', 'Transient τ'), ('a', 'Attention gain')))
+    dv = S4['varied_minus_single_4h']
+    maxd = max(abs(v['diff']) for v in dv.values())
+    v4_section = f"""
+<h2 id="round-4">Round 4 · Twenty hours, ten levels</h2>
+<p>One simulated subject plays ten 2-hour sessions (240 five-minute runs) of the levered game. Each session is a different level, the way a campaign varies: Warehouse, Night ops (dim, stealthy, frequent covert cues), Open arena (big rooms, fast), Cathedral (huge rooms, fine textures), Sprint, Treasure hunt, Fog bank, Mixed day, Boss rush and Dusk maze. Each session also has its own response gain (±10%) and noise level (±15%), and the fitter estimates one gain per session. A 24-run control repeats the Warehouse level, so 4 h of one level type can be compared with 4 h spread over all ten. The first 120 voxels of the round-2 V1 population are used throughout, including the dedicated baselines; brackets are bootstrap 95% CIs over voxels.</p>
+<img src="fig9_long.png" alt="Recovery vs hours and the variety test">
+<p></p>
+<table><thead><tr><th>Spearman r</th><th>dedicated 10 min</th><th>2 h</th><th>5 h</th><th>10 h</th><th>20 h</th></tr></thead><tbody>{rows4}</tbody></table>
+<div class="tldr"><b>Bottom line, round 4</b><ul>
+<li><b>By ~10 hours, gameplay matches or beats every dedicated experiment except SF bandwidth.</b> 20 h vs dedicated: transient τ {g4('long_20h','tau')} vs {g4('dedicated_10min','tau')}; surround k {g4('long_20h','k')} vs {g4('dedicated_10min','k')}; CRF exponent {g4('long_20h','q')} vs {g4('dedicated_10min','q')}; attention gain {g4('long_20h','a')} vs {g4('dedicated_10min','a')}; pSFT peak {g4('long_20h','mu')} vs {g4('dedicated_10min','mu')}.</li>
+<li><b>Several measures plateau from 10 to 20 h</b> (pSFT peak, effective c50, surround k). The most likely limit there is model mismatch rather than data: eye-tracker gaze and bar-fitted pRFs. Round 3's oracle shows how much headroom better gaze and pRFs would give. Transient weight and attention keep improving.</li>
+<li><b>Variety did not help at equal time.</b> 4 h across ten levels vs 4 h of one level type: every difference is within ±{maxd:.2f}, and every 95% CI spans zero. The levers already make each level sample SF, contrast and attention broadly, and the themes mostly shift global statistics (lighting, fog, pace). Variety's payoff is more likely in generalization (models tested on unseen levels) and in models whose variables a single level under-samples (e.g., numerosity range), neither of which this test probes.</li>
+<li><b>pSFT bandwidth stays weak</b> in every design ({g4('long_20h','sig')} at 20 h). Recovering bandwidth probably needs a higher-resolution display and finer SF sampling than the sandbox's 8 px/deg.</li>
+</ul></div>
+"""
 
 html = f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
@@ -193,6 +221,7 @@ code{{font:13px 'JetBrains Mono',monospace;background:#f1f0ec;padding:1px 5px;bo
 </ul>
 {v2_section}
 {v3_section}
+{v4_section}
 <p class="note">Code: <code>github.com/samuelling/boldblaster</code>. Round 1: <code>python run_experiment.py</code>, <code>make_figures.py</code>. Round 2: <code>python run_v2.py data</code>, <code>python run_v2.py fit</code>, <code>make_figures_v2.py</code>. Then <code>build_report.py</code>.</p>
 </main></body></html>"""
 open(os.path.join(R, 'index.html'), 'w').write(html)

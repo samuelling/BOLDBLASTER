@@ -153,3 +153,56 @@ def fig_levers(res):
 
 if __name__ == '__main__':
     fig_levers(json.load(open(os.path.join(D, 'results.json'))))
+
+
+def fig_long(S):
+    """S: data_long/summary.json (Spearman r with bootstrap 95% CIs, same 120 voxels)."""
+    params = [('mu', 'pSFT peak'), ('sig', 'pSFT bandwidth'), ('c50_eff', 'pCRF eff. c50'),
+              ('q', 'pCRF exponent'), ('k', 'Surround k'), ('tau', 'Transient τ'), ('a', 'Attention gain')]
+    names = ['long_2h', 'long_5h', 'long_10h', 'long_20h']
+    hrs = [2, 5, 10, 20]
+    fig, axs = plt.subplots(1, len(params) + 1, figsize=(16, 3.4),
+                            gridspec_kw=dict(width_ratios=[1] * len(params) + [1.5]))
+    for a_, (prm, lab) in zip(axs, params):
+        y = [S[n][prm]['r'] for n in names]
+        lo = [S[n][prm]['lo'] for n in names]
+        hi = [S[n][prm]['hi'] for n in names]
+        a_.fill_between(hrs, lo, hi, color='#eb6834', alpha=0.18, lw=0)
+        a_.plot(hrs, y, '-o', color='#eb6834', lw=2, ms=4)
+        dd = S['dedicated_10min'][prm]
+        a_.axhspan(dd['lo'], dd['hi'], color='#2a78d6', alpha=0.12, lw=0)
+        a_.axhline(dd['r'], color='#2a78d6', lw=1.5, ls='--')
+        a_.set_xscale('log')
+        a_.set_xticks(hrs)
+        a_.set_xticklabels([str(h) for h in hrs])
+        a_.minorticks_off()
+        a_.set_ylim(-0.1, 1)
+        a_.set_title(lab, fontsize=9)
+        a_.set_xlabel('hours')
+        a_.grid(color='#e4e3df', lw=0.5)
+        a_.set_axisbelow(True)
+    axs[0].set_ylabel('Spearman r (95% CI)')
+    axs[0].text(2.1, 0.93, 'game (orange)\ndedicated 10 min\n(blue dashed)', fontsize=7, color=INK2, va='top')
+    a_ = axs[-1]
+    D_ = S['varied_minus_single_4h']
+    y = np.arange(len(params))
+    for yi, (prm, lab) in zip(y, params):
+        v = D_[prm]
+        a_.plot([v['lo'], v['hi']], [yi, yi], color='#eb6834', lw=2)
+        a_.plot(v['diff'], yi, 'o', color='#eb6834', ms=6)
+    a_.axvline(0, color=INK2, lw=0.8)
+    a_.set_yticks(y)
+    a_.set_yticklabels([l for _, l in params], fontsize=8)
+    a_.invert_yaxis()
+    a_.set_xlim(-0.35, 0.35)
+    a_.set_xlabel('Δr, varied − one level (4 h)')
+    a_.set_title('Variety at equal time', fontsize=9)
+    plt.tight_layout()
+    plt.savefig(os.path.join(F, 'fig9_long.png'), dpi=140)
+    plt.close()
+
+
+if __name__ == '__main__':
+    LP = os.path.join(ROOT, 'data_long', 'summary.json')
+    if os.path.exists(LP):
+        fig_long(json.load(open(LP)))
