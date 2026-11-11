@@ -1,0 +1,9 @@
+check,condition,metric,value
+"Round 1: what limits game pRF fits (120 voxels, 30 min, true gaze)",visual only,median position error (deg),0.1921
+"Round 1: what limits game pRF fits (120 voxels, 30 min, true gaze)",visual + systemic (arousal regressor),median position error (deg),0.2965
+"Round 1: what limits game pRF fits (120 voxels, 30 min, true gaze)",visual + systemic (no regressor),median position error (deg),0.8567
+"Round 1: what limits game pRF fits (120 voxels, 30 min, true gaze)",visual + noise,median position error (deg),2.899
+"Round 1: what limits game pRF fits (120 voxels, 30 min, true gaze)",full (arousal regressor),median position error (deg),2.599
+Round 1: game/bar visual modulation by V1 channel,sustained,median ratio,0.2113
+Round 1: game/bar visual modulation by V1 channel,transient,median ratio,0.6533
+Round 1: game/bar visual modulation by V1 channel,mixture_50_50,median ratio,0.3845

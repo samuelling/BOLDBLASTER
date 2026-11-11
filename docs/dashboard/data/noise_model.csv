@@ -1,0 +1,9 @@
+component,applies_to,form,parameters,shared_across_voxels,handled_by_fit
+Measurement noise,All runs,"AR(1), rho = 0.3","SD per voxel ~ U(0.6, 1.2) %",No,"Not modeled (least squares, no prewhitening)"
+Slow drift,All runs,Legendre order 1-3,"Coefficients ~ N(0, 0.5) % per voxel per run",No,Legendre 0-3 regressors per run
+Event-locked arousal,Game hits/explosions; reward-task wins,Gamma response peaking at 8 s per event,"Per-voxel weight ~ N(0.5, 0.2), min 0.05","Shape shared, scaled per voxel","Regressor from logged events (7 s kernel, mismatched) + derivative"
+Slow global fluctuation,All runs,"Random walk smoothed by 20 s boxcar, SD 0.3",Same per-voxel weight as arousal,Yes,Not modeled (partly absorbed by drift terms)
+HRF timing,All voxels,"Double-gamma, per-voxel time scaling","Scale ~ N(1, 0.08), clipped 0.8-1.2",No,Round 1 canonical; rounds 2-4 per-voxel scale fitted
+Session effects,Round 4 sessions,"Gain ~ N(1, 0.1); noise SD x U(0.85, 1.15)",Per 2 h session,Per session,One gain per session fitted
+Eye-tracker error,Game runs,"Offset N(0, 0.5 deg)/run, drift N(0, 0.3 deg), gain N(0, 4 %), 0.3 deg sample noise, blinks ~1.2 %",Per run,-,Not corrected
+Not simulated,-,Head motion; spatially correlated noise; cardiac/respiratory; voxel-size scaling,-,-,Testbed is optimistic here

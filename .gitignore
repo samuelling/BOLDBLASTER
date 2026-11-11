@@ -1,7 +1,7 @@
-data/
+/data/
+/data_v2/
+/data_long/
+/report/
 __pycache__/
 *.log
-report/
 figures/*.mp4
-data_v2/
-data_long/
