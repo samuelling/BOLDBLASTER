@@ -38,6 +38,52 @@ two_h = (f"With <b>2 hours</b> of gameplay (eye-tracker gaze), median error fall
          f"{g2h['by_ecc']['9-12.1']['pos_err']:.2f}° beyond 9° eccentricity, where bars give "
          f"{res['bars']['by_ecc']['9-12.1']['pos_err']:.2f}°.") if g2h else ''
 
+v2_section = ''
+R2 = os.path.join(ROOT, 'data_v2', 'results.json')
+if os.path.exists(R2):
+    r2 = json.load(open(R2))
+
+    def s(key, prm):
+        return r2[key]['scores'][prm]['spearman']
+
+    v2_section = f"""
+<h2 id="round-2">Round 2 · Many models from one game</h2>
+<div class="tldr"><b>Bottom line, round 2</b><ul>
+<li><b>Gameplay wins where the game varies a quantity a lot or produces many events.</b> Transient weight: r = {s('game_2h','tau'):.2f} (game 2 h) vs {s('dedicated_temporal','tau'):.2f} (dedicated) and {s('battery_joint','tau'):.2f} (whole battery fit jointly). Numerosity preference: {s('num_game_2h','mu'):.2f} vs {s('num_dedicated','mu'):.2f}. Striatal RPE: {s('rpe_game_2h','rpe_beta'):.2f} from {r2['rpe_game_2h']['n_outcomes']} outcomes vs {s('rpe_dedicated','rpe_beta'):.2f} from {r2['rpe_dedicated']['n_outcomes']}. Effective c50: {s('game_2h','c50_eff'):.2f} vs {s('dedicated_crf','c50_eff'):.2f}.</li>
+<li><b>Ties:</b> self-motion preferences are easy either way (rotation preference {s('mst_game_2h','rotation_pref'):.2f} vs {s('mst_dedicated','rotation_pref'):.2f}).</li>
+<li><b>Gameplay loses on SF tuning and attention.</b> pSFT peak: {s('game_2h','mu'):.2f} vs {s('dedicated_psft','mu'):.2f}. Attention gain: {s('game_2h','a'):.2f} vs {s('dedicated_attn','a'):.2f}. In play, attention lands where the eyes land, on objects that are also visual onsets and arousal events.</li>
+<li><b>Gaze and pRF accuracy multiply everything in V1.</b> With true gaze and true pRFs ("oracle"), the same 2 h gives pSFT peak {s('game_2h_oracle','mu'):.2f}, surround {s('game_2h_oracle','k'):.2f} (vs {s('game_2h','k'):.2f}), effective c50 {s('game_2h_oracle','c50_eff'):.2f}.</li>
+<li><b>Interacting parameters can't be measured one at a time.</b> Surround suppression, transient weight and the CRF exponent trade off. Fixing the others at population defaults (the usual single-experiment analysis) leaves them unrecoverable. A contrast experiment measures an effective c50 = c50/(1+k)<sup>1/q</sup>, not c50 itself.</li>
+</ul></div>
+<p><b>Setup.</b> One simulated subject holds four populations with planted parameters. <b>V1</b> (300 voxels) has the round-1 pRFs plus SF tuning (log-Gaussian over 8 half-octave bands, 0.25–2.8 cpd), a contrast response with normalization, R = (D<sub>c</sub><sup>q</sup> + τ·D<sub>t</sub><sup>q</sup>) / (c50<sup>q</sup> + D<sub>c</sub><sup>q</sup> + k·D<sub>s</sub><sup>q</sup>) × (1 + a·Att), a transient channel driven by |ΔE| in retinal coordinates, and an attention gain field around salient events. The other populations are <b>numerosity</b> (150 voxels; log-Gaussian tuning), <b>self-motion</b> (150; forward, rotate-left, rotate-right weights) and <b>striatum</b> (100; outcome and RPE weights). The game gained clusters of 1–8 coins (the numerosity lever, visible ~70% of the time) and probabilistic shots with logged p(hit) from 0.1 to 0.95, mostly below 0.7 (about 50 per run).</p>
+<p><b>Designs.</b> Dedicated experiments are 2 × 5 min each: band-pass noise (pSFT), 7 contrasts (pCRF), discs and annuli (surround), 0–5 Hz refresh (transient), attend-left/right blocks (attention), dot numerosity, optic-flow blocks, and a cued reward task. Gameplay is 1 h or 2 h. All V1 fits use bar-fitted pRFs from round 1, eye-tracker gaze, an assumed attention width, and a per-voxel HRF timescale. The dedicated fits free only their own parameters; the battery and game fits free all seven.</p>
+<img src="fig6_recovery_matrix.png" alt="Recovery matrix across models and designs">
+<figcaption>Spearman r between planted and fitted parameters. Dedicated rows: the experiment built for that parameter, 10 min each. The dedicated route totals ~95 min for one model each (15 bars + 50 V1 battery + 30 numerosity/flow/reward); gameplay is 15 min bars + 1–2 h play for all of them at once.</figcaption>
+<p></p>
+<img src="fig7_v1_scatter.png" alt="Planted vs fitted V1 parameters">
+<figcaption>Planted vs fitted, dedicated (blue) vs game 2 h (orange). Points on the edges are fits at parameter bounds, mostly dedicated surround and transient fits with the other parameters held at defaults.</figcaption>
+<h3>What building it taught us about the real pipeline</h3>
+<ul>
+<li><b>Apply nonlinearities at the frame rate, then bin.</b> Binning features to 2 Hz first distorts brief transients (trial onsets and offsets, saccades) by a factor that depends on each voxel's exponent. Noise-free contrast-response recovery collapsed until we fit at 10 Hz.</li>
+<li><b>Fit each voxel's HRF timing.</b> ±20% HRF time-scaling dropped noise-free effective-c50 recovery in a rapid event design from 0.95 to 0.41; fitting a per-voxel timescale brought it back to 0.68.</li>
+<li><b>Size event responses realistically.</b> Our first striatal simulation used 0.1 s impulses (~0.03% per event) and no design could recover anything. With 1 s outcome events (~0.2%), gameplay's event count dominates.</li>
+</ul>
+<h3>Caveats for round 2</h3>
+<ul>
+<li>Best case for model form: the fitter knows each model's functional form (not its parameters, HRF, gaze or pRFs).</li>
+<li>The non-visual populations read engine variables directly: coin count, speed, yaw, p(hit). Real numerosity and motion areas also see item size, density and retinal flow, so the game must decorrelate those (vary coin size and spacing; separate flow from heading).</li>
+<li>Dedicated non-visual experiments got 10 min against 60–120 min of play. Per minute, a dedicated design is often better; the gameplay gain is concurrency.</li>
+<li>One simulated subject, no head motion, a screen capped at 8 px/deg (SF bands stop at 2.8 cpd).</li>
+</ul>
+<h3>Design levers this points to</h3>
+<ul>
+<li><b>Engineered quantities work:</b> coin clusters made numerosity the best-recovered model. Each target model should get its own lever in the level design.</li>
+<li><b>Covert-attention moments:</b> events that demand monitoring the periphery while holding the crosshair would break the gaze/attention/onset collinearity.</li>
+<li><b>SF and contrast decorrelation:</b> textures whose SF content varies independently of distance and fog, on a higher-resolution display.</li>
+<li><b>Best-in-class eye tracking</b> and a pRF localizer for every subject: the oracle column is roughly what better gaze and pRFs buy.</li>
+</ul>
+"""
+
 html = f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,6 +96,7 @@ body{{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system
 main{{max-width:1080px;margin:0 auto;padding:40px 24px 80px}}
 h1{{font-size:30px;margin:0 0 4px;letter-spacing:-.01em}} h1 span{{color:var(--accent)}}
 .sub{{color:var(--ink2);margin:0 0 28px}}
+h3{{font-size:16px;margin:26px 0 6px}}
 h2{{font-size:19px;margin:44px 0 10px;padding-top:18px;border-top:1px solid var(--rule)}}
 .tldr{{background:#fff;border:1px solid var(--rule);border-left:4px solid var(--accent);padding:16px 20px;border-radius:6px}}
 .tldr li{{margin:6px 0}}
@@ -63,6 +110,7 @@ code{{font:13px 'JetBrains Mono',monospace;background:#f1f0ec;padding:1px 5px;bo
 .note{{color:var(--ink2);font-size:13px}}
 </style></head><body><main>
 <h1>BOLD<span>BLASTER</span></h1>
+<p class="note">Round 1: pRFs from gameplay (below). <a href="#round-2">Round 2: pSFT, pCRF, normalization, transient, attention, numerosity, self-motion and RPE from one game</a>.</p>
 <p class="sub">Simulation testbed: can V1 pRFs be recovered from free first-person gameplay, and what would a dynamic, NSD-style gaming dataset need?</p>
 
 <div class="tldr"><b>Bottom line</b><ul>
@@ -123,7 +171,8 @@ code{{font:13px 'JetBrains Mono',monospace;background:#f1f0ec;padding:1px 5px;bo
 <li><b>Eye tracking and event logging are non-negotiable.</b> Gaze rescues position estimates; engine-logged events remove most of the systemic confound.</li>
 <li><b>Design the game for modulation.</b> Since SNR is the bottleneck, the engine should create local contrast change: probe textures, lighting cuts, objects that appear and vanish in the periphery. The next simulation to run is whether those raise information per minute.</li>
 </ul>
-<p class="note">Code: <code>github.com/samuelling/boldblaster</code> — <code>python run_experiment.py</code> then <code>python make_figures.py</code> and <code>python build_report.py</code>.</p>
+{v2_section}
+<p class="note">Code: <code>github.com/samuelling/boldblaster</code>. Round 1: <code>python run_experiment.py</code>, <code>make_figures.py</code>. Round 2: <code>python run_v2.py data</code>, <code>python run_v2.py fit</code>, <code>make_figures_v2.py</code>. Then <code>build_report.py</code>.</p>
 </main></body></html>"""
 open(os.path.join(R, 'index.html'), 'w').write(html)
 print('report built')

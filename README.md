@@ -51,17 +51,45 @@ python build_report.py              # report/index.html
 - Gaze-contingent shift is integer-quantized at 0.25°.
 - Head motion from controller use is not simulated.
 
-## Results (first pass)
+## Round 2: many models from one game
 
-| Condition | train min | median pRF position error | error at 9–12° |
-|---|---|---|---|
-| Bars, fixation | 15 | 0.42° | 1.87° |
-| Game, perfect gaze | 30 | 2.16° | 1.14° |
-| Game, in-bore eye tracker | 30 | 2.71° | 1.10° |
-| Game, gaze ignored | 30 | 4.08° | 3.92° |
-| Bars + game (ET) | 45 | 0.37° | 0.51° |
-| Game, eye tracker, 2 h | 120 | 1.01° | 0.55° |
+`run_v2.py` plants parameters for four populations in one simulated subject and asks
+whether gameplay recovers them as well as dedicated experiments:
 
-Noise-free game data recovers pRFs to 0.19°, so the limit is SNR, not
-identifiability: gameplay modulates each V1 pRF ~0.2× as much as bars (sustained
-model). Figures in `figures/`.
+- **V1 (300 voxels):** pRF + SF tuning (8 half-octave bands), contrast response with
+  surround normalization, transient channel (|ΔE| in retinal coordinates), attention gain
+  around salient events. Modules: `bands.py` (front end), `models.py` (truth + fitter).
+- **Numerosity (150), self-motion (150), striatal RPE (100)**, driven by engine logs.
+- Game v2 (`game.simulate_run_v2`): coin clusters (1–8) as a numerosity lever,
+  probabilistic shots with logged p(hit), salient-onset and self-motion logs.
+- Dedicated designs (`controlled.py`): band-pass noise, contrast series, discs/annuli,
+  refresh-rate series, attend-left/right blocks, dot numerosity, optic-flow blocks, cued
+  reward task (2 × 5 min each).
+
+Spearman r between planted and fitted parameters (game uses eye-tracker gaze and
+bar-fitted pRFs; oracle uses true gaze and pRFs):
+
+| Parameter | Dedicated 10 min | V1 battery joint 50 min | Game 1 h | Game 2 h | Game 2 h oracle |
+|---|---|---|---|---|---|
+| pSFT peak | 0.72 | 0.75 | 0.38 | 0.47 | 0.65 |
+| pSFT bandwidth | 0.31 | 0.39 | 0.00 | 0.11 | 0.21 |
+| pCRF effective c50 | 0.49 | 0.50 | 0.43 | 0.58 | 0.72 |
+| pCRF exponent | 0.20 | 0.17 | 0.15 | 0.26 | 0.42 |
+| Surround k | 0.10 | 0.07 | 0.21 | 0.25 | 0.51 |
+| Transient τ | 0.04 | 0.48 | 0.61 | 0.65 | 0.70 |
+| Attention gain | 0.50 | 0.57 | 0.10 | 0.22 | 0.24 |
+| Numerosity preference | 0.91 | — | 0.99 | 0.99 | — |
+| Numerosity width | 0.58 | — | 0.89 | 0.93 | — |
+| Rotation preference | 0.92 | — | 0.88 | 0.94 | — |
+| Expansion share | 0.95 | — | 0.92 | 0.93 | — |
+| Striatal RPE β | 0.19 | — | 0.66 | 0.72 | — |
+
+Pipeline lessons: apply model nonlinearities at the frame rate before binning; fit a
+per-voxel HRF timescale; interacting V1 parameters (k, τ, q) need joint estimation, and a
+contrast experiment measures effective c50 = c50/(1+k)^(1/q).
+
+```bash
+python run_v2.py data      # ~25 min on 2 cores (needs round-1 data/ for pRFs)
+python run_v2.py fit       # ~15 min
+python make_figures_v2.py && python build_report.py
+```

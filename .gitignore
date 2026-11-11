@@ -3,3 +3,4 @@ __pycache__/
 *.log
 report/
 figures/*.mp4
+data_v2/

@@ -325,6 +325,56 @@ class NPCs:
         self.timer[i] = self.rng.uniform(3, 6)
 
 
+# ----------------------------------------------------------------- coins (v2)
+class Coins:
+    """Clusters of 1-8 floor coins: a designed numerosity lever. Collected (and
+    respawned elsewhere) when the player walks into a cluster."""
+
+    def __init__(self, rng, m, n_clusters=28):
+        self.rng = rng
+        self.open = np.argwhere(m == 0)[:, ::-1] + 0.5
+        self.clusters = [self._new() for _ in range(n_clusters)]
+
+    def _new(self):
+        rng = self.rng
+        c = self.open[rng.integers(len(self.open))]
+        k = int(rng.integers(1, 9))
+        ang = rng.uniform(0, 2 * np.pi, k)
+        rad = 0.45 * np.sqrt(rng.uniform(0, 1, k))
+        return dict(c=c, xy=c + np.c_[rad * np.cos(ang), rad * np.sin(ang)], alive=True, t=0.0)
+
+    def step(self, dt, player):
+        for i, cl in enumerate(self.clusters):
+            if cl['alive'] and np.hypot(*(cl['c'] - player)) < 0.6:
+                cl['alive'], cl['t'] = False, self.rng.uniform(5, 10)
+            elif not cl['alive']:
+                cl['t'] -= dt
+                if cl['t'] <= 0:
+                    self.clusters[i] = self._new()
+
+
+def draw_coin(img, zbuf, tx, ty):
+    if ty < 0.2:
+        return None
+    scrx = (W / 2) * (1 + tx / ty)
+    scry = H / 2 + SCALE * (0.5 - 0.12) / ty
+    rpx = max(SCALE * 0.07 / ty, 0.6)
+    x0, x1, y0, y1 = _bbox(scrx, scry, rpx + 1, rpx + 1)
+    if x0 >= x1 or y0 >= y1:
+        return None
+    cols, rows = np.arange(x0, x1), np.arange(y0, y1)
+    D = np.hypot((cols + 0.5 - scrx)[None, :], (rows + 0.5 - scry)[:, None])
+    vis = (ty < zbuf[cols])[None, :]
+    disk = (D < rpx) & vis
+    ring = (D >= rpx) & (D < rpx + 0.8) & vis
+    if not disk.any():
+        return None
+    sub = img[y0:y1, x0:x1]
+    sub[ring] = 0.12
+    sub[disk] = 0.95
+    return ((scrx - W / 2) / PX_PER_DEG, (H / 2 - scry) / PX_PER_DEG)
+
+
 # ----------------------------------------------------------------- gaze
 class GazeModel:
     """Fixation/saccade sampler at frame rate. Targets: crosshair (most often),
@@ -335,7 +385,7 @@ class GazeModel:
         self.target = np.zeros(2)
         self.left = 0
 
-    def step(self, npcs_vis, onset):
+    def step(self, npcs_vis, onset, coins=None):
         rng = self.rng
         if onset is not None and rng.random() < 0.85:
             self._set(np.array(onset[:2]) + rng.normal(0, 0.3, 2))
@@ -347,6 +397,8 @@ class GazeModel:
             elif r < 0.78 and vis:
                 v = min(vis, key=lambda v: abs(v[0]))
                 tgt = np.array(v[:2]) + rng.normal(0, 0.4, 2)
+            elif r < 0.88 and coins:
+                tgt = np.array(coins[rng.integers(len(coins))]) + rng.normal(0, 0.3, 2)
             else:
                 tgt = np.array([rng.normal(0, 5.0), rng.normal(-0.5, 3.5)])
             self._set(tgt)
@@ -415,3 +467,93 @@ def simulate_run(seed, duration=300.0, frame_sink=None, keep_frames=0):
             buf = []
     return dict(gaze=gaze, events=np.array(events).reshape(-1, 3), frames=np.array(kept),
                 map=m, pos=pos, ang=ang)
+
+
+def simulate_run_v2(seed, duration=300.0, frame_sink=None, keep_frames=0):
+    """v2 run: v1 game plus coin clusters, probabilistic shots, and per-frame logs.
+    Logs: n_coins (visible coins), n_npcs, fwd (cells/s), yaw (rad/s),
+    salient onsets (t, x, y, kind: 0 NPC appears, 1 explosion),
+    shots (t, p_hit, outcome, x, y), events (hits = arousal events)."""
+    rng = np.random.default_rng(seed)
+    tex = make_textures(rng)
+    m, centers = make_map(rng)
+    pos, ang, speed = make_trajectory(rng, m, centers, duration)
+    npcs = NPCs(rng, m, n=12)
+    coins = Coins(rng, m)
+    gm = GazeModel(rng)
+    nf = len(pos)
+    gaze = np.zeros((nf, 2), np.float32)
+    n_coins = np.zeros(nf, np.int16)
+    n_npcs = np.zeros(nf, np.int16)
+    events, salient, shots, explosions, kept, buf = [], [], [], [], [], []
+    last_seen = np.full(len(npcs.pos), -1e9)
+    cooldown = 0.0
+    for f in range(nf):
+        t = f / FPS
+        px, py = pos[f]
+        img, zbuf, cam = render_world(m, tex, px, py, ang[f])
+        npcs.step(1 / FPS, pos[f])
+        coins.step(1 / FPS, pos[f])
+        coin_pos = []
+        for cl in coins.clusters:
+            if not cl['alive']:
+                continue
+            for cx, cy in cl['xy']:
+                tx, ty = project(px, py, cam, cx, cy)
+                r = draw_coin(img, zbuf, tx, ty)
+                if r is not None and abs(r[0]) < SCREEN_HALF[0] and abs(r[1]) < SCREEN_HALF[1]:
+                    coin_pos.append(r)
+        n_coins[f] = len(coin_pos)
+        vis = []
+        for i in np.where(npcs.alive)[0]:
+            tx, ty = project(px, py, cam, *npcs.pos[i])
+            r = draw_npc(img, zbuf, tx, ty)
+            if r is not None:
+                vis.append(r + (i,))
+                if r[3]:
+                    if t - last_seen[i] > 1.0:
+                        salient.append((t, r[0], r[1], 0))
+                    last_seen[i] = t
+        n_npcs[f] = sum(1 for v in vis if v[3])
+        flash = 0.0
+        for e in explosions:
+            age = (f - e['f0']) / FPS
+            if age <= 0.8:
+                tx, ty = project(px, py, cam, *e['xy'])
+                draw_explosion(img, zbuf, tx, ty, age, rng)
+                if age < 0.3:
+                    flash = max(flash, 0.45 * (1 - age / 0.3))
+        explosions = [e for e in explosions if (f - e['f0']) / FPS <= 0.8]
+        onset = None
+        cooldown -= 1 / FPS
+        for v in vis:
+            if cooldown <= 0 and v[3] and abs(v[0]) < 4 and abs(v[1]) < 5 and v[2] < 13 \
+                    and rng.random() < 0.4:
+                p = float(np.clip(1.05 - v[2] / 13 - abs(v[0]) / 10, 0.1, 0.95))
+                hit = rng.random() < p
+                shots.append((t, p, float(hit), v[0], v[1]))
+                cooldown = 1.0
+                if hit:
+                    npcs.kill(v[4])
+                    explosions.append(dict(f0=f, xy=npcs.pos[v[4]].copy()))
+                    events.append((t, v[0], v[1]))
+                    salient.append((t, v[0], v[1], 1))
+                    onset = v
+                    flash = 0.45
+                break
+        draw_hud(img, 1.5 * np.sin(2 * np.pi * f / FPS * 1.6) * (speed[f] > 0))
+        if flash > 0:
+            img = img + flash * (1 - img)
+        gaze[f] = gm.step(vis, onset, coin_pos)
+        if f < keep_frames:
+            kept.append(img.copy())
+        buf.append(img)
+        if len(buf) == 50 or f == nf - 1:
+            if frame_sink is not None:
+                frame_sink(np.stack(buf))
+            buf = []
+    yaw = np.gradient(np.unwrap(ang)) * FPS
+    return dict(gaze=gaze, events=np.array(events).reshape(-1, 3), frames=np.array(kept),
+                n_coins=n_coins, n_npcs=n_npcs, fwd=speed.astype(np.float32),
+                yaw=yaw.astype(np.float32), salient=np.array(salient).reshape(-1, 4),
+                shots=np.array(shots).reshape(-1, 5))
