@@ -48,14 +48,27 @@ def make_textures(rng):
     return np.clip(tex, 0, 1)
 
 
+def make_textures_v3(rng, sf_scale=1.0, mode='bandpass'):
+    """Walls: contrast-equalized isotropic band-pass noise at 2, 4, 8, 16 cycles per
+    wall unit (x sf_scale), so retinal SF depends on distance, not contrast.
+    mode 'mixed' keeps two natural textures; 'natural' keeps all four."""
+    tex = make_textures(rng)
+    slots = {'bandpass': (1, 2, 3, 4), 'mixed': (3, 4), 'natural': ()}[mode]
+    for k, f0 in zip((1, 2, 3, 4), (2, 4, 8, 16)):
+        if k in slots:
+            n = _bandnoise(rng, min(f0 * sf_scale, 28) / TS, bw=0.25)
+            tex[k] = np.clip(0.5 + 0.2 * n, 0, 1)
+    return tex
+
+
 # ----------------------------------------------------------------- map
-def make_map(rng, n=40, n_rooms=12):
+def make_map(rng, n=40, n_rooms=12, size=(4, 10)):
     m = np.ones((n, n), np.int8)
     rooms = []
     tries = 0
     while len(rooms) < n_rooms and tries < 1000:
         tries += 1
-        w, h = rng.integers(4, 10, size=2)
+        w, h = rng.integers(size[0], size[1], size=2)
         x, y = rng.integers(1, n - w - 1), rng.integers(1, n - h - 1)
         if all(x + w + 1 < rx or rx + rw + 1 < x or y + h + 1 < ry or ry + rh + 1 < y
                for rx, ry, rw, rh in rooms):
@@ -107,7 +120,7 @@ def _gsmooth(x, sigma_frames, axis=0):
     return gaussian_filter1d(x, sigma_frames, axis=axis, mode='nearest')
 
 
-def make_trajectory(rng, m, centers, duration, speed=1.8):
+def make_trajectory(rng, m, centers, duration, speed=1.8, look_deg=28.0):
     nf = int(duration * FPS)
     t = np.arange(nf) / FPS
     cur = centers[rng.integers(len(centers))]
@@ -141,7 +154,7 @@ def make_trajectory(rng, m, centers, duration, speed=1.8):
         if not moving[i]:
             ang[i] = ang[i - 1]
     ang = _gsmooth(np.unwrap(ang), 8)
-    look = np.deg2rad(28) * np.sin(2 * np.pi * t / 9 + rng.uniform(0, 6.3)) \
+    look = np.deg2rad(look_deg) * np.sin(2 * np.pi * t / 9 + rng.uniform(0, 6.3)) \
         * (0.5 + 0.5 * np.sin(2 * np.pi * t / 23 + rng.uniform(0, 6.3)))
     pan = _gsmooth(np.where(stop, np.deg2rad(45) * np.sin(2 * np.pi * t / 4), 0.0), 4)
     return pos, ang + look + pan, v
@@ -153,7 +166,7 @@ _CAMX = 2 * (_COLS + 0.5) / W - 1
 _ROWS = np.arange(H)[:, None]
 
 
-def render_world(m, tex, px, py, ang, fog=9.0):
+def render_world(m, tex, px, py, ang, fog=9.0, cgain=None):
     n = m.shape[0]
     dx, dy = np.cos(ang), np.sin(ang)
     plx, ply = dy * K, -dx * K                 # camera plane: right column = right side
@@ -190,6 +203,9 @@ def render_world(m, tex, px, py, ang, fog=9.0):
     wall = (tv >= 0) & (tv < 1)
     tvi = np.clip((tv * TS).astype(int), 0, TS - 1)
     img = tex[wt[None, :], tvi, tu[None, :]]
+    if cgain is not None:                      # v3: random contrast per wall cell
+        g = cgain[np.clip(mapy, 0, n - 1), np.clip(mapx, 0, n - 1)]
+        img = 0.5 + (img - 0.5) * g[None, :]
     img = np.where(side[None, :] == 1, img * 0.85, img)
     dist = np.broadcast_to(perp[None, :], (H, W)).copy()
     # floor / ceiling
@@ -330,15 +346,15 @@ class Coins:
     """Clusters of 1-8 floor coins: a designed numerosity lever. Collected (and
     respawned elsewhere) when the player walks into a cluster."""
 
-    def __init__(self, rng, m, n_clusters=28):
-        self.rng = rng
+    def __init__(self, rng, m, n_clusters=28, max_k=8):
+        self.rng, self.max_k = rng, max_k
         self.open = np.argwhere(m == 0)[:, ::-1] + 0.5
         self.clusters = [self._new() for _ in range(n_clusters)]
 
     def _new(self):
         rng = self.rng
         c = self.open[rng.integers(len(self.open))]
-        k = int(rng.integers(1, 9))
+        k = int(rng.integers(1, self.max_k + 1))
         ang = rng.uniform(0, 2 * np.pi, k)
         rad = 0.45 * np.sqrt(rng.uniform(0, 1, k))
         return dict(c=c, xy=c + np.c_[rad * np.cos(ang), rad * np.sin(ang)], alive=True, t=0.0)
@@ -384,9 +400,21 @@ class GazeModel:
         self.rng = rng
         self.target = np.zeros(2)
         self.left = 0
+        self.holding = 0
+
+    def hold(self, n):
+        """Hold gaze on the crosshair for n frames (covert-attention episode)."""
+        self.target = self.rng.normal(0, 0.3, 2)
+        self.left = self.holding = n
 
     def step(self, npcs_vis, onset, coins=None):
         rng = self.rng
+        if self.holding > 0:
+            self.holding -= 1
+            self.left -= 1
+            g = self.target + rng.normal(0, 0.08, 2)
+            return np.clip(g, [-SCREEN_HALF[0] + 0.3, -SCREEN_HALF[1] + 0.3],
+                           [SCREEN_HALF[0] - 0.3, SCREEN_HALF[1] - 0.3])
         if onset is not None and rng.random() < 0.85:
             self._set(np.array(onset[:2]) + rng.normal(0, 0.3, 2))
         elif self.left <= 0:
@@ -469,17 +497,31 @@ def simulate_run(seed, duration=300.0, frame_sink=None, keep_frames=0):
                 map=m, pos=pos, ang=ang)
 
 
-def simulate_run_v2(seed, duration=300.0, frame_sink=None, keep_frames=0):
+def simulate_run_v2(seed, duration=300.0, frame_sink=None, keep_frames=0, levers=False, theme=None):
     """v2 run: v1 game plus coin clusters, probabilistic shots, and per-frame logs.
     Logs: n_coins (visible coins), n_npcs, fwd (cells/s), yaw (rad/s),
     salient onsets (t, x, y, kind: 0 NPC appears, 1 explosion),
     shots (t, p_hit, outcome, x, y), events (hits = arousal events)."""
     rng = np.random.default_rng(seed)
-    tex = make_textures(rng)
-    m, centers = make_map(rng)
-    pos, ang, speed = make_trajectory(rng, m, centers, duration)
-    npcs = NPCs(rng, m, n=12)
-    coins = Coins(rng, m)
+    th = theme or {}
+    if th:
+        tex = make_textures_v3(rng, th['sf_scale'], th['tex'])
+        m, centers = make_map(rng, n_rooms=th['rooms'][0], size=th['rooms'][1:])
+        pos, ang, speed = make_trajectory(rng, m, centers, duration, speed=th['speed'], look_deg=th['look'])
+    else:
+        tex = make_textures_v3(rng) if levers else make_textures(rng)
+        m, centers = make_map(rng)
+        pos, ang, speed = make_trajectory(rng, m, centers, duration)
+    cgain = rng.uniform(0.25, 1.6, m.shape) if levers else None
+    fog = th.get('fog', 25.0 if levers else 9.0)
+    light = th.get('light', 1.0)
+    cue_rng = th.get('cue', (6, 10))
+    shot_p = th.get('shot_p', 0.4)
+    flash_amp = th.get('flash', 0.45)
+    next_cue = rng.uniform(4, 10) if levers else 1e9
+    cue = None
+    npcs = NPCs(rng, m, n=th.get('npcs', 12))
+    coins = Coins(rng, m, *th.get('coins', (28, 8)))
     gm = GazeModel(rng)
     nf = len(pos)
     gaze = np.zeros((nf, 2), np.float32)
@@ -491,9 +533,19 @@ def simulate_run_v2(seed, duration=300.0, frame_sink=None, keep_frames=0):
     for f in range(nf):
         t = f / FPS
         px, py = pos[f]
-        img, zbuf, cam = render_world(m, tex, px, py, ang[f])
+        img, zbuf, cam = render_world(m, tex, px, py, ang[f], fog=fog, cgain=cgain)
         npcs.step(1 / FPS, pos[f])
         coins.step(1 / FPS, pos[f])
+        if t >= next_cue and cue is None:          # covert-attention episode
+            th = rng.uniform(0, 2 * np.pi)
+            ecc = rng.uniform(4, 9)
+            cx, cy = ecc * np.cos(th), np.clip(ecc * np.sin(th), -8, 8)
+            cue = dict(t0=t, th=th)
+            salient.append((t, cx, cy, 2))
+            gm.hold(int(2.0 * FPS))
+            next_cue = t + 2.0 + rng.uniform(*cue_rng)
+        if cue is not None and t - cue['t0'] >= 2.0:
+            cue = None
         coin_pos = []
         for cl in coins.clusters:
             if not cl['alive']:
@@ -522,13 +574,13 @@ def simulate_run_v2(seed, duration=300.0, frame_sink=None, keep_frames=0):
                 tx, ty = project(px, py, cam, *e['xy'])
                 draw_explosion(img, zbuf, tx, ty, age, rng)
                 if age < 0.3:
-                    flash = max(flash, 0.45 * (1 - age / 0.3))
+                    flash = max(flash, flash_amp * (1 - age / 0.3))
         explosions = [e for e in explosions if (f - e['f0']) / FPS <= 0.8]
         onset = None
         cooldown -= 1 / FPS
         for v in vis:
             if cooldown <= 0 and v[3] and abs(v[0]) < 4 and abs(v[1]) < 5 and v[2] < 13 \
-                    and rng.random() < 0.4:
+                    and rng.random() < shot_p:
                 p = float(np.clip(1.05 - v[2] / 13 - abs(v[0]) / 10, 0.1, 0.95))
                 hit = rng.random() < p
                 shots.append((t, p, float(hit), v[0], v[1]))
@@ -539,9 +591,16 @@ def simulate_run_v2(seed, duration=300.0, frame_sink=None, keep_frames=0):
                     events.append((t, v[0], v[1]))
                     salient.append((t, v[0], v[1], 1))
                     onset = v
-                    flash = 0.45
+                    flash = flash_amp
                 break
+        if light != 1.0:                           # level lighting scales world contrast and mean
+            img = 0.5 * light + (img - 0.5) * light
         draw_hud(img, 1.5 * np.sin(2 * np.pi * f / FPS * 1.6) * (speed[f] > 0))
+        if cue is not None:                        # small arrow next to the crosshair
+            for rr in np.linspace(0.7, 1.6, 9):
+                c_ = int(W / 2 + rr * np.cos(cue['th']) * PX_PER_DEG)
+                r_ = int(H / 2 - rr * np.sin(cue['th']) * PX_PER_DEG)
+                img[max(0, r_ - 1):r_ + 1, max(0, c_ - 1):c_ + 1] = 0.98
         if flash > 0:
             img = img + flash * (1 - img)
         gaze[f] = gm.step(vis, onset, coin_pos)

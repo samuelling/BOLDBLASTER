@@ -57,8 +57,9 @@ def attention_trace(salient, gaze, x, y, sigma=2.0, dur=1.5):
     """(nf,V) attention field value at each pRF centre from salient onsets."""
     nf = len(gaze)
     att = np.zeros((nf, len(x)), np.float32)
-    for t, ex, ey, _ in salient:
-        f0, f1 = int(t * FPS), min(nf, int((t + dur) * FPS))
+    for t, ex, ey, kind in salient:
+        d = 2.0 if kind == 2 else dur          # covert-attention episodes last 2 s
+        f0, f1 = int(t * FPS), min(nf, int((t + d) * FPS))
         if f1 <= f0:
             continue
         rx = ex - gaze[f0:f1, 0]
@@ -115,6 +116,8 @@ class V1Fitter:
         Tc = np.concatenate([r['Tc'][:, v] for r in runs])
         att = np.concatenate([r['att'][:, v] for r in runs])
         y = np.concatenate([r['Y'][:, v] - r['Q'] @ (r['Q'].T @ r['Y'][:, v]) for r in runs])
+        grp = np.concatenate([np.full(r['Y'].shape[0], hash(r.get('group', 0)) % 100003) for r in runs])
+        gids = [grp == u for u in np.unique(grp)]          # one response gain per scan session
         bnd = dict(BOUNDS, hrf=(0.75, 1.3))
         lo = np.array([bnd[k][0] for k in self.free])
         hi = np.array([bnd[k][1] for k in self.free])
@@ -139,8 +142,11 @@ class V1Fitter:
             P = dict(fixed)
             P.update(zip(self.free, theta))
             p = pred(P)
-            g = max(p @ y / max(p @ p, 1e-12), 0)
-            return y - g * p
+            out = y.copy()
+            for gm in gids:
+                pg = p[gm]
+                out[gm] -= max(pg @ y[gm] / max(pg @ pg, 1e-12), 0) * pg
+            return out
 
         best = None
         for s in starts:

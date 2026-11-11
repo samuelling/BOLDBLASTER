@@ -114,12 +114,12 @@ def v1_truth_bold(Ec, Es, Tc, att, pop):
 
 
 # ------------------------------------------------------------------ game runs
-def game_run(i, pop, G):
-    if os.path.exists(p(f'game{i}_Y.npz')):
+def game_run(i, pop, G, prefix='game', levers=False):
+    if os.path.exists(p(f'{prefix}{i}_Y.npz')):
         return
     Gc_t, Gs_t, Gc_f, Gs_f = G
     sink = bands.BandSink()
-    r = game.simulate_run_v2(300 + i, duration=DUR, frame_sink=sink)
+    r = game.simulate_run_v2((800 if levers else 300) + i, duration=DUR, frame_sink=sink, levers=levers)
     maps = sink.result()
     gz = r['gaze']
     et = R1.eyetracker(gz, np.random.default_rng(700 + i))
@@ -127,12 +127,12 @@ def game_run(i, pop, G):
     Ec, Es, Tc = bands.pool(maps, gz, Gc_t, Gs_t)
     att_t = M.attention_trace(r['salient'], gz, pop['v1_x'], pop['v1_y'], sigma=2.0)
     vis = v1_truth_bold(Ec, Es, Tc, att_t, pop)
-    save_feats(f'game{i}_feat_oracle', Ec, Es, Tc, att_t)
+    save_feats(f'{prefix}{i}_feat_oracle', Ec, Es, Tc, att_t)
     del Ec, Es, Tc
     # realistic features (eye tracker, bar-fitted pRFs, assumed attention width 2.5 deg)
     Ec, Es, Tc = bands.pool(maps, et, Gc_f, Gs_f)
     att_f = M.attention_trace(r['salient'], et, pop['v1_fx'], pop['v1_fy'], sigma=2.5)
-    save_feats(f'game{i}_feat', Ec, Es, Tc, att_f)
+    save_feats(f'{prefix}{i}_feat', Ec, Es, Tc, att_f)
     del Ec, Es, Tc, maps
     ev = r['events']
     rng = np.random.default_rng(900 + i)
@@ -153,10 +153,10 @@ def game_run(i, pop, G):
     rd = on[:, None] * pop['rpe_g'][None] + rp[:, None] * pop['rpe_b'][None]
     rvis = M.bold_from_drive(rd, pop['rpe_hrf_scale'], pop['rpe_amp'])
     out['rpe_Y'] = M.add_nuisance(rng, rvis, vox(pop, 'rpe'), ev)
-    np.savez(p(f'game{i}_logs'), gaze=gz, et=et, events=ev, salient=r['salient'], shots=sh,
+    np.savez(p(f'{prefix}{i}_logs'), gaze=gz, et=et, events=ev, salient=r['salient'], shots=sh,
              n_coins=r['n_coins'], fwd=r['fwd'], yaw=r['yaw'])
-    np.savez(p(f'game{i}_Y'), **out)
-    log(f'game{i}: {len(sh)} shots, {len(ev)} hits, coins visible {np.mean(r["n_coins"] > 0):.2f}')
+    np.savez(p(f'{prefix}{i}_Y'), **out)
+    log(f'{prefix}{i}: {len(sh)} shots, {len(ev)} hits, coins visible {np.mean(r["n_coins"] > 0):.2f}')
 
 
 # ------------------------------------------------------------------ dedicated runs
@@ -215,6 +215,8 @@ def _data_task(task):
     kind, a, b = task
     if kind == 'ded':
         v1_dedicated(a, b, _FIT['pop'], _FIT['G'])
+    elif kind == 'g3':
+        game_run(a, _FIT['pop'], _FIT['G'], prefix='g3_', levers=True)
     else:
         game_run(a, _FIT['pop'], _FIT['G'])
 
@@ -236,8 +238,8 @@ def load_v1_runs(specs, oracle=False):
     return runs
 
 
-def game_specs(idx):
-    return lambda: [(f'game{i}', np.load(p(f'game{i}_logs.npz'))['events']) for i in idx]
+def game_specs(idx, prefix='game'):
+    return lambda: [(f'{prefix}{i}', np.load(p(f'{prefix}{i}_logs.npz'))['events']) for i in idx]
 
 
 def fit_v1(name, specs, free, oracle=False):
@@ -276,6 +278,9 @@ def run_fits(names):
         'game_2h': (game_specs(range(24)), allp, False, 120),
         'game_2h_oracle': (game_specs(range(24)), allp, True, 120),
         'battery_joint': ([(f'{k}{j}', []) for k in V1_KINDS for j in range(2)], allp, False, 50),
+        'levers_1h': (game_specs(range(12), 'g3_'), allp, False, 60),
+        'levers_2h': (game_specs(range(24), 'g3_'), allp, False, 120),
+        'levers_2h_oracle': (game_specs(range(24), 'g3_'), allp, True, 120),
     }
     for kind in V1_KINDS:
         V1[f'dedicated_{kind}'] = ([(f'{kind}{j}', []) for j in range(2)], DEDICATED_FREE[kind], False, 10)
@@ -410,6 +415,10 @@ if __name__ == '__main__':
         tasks = [('ded', k, j) for k in V1_KINDS for j in range(2)] + [('game', i, 0) for i in range(N_GAME)]
         with Pool(2) as pool:
             pool.map(_data_task, tasks, chunksize=1)
+    if stage == 'data3':
+        _FIT['pop'], _FIT['G'] = pop, G
+        with Pool(2) as pool:
+            pool.map(_data_task, [('g3', i, 0) for i in range(N_GAME)], chunksize=1)
     if stage in ('all', 'fit'):
         names = sys.argv[2:] or (['dedicated_' + k for k in V1_KINDS] + ['battery_joint', 'game_1h',
                                                                           'game_2h', 'game_2h_oracle', 'nonv1'])

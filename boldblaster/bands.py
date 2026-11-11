@@ -7,6 +7,7 @@ Pooling into voxels: per frame, maps are shifted into retinal coordinates by gaz
 (3 x sigma, the normalization pool), and centre Gaussians applied to |dE/dt|
 (transient channel, computed in retinal coordinates so saccades count)."""
 import numpy as np
+import scipy.fft as sfft
 from .game import W, H, PX_PER_DEG
 
 PAD = 32
@@ -42,11 +43,11 @@ def band_energy(frames):
     n = frames.shape[0]
     c = np.zeros((n, PH, PW), np.float32)
     c[:, PAD:PAD + H, PAD:PAD + W] = (frames - 0.5) / 0.5
-    C = np.fft.rfft2(c)
+    C = sfft.rfft2(c)                         # float32 / complex64 throughout
     out = np.empty((n, NB, MH, MW), np.float32)
     for b in range(NB):
-        x = np.fft.irfft2(C * _FILT[b], s=(PH, PW))
-        e = np.fft.irfft2(np.fft.rfft2(x * x) * _POOL[b], s=(PH, PW))
+        x = sfft.irfft2(C * _FILT[b], s=(PH, PW))
+        e = sfft.irfft2(sfft.rfft2(x * x) * _POOL[b], s=(PH, PW))
         e = np.sqrt(np.maximum(e, 0))
         out[:, b] = e.reshape(n, MH, BLOCK, MW, BLOCK).mean((2, 4))
     return out * E_SCALE

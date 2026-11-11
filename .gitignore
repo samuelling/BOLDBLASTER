@@ -4,3 +4,4 @@ __pycache__/
 report/
 figures/*.mp4
 data_v2/
+data_long/

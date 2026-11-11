@@ -93,3 +93,18 @@ python run_v2.py data      # ~25 min on 2 cores (needs round-1 data/ for pRFs)
 python run_v2.py fit       # ~15 min
 python make_figures_v2.py && python build_report.py
 ```
+
+## Round 3: design levers
+
+`simulate_run_v2(..., levers=True)` adds covert-attention cues (central arrow → peripheral
+location, gaze held at the crosshair for 2 s) and SF/contrast-decorrelated walls
+(contrast-equalized band-pass textures, random per-segment contrast, weaker fog).
+With 2 h of play: pSFT peak 0.47 → 0.64 (dedicated 0.72; 0.79 with oracle gaze/pRFs),
+attention gain 0.22 → 0.33 (dedicated 0.50), CRF exponent 0.26 → 0.37.
+`python run_v2.py data3 && python run_v2.py fit levers_1h levers_2h levers_2h_oracle`.
+
+## Round 4 (in progress): 20 h across ten themed levels
+
+`run_long.py`: ten 2 h sessions (Warehouse, Night ops, Open arena, Cathedral, Sprint,
+Treasure hunt, Fog bank, Mixed day, Boss rush, Dusk maze) with session-specific gain and
+noise; fits at 2/5/10/20 h and a 4 h varied-vs-single-level comparison.

@@ -116,3 +116,40 @@ if __name__ == '__main__':
     M = fig_matrix(res)
     fig_scatter(pop)
     print(np.round(M, 2))
+
+
+def fig_levers(res):
+    """Round 3: v1 parameters, dedicated vs game v2 vs game v3 (design levers)."""
+    params = [('mu', 'pSFT peak'), ('sig', 'pSFT bandwidth'), ('c50_eff', 'pCRF eff. c50'),
+              ('q', 'pCRF exponent'), ('k', 'Surround k'), ('tau', 'Transient τ'), ('a', 'Attention gain')]
+    series = [('Dedicated 10 min', None, '#2a78d6'), ('Game 2 h', 'game_2h', '#9c9a92'),
+              ('Game + levers 2 h', 'levers_2h', '#eb6834'),
+              ('Game + levers 2 h, oracle', 'levers_2h_oracle', '#1baf7a')]
+    fig, ax = plt.subplots(figsize=(12, 3.9))
+    x = np.arange(len(params))
+    w = 0.2
+    for j, (lab, key, col) in enumerate(series):
+        vals = []
+        for prm, _ in params:
+            k = key or 'dedicated_' + DED['c50' if prm == 'c50_eff' else prm]
+            vals.append(res[k]['scores'][prm]['spearman'] if k in res else np.nan)
+        b = ax.bar(x + (j - 1.5) * w, vals, width=w - 0.02, color=col, label=lab)
+        for xi, v in zip(x + (j - 1.5) * w, vals):
+            if not np.isnan(v):
+                ax.text(xi, max(v, 0) + 0.015, f'{v:.2f}', ha='center', fontsize=6.5, color=INK)
+    ax.set_xticks(x)
+    ax.set_xticklabels([n for _, n in params])
+    ax.set_ylabel('Spearman r (planted vs fitted)')
+    ax.set_ylim(0, 1)
+    ax.axhline(0, color=INK2, lw=0.6)
+    ax.grid(axis='y', color='#e4e3df', lw=0.6)
+    ax.set_axisbelow(True)
+    ax.legend(frameon=False, fontsize=8, ncol=4, loc='upper left')
+    ax.set_title('V1 parameter recovery with design levers (covert-attention cues + SF/contrast-decorrelated textures)', loc='left')
+    plt.tight_layout()
+    plt.savefig(os.path.join(F, 'fig8_levers.png'), dpi=140)
+    plt.close()
+
+
+if __name__ == '__main__':
+    fig_levers(json.load(open(os.path.join(D, 'results.json'))))

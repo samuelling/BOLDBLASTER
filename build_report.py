@@ -84,6 +84,26 @@ if os.path.exists(R2):
 </ul>
 """
 
+v3_section = ''
+if os.path.exists(R2) and 'levers_2h' in r2:
+    def d(prm):
+        k = 'dedicated_' + {'c50_eff': 'crf', 'mu': 'psft', 'sig': 'psft', 'q': 'crf', 'k': 'size',
+                            'tau': 'temporal', 'a': 'attn'}[prm]
+        return s(k, prm)
+    v3_section = f"""
+<h2 id="round-3">Round 3 · Design levers</h2>
+<p>Two changes to the game, aimed at round 2's losses. <b>Covert-attention cues:</b> every 8–12 s an arrow at the crosshair points to a peripheral spot (4–9°). For 2 s the player monitors it while gaze holds the crosshair, which separates attention from fixation, visual onsets and arousal (~30 episodes per 5-min run). <b>SF/contrast decorrelation:</b> walls use contrast-equalized band-pass textures (2–16 cycles per wall unit), each wall segment gets a random contrast (×0.25–1.6), and fog is weaker. Retinal SF then varies with viewing distance independently of contrast. Same planted V1 population, same fitter.</p>
+<img src="fig8_levers.png" alt="Recovery with design levers">
+<div class="tldr"><b>What the levers bought (2 h of play, realistic gaze and pRFs)</b><ul>
+<li><b>SF tuning:</b> pSFT peak {s('game_2h','mu'):.2f} → <b>{s('levers_2h','mu'):.2f}</b> (dedicated {d('mu'):.2f}); bandwidth {s('game_2h','sig'):.2f} → {s('levers_2h','sig'):.2f}. With oracle gaze and pRFs the levered game beats the dedicated experiment ({s('levers_2h_oracle','mu'):.2f}).</li>
+<li><b>Attention:</b> gain recovery {s('game_2h','a'):.2f} → <b>{s('levers_2h','a'):.2f}</b>, still below a dedicated block design ({d('a'):.2f}). Covert episodes help, but each is short and the attention field's width must be assumed.</li>
+<li><b>CRF exponent</b> improves ({s('game_2h','q'):.2f} → {s('levers_2h','q'):.2f}); effective c50 dips slightly ({s('game_2h','c50_eff'):.2f} → {s('levers_2h','c50_eff'):.2f}), likely because weaker fog and equalized textures narrow the contrast range. Transient weight is unchanged.</li>
+<li><b>Gaze/pRF accuracy is still the biggest multiplier:</b> the levered oracle reaches surround k {s('levers_2h_oracle','k'):.2f} and transient {s('levers_2h_oracle','tau'):.2f}.</li>
+</ul></div>
+"""
+
+v4_section = ''
+
 html = f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -110,7 +130,7 @@ code{{font:13px 'JetBrains Mono',monospace;background:#f1f0ec;padding:1px 5px;bo
 .note{{color:var(--ink2);font-size:13px}}
 </style></head><body><main>
 <h1>BOLD<span>BLASTER</span></h1>
-<p class="note">Round 1: pRFs from gameplay (below). <a href="#round-2">Round 2: pSFT, pCRF, normalization, transient, attention, numerosity, self-motion and RPE from one game</a>.</p>
+<p class="note">Round 1: pRFs from gameplay (below). <a href="#round-2">Round 2: eight models from one game</a> · <a href="#round-3">Round 3: design levers</a>{' · <a href="#round-4">Round 4: twenty hours</a>' if v4_section else ''}.</p>
 <p class="sub">Simulation testbed: can V1 pRFs be recovered from free first-person gameplay, and what would a dynamic, NSD-style gaming dataset need?</p>
 
 <div class="tldr"><b>Bottom line</b><ul>
@@ -172,6 +192,7 @@ code{{font:13px 'JetBrains Mono',monospace;background:#f1f0ec;padding:1px 5px;bo
 <li><b>Design the game for modulation.</b> Since SNR is the bottleneck, the engine should create local contrast change: probe textures, lighting cuts, objects that appear and vanish in the periphery. The next simulation to run is whether those raise information per minute.</li>
 </ul>
 {v2_section}
+{v3_section}
 <p class="note">Code: <code>github.com/samuelling/boldblaster</code>. Round 1: <code>python run_experiment.py</code>, <code>make_figures.py</code>. Round 2: <code>python run_v2.py data</code>, <code>python run_v2.py fit</code>, <code>make_figures_v2.py</code>. Then <code>build_report.py</code>.</p>
 </main></body></html>"""
 open(os.path.join(R, 'index.html'), 'w').write(html)
