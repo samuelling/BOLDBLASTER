@@ -1,6 +1,6 @@
 # BOLDBLASTER
 
-> Noise assumptions: [NOISE.md](NOISE.md). Tidy CSVs of every result: [`dashboard_data/`](dashboard_data/) (regenerate with `python export_dashboard_data.py`).
+> Interactive dashboard source: [`dashboard/`](dashboard/) (page + scripts over the CSVs; `test_harness.js` runs it headless with jsdom). Noise assumptions: [NOISE.md](NOISE.md). Tidy CSVs of every result: [`dashboard_data/`](dashboard_data/) (regenerate with `python export_dashboard_data.py`).
 
 A simulation testbed for one question: **can model-based fMRI (here, V1 pRF
 mapping) be fit from free gameplay instead of a controlled localizer, and what
