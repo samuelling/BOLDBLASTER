@@ -27,6 +27,12 @@ dash.draw('forest', (el) => {
         .style('stroke', 'var(--color-border-line)');
     }
   });
+  // shaded column: the dedicated experiment's 95% interval (round 2-3 voxels)
+  const dedRow = rows.find((r) => r.design === 'dedicated');
+  if (dedRow && dedRow.ci_lo !== null && dedRow.ci_lo !== '') {
+    s.insert('rect', ':first-child').attr('x', x(+dedRow.ci_lo)).attr('width', Math.max(1, x(+dedRow.ci_hi) - x(+dedRow.ci_lo)))
+      .attr('y', top - 6).attr('height', H - bottom - top + 10).style('fill', BB.color('dedicated')).style('opacity', 0.1);
+  }
   const tip = BB.tip(el);
   const gr = s.append('g').selectAll('g').data(rows).join('g').attr('transform', (r, i) => `translate(0,${y(i)})`);
   gr.append('text').attr('class', 'bb-lab').attr('x', 0).attr('dy', '0.32em').text((r) => r.design_label)
@@ -92,12 +98,12 @@ dash.draw('varietychart', (el) => {
   const labs = { mu: 'pSFT peak', sig: 'pSFT bandwidth', c50_eff: 'pCRF eff. c50', q: 'pCRF exponent', k: 'Surround k', tau: 'Transient', a: 'Attention gain' };
   const rows = BB.V1.map((p) => ({ p, one: BB.recRow(rec, 'single_4h', p), ten: BB.recRow(rec, 'varied_4h', p) })).filter((r) => r.one && r.ten);
   const P = BB.params();
-  const H = 300, rowH = (H - 40) / rows.length;
+  const H = 300, rowH = (H - 58) / rows.length;
   const { s, w } = BB.svg(el, H, 'Spearman r at 4 h for one level type versus ten level types');
   const lw = BB.textWidth(s, Object.values(labs)) + 12;
   const x = d3.scaleLinear().domain([0, 1]).range([lw, w - 10]);
-  BB.grid(s.append('g'), x, x.ticks(5), 4, H - 30, false);
-  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - 30})`).call(d3.axisBottom(x).ticks(5).tickSizeOuter(0)));
+  BB.grid(s.append('g'), x, x.ticks(5), 4, H - 44, false);
+  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - 44})`).call(d3.axisBottom(x).ticks(5).tickSizeOuter(0)));
   const c1 = 'var(--cds-chart-muted)', c2 = BB.color('long');
   const tip = BB.tip(el);
   const g = s.append('g').selectAll('g').data(rows).join('g').attr('transform', (r, i) => `translate(0,${8 + i * rowH + rowH / 2})`);

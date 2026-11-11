@@ -91,18 +91,31 @@ window.BB = (function () {
   }
 
   const recRow = (rows, design, param) => rows.find((r) => r.design === design && r.parameter === param);
+  // data-where "a=1&b=2" (values percent-encoded) -> {a: '1', b: '2'}
+  function where(el) {
+    const out = {};
+    (el.getAttribute('data-where') || '').split('&').filter(Boolean).forEach((kv) => {
+      const i = kv.indexOf('=');
+      out[decodeURIComponent(kv.slice(0, i))] = decodeURIComponent(kv.slice(i + 1));
+    });
+    return out;
+  }
+  const match = (row, w) => Object.keys(w).every((k) => String(row[k]) === w[k]);
+  // realistic designs only (oracles use true gaze and pRFs)
+  const realistic = (r) => !r.design.endsWith('oracle');
 
-  return { num, f2, V1, params, family, color, ready, tip, svg, styleAxis, grid, textWidth, recRow };
+  return { num, f2, V1, params, family, color, ready, tip, svg, styleAxis, grid, textWidth, recRow, where, match, realistic };
 })();
 
 // ---------------------------------------------------------------- controls
+const bbBound = new WeakSet();
 dash.onData(() => {
   const P = BB.params();
   document.querySelectorAll('select[data-param]').forEach((sel) => {
     const name = sel.getAttribute('data-param');
     if (document.activeElement !== sel && P[name] !== undefined) sel.value = P[name];
-    if (!sel.dataset.bound) {
-      sel.dataset.bound = '1';
+    if (!bbBound.has(sel)) {
+      bbBound.add(sel);
       sel.addEventListener('change', () => dash.setParams({ [name]: sel.value }));
     }
   });
@@ -171,10 +184,38 @@ drawCalc('variety', (v) => (+v).toFixed(2));
 dash.draw('kpi', (el) => {
   const d = dash.data('recovery');
   if (d.status !== 'ok') { el.textContent = '—'; return; }
-  const q = new URLSearchParams((el.getAttribute('data-where') || '').replace(/&amp;/g, '&'));
-  const row = BB.recRow(d.data, q.get('design'), q.get('parameter'));
+  const w = BB.where(el);
+  const row = BB.recRow(d.data, w.design, w.parameter);
   el.textContent = row ? BB.f2(+row.spearman) : '—';
 });
+
+// ---------------------------------------------------------------- any single cell: data-source, data-field, data-where
+dash.draw('cell', (el) => {
+  const src = (el.getAttribute('data-source') || '').split(' ')[0];
+  const d = dash.data(src);
+  const rows = d.status === 'ok' && Array.isArray(d.data) ? d.data : [];
+  const row = rows.find((r) => BB.match(r, BB.where(el)));
+  const v = row ? +row[el.getAttribute('data-field')] : NaN;
+  el.textContent = isFinite(v) ? BB.f2(v) : '—';
+});
+
+// ---------------------------------------------------------------- best realistic design for the chosen parameter
+function bbBest() {
+  const d = dash.data('recovery');
+  if (d.status !== 'ok') return null;
+  const P = BB.params();
+  const rows = d.data.filter((r) => r.parameter === P.param && BB.realistic(r) && !r.design.startsWith('dedicated'));
+  const best = rows.reduce((a, r) => (!a || +r.spearman > +a.spearman ? r : a), null);
+  const ded = d.data.find((r) => r.parameter === P.param && r.design === 'dedicated');
+  return { best, ded };
+}
+function bbMark(el, row) {
+  if (row) el.setAttribute('data-where', `design=${encodeURIComponent(row.design)}&parameter=${encodeURIComponent(row.parameter)}`);
+}
+dash.draw('sel-param', (el) => { const b = bbBest(); const r = b && (b.best || b.ded); bbMark(el, r); el.textContent = r ? r.parameter_label : '—'; });
+dash.draw('best-design', (el) => { const b = bbBest(); bbMark(el, b && b.best); el.textContent = b && b.best ? b.best.design_label : '—'; });
+dash.draw('best-r', (el) => { const b = bbBest(); bbMark(el, b && b.best); el.textContent = b && b.best ? BB.f2(+b.best.spearman) : '—'; });
+dash.draw('ded-r', (el) => { const b = bbBest(); bbMark(el, b && b.ded); el.textContent = b && b.ded ? BB.f2(+b.ded.spearman) : '—'; });
 
 // ---------------------------------------------------------------- selected-row numbers
 dash.draw('scatter-r', (el) => {

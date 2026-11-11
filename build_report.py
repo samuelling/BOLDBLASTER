@@ -158,7 +158,7 @@ code{{font:13px 'JetBrains Mono',monospace;background:#f1f0ec;padding:1px 5px;bo
 .note{{color:var(--ink2);font-size:13px}}
 </style></head><body><main>
 <h1>BOLD<span>BLASTER</span></h1>
-<p class="note">Round 1: pRFs from gameplay (below). <a href="#round-2">Round 2: eight models from one game</a> · <a href="#round-3">Round 3: design levers</a>{' · <a href="#round-4">Round 4: twenty hours</a>' if v4_section else ''}.</p>
+<p class="note"><b><a href="dashboard/">Interactive dashboard →</a></b> · Round 1: pRFs from gameplay (below). <a href="#round-2">Round 2: eight models from one game</a> · <a href="#round-3">Round 3: design levers</a>{' · <a href="#round-4">Round 4: twenty hours</a>' if v4_section else ''}.</p>
 <p class="sub">Simulation testbed: can V1 pRFs be recovered from free first-person gameplay, and what would a dynamic, NSD-style gaming dataset need?</p>
 
 <div class="tldr"><b>Bottom line</b><ul>

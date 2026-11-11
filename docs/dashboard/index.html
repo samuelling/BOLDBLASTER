@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOLDBLASTER: what can gameplay fMRI recover?</title>
+<meta name="description" content="Simulation testbed for an open fMRI dataset of people playing a first-person game: which tuning models can be recovered, and how much play it takes.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2714%27 fill=%27%236250d6%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23eb6834%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Serif+4:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-anthropic-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-anthropic-serif: "Source Serif 4", Georgia, serif;
+  --color-fg: #18181a; --color-fg-muted: #66656f; --color-bg: #f7f7f5; --color-panel: #ffffff;
+  --color-border-line: #e4e3df; --color-ok: #1baf7a; --color-warn: #eda100; --color-bad: #e34948;
+  --cds-font-size-caption: 12.5px; --cds-font-size-body: 15px; --cds-font-size-heading: 18px; --cds-font-size-title: 26px;
+  --cds-font-weight-medium: 600;
+  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 14px; --cds-gap-lg: 20px; --cds-gap-xl: 28px;
+  --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 18px; --cds-pad-xl: 32px;
+  --cds-radius: 12px;
+  --cds-chart-grid: #ecebe7; --cds-chart-axis: #c9c7c0; --cds-chart-reference: #9c9a92; --cds-chart-muted: #b4b2aa;
+  --cds-text-secondary: #6b6a72; --cds-surface-popover: #ffffff; --cds-border: #e4e3df;
+  --cds-shadow-popover: 0 8px 28px rgba(20, 20, 30, .14);
+  --bb-series-1: #2a78d6; --bb-series-2: #eb6834; --bb-series-3: #1baf7a; --bb-series-4: #eda100;
+  --bb-series-5: #e87ba4; --bb-series-6: #008300; --bb-series-7: #6250d6; --bb-series-8: #e34948;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-fg: #f0efec; --color-fg-muted: #a9a8b0; --color-bg: #121214; --color-panel: #1b1b1e;
+    --color-border-line: #2e2e33; --cds-chart-grid: #2a2a2f; --cds-chart-axis: #45454c; --cds-chart-reference: #77767e;
+    --cds-chart-muted: #6c6b73; --cds-text-secondary: #a3a2aa; --cds-surface-popover: #222226; --cds-border: #34343a;
+    --cds-shadow-popover: 0 8px 28px rgba(0, 0, 0, .5);
+    --bb-series-1: #3987e5; --bb-series-2: #d95926; --bb-series-3: #199e70; --bb-series-4: #c98500;
+    --bb-series-5: #d55181; --bb-series-6: #2a9a2a; --bb-series-7: #9085e9; --bb-series-8: #e66767;
+    color-scheme: dark;
+  }
+}
+html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-body); -webkit-font-smoothing: antialiased; }
+#dash-root { padding: 0 clamp(14px, 4vw, 40px) 60px; }
+.dash-select { font: inherit; font-size: 14px; color: var(--color-fg); background-color: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 8px; padding: 6px 30px 6px 10px; appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2388878f' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center; min-width: 210px; }
+.dash-skeleton { position: relative; color: transparent !important; }
+.dash-skeleton::after { content: ""; position: absolute; inset: 0; border-radius: 8px; background: linear-gradient(90deg, var(--color-border-line), transparent, var(--color-border-line)); background-size: 200% 100%; opacity: .5; animation: bbsk 1.4s linear infinite; }
+@keyframes bbsk { to { background-position: -200% 0; } }
+.bb-ghbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; padding: 14px 0 0; font-size: 12.5px; color: var(--color-fg-muted); }
+.bb-ghbar a { color: var(--color-fg); text-decoration: none; border-bottom: 1px solid var(--color-border-line); }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+</head>
+<body>
+<div class="bb-ghbar"><span>BOLDBLASTER · interactive results</span><span><a href="https://github.com/samuelling/boldblaster">Code &amp; data on GitHub</a> · <a href="../">Full report</a></span></div>
+<div id="dash-root">
+<style>
+.bb { font-family: var(--font-anthropic-sans); color: var(--color-fg); max-width: 1180px; margin: 0 auto; }
+.bb-hero { padding: var(--cds-pad-xl) 0 var(--cds-pad-lg); border-bottom: 1px solid var(--color-border-line); margin-bottom: var(--cds-gap-xl); }
+.bb-eyebrow { font-size: var(--cds-font-size-caption); letter-spacing: .14em; text-transform: uppercase; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); }
+.bb-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: clamp(30px, 5vw, 46px); line-height: 1.05; margin: 0 0 var(--cds-gap-md); letter-spacing: -.01em; }
+.bb-title .bb-accent { background: linear-gradient(90deg, #2a78d6, #6250d6 55%, #eb6834); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.bb-lede { font-size: var(--cds-font-size-heading); line-height: 1.45; max-width: 60em; margin: 0; }
+.bb-lede b { font-variant-numeric: tabular-nums; }
+.bb-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: var(--cds-gap-md); margin-top: var(--cds-gap-xl); }
+.bb-kpi { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); position: relative; overflow: hidden; }
+.bb-kpi::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--bb-kpi-c, var(--color-fg-muted)); }
+.bb-kpi-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); text-transform: uppercase; letter-spacing: .08em; margin: 0 0 var(--cds-gap-sm); }
+.bb-kpi-value { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
+.bb-kpi-sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: var(--cds-gap-sm); font-variant-numeric: tabular-nums; }
+.bb-sec { margin: 0 0 calc(var(--cds-gap-xl) * 1.6); }
+.bb-sec-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-md); margin-bottom: var(--cds-gap-md); }
+.bb-num { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .14em; text-transform: uppercase; margin: 0 0 4px; }
+.bb-h2 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; }
+.bb-desc { color: var(--color-fg-muted); max-width: 52em; margin: var(--cds-gap-sm) 0 0; line-height: 1.5; }
+.bb-controls { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; }
+.bb-controls label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); display: flex; flex-direction: column; gap: 3px; }
+.bb-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); }
+.bb-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: var(--cds-gap-md); }
+.bb-chart { position: relative; min-height: 260px; width: 100%; }
+.bb-chart svg { display: block; overflow: visible; }
+.bb-chart text { font-size: var(--cds-font-size-caption); fill: var(--cds-text-secondary, var(--color-fg-muted)); }
+.bb-chart .bb-lab { fill: var(--color-fg); }
+.bb-tip { position: absolute; z-index: 5; pointer-events: none; background: var(--cds-surface-popover, var(--color-panel)); border: 1px solid var(--cds-border, var(--color-border-line)); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 8px 10px; font-size: var(--cds-font-size-caption); color: var(--cds-text-secondary, var(--color-fg-muted)); max-width: 260px; font-variant-numeric: tabular-nums; }
+.bb-tip-h { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); margin-bottom: 2px; }
+.bb-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: var(--cds-gap-sm); }
+.bb-legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; background: var(--bb-c); }
+.bb-stat { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); }
+.bb-stat b { color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.bb-note { color: var(--color-fg-muted); font-style: italic; margin: var(--cds-gap-md) 0; }
+.bb-tablewrap { overflow-x: auto; }
+.bb-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+.bb-table th { text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); border-bottom: 1px solid var(--color-border-line); padding: 8px 10px; white-space: nowrap; }
+.bb-table td { border-bottom: 1px solid var(--color-border-line); padding: 8px 10px; vertical-align: top; }
+.bb-table tr.bb-click { cursor: pointer; }
+.bb-table tr.bb-click:hover td { background: color-mix(in srgb, var(--color-fg) 4%, transparent); }
+.bb-table tr.bb-sel td { background: color-mix(in srgb, #2a78d6 14%, transparent); }
+.bb-table td.bb-r { text-align: right; }
+.bb-foot { border-top: 1px solid var(--color-border-line); padding-top: var(--cds-gap-lg); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.6; }
+.bb-foot summary { cursor: pointer; color: var(--color-fg); font-size: var(--cds-font-size-body); margin-bottom: var(--cds-gap-sm); }
+.bb-empty { color: var(--color-fg-muted); padding: var(--cds-pad-lg) 0; }
+[data-dash-source-state=refreshing] { opacity: .5; }
+.bb-tldr { display: flex; gap: var(--cds-gap-md); align-items: flex-start; background: color-mix(in srgb, #6250d6 7%, var(--color-panel)); border: 1px solid color-mix(in srgb, #6250d6 28%, var(--color-border-line)); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); margin: 0 0 var(--cds-gap-md); line-height: 1.55; }
+.bb-tldr-tag { flex: none; font-size: 11px; font-weight: 700; letter-spacing: .12em; color: #fff; background: linear-gradient(90deg, #2a78d6, #6250d6); border-radius: 999px; padding: 3px 9px; margin-top: 2px; }
+.bb-tldr p { margin: 0 0 6px; }
+.bb-tldr p:last-child { margin-bottom: 0; }
+.bb-tldr b { font-variant-numeric: tabular-nums; }
+.bb-explain { margin-top: var(--cds-gap-md); border-top: 1px dashed var(--color-border-line); padding-top: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.6; }
+.bb-explain summary { cursor: pointer; color: var(--color-fg); font-weight: var(--cds-font-weight-medium); list-style: none; display: inline-flex; align-items: center; gap: 6px; }
+.bb-explain summary::-webkit-details-marker { display: none; }
+.bb-explain summary::before { content: "+"; display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--color-border-line); font-size: 13px; line-height: 1; }
+.bb-explain[open] summary::before { content: "\2212"; }
+.bb-explain h4 { margin: var(--cds-gap-md) 0 2px; font-size: var(--cds-font-size-caption); text-transform: uppercase; letter-spacing: .08em; color: var(--color-fg); }
+.bb-explain p, .bb-explain ul { margin: 0 0 4px; }
+.bb-explain ul { padding-left: 18px; }
+.bb-signal { border-left: 3px solid #1baf7a; padding-left: 10px; }
+.bb-dyn { margin: 0 0 var(--cds-gap-md); }
+</style>
+
+<div class="bb" data-read lang="en">
+
+<header class="bb-hero" id="top">
+  <p class="bb-eyebrow">Simulation testbed · gameplay fMRI · model recovery</p>
+  <h1 class="bb-title">BOLD<span class="bb-accent">BLASTER</span>: what can a video game recover from visual cortex?</h1>
+  <p class="bb-lede" id="takeaway">With twenty hours of varied first-person gameplay, fitted V1 parameters beat a dedicated 10-minute experiment on <b data-draw="wins20" data-source="wins20">—</b> of 7 measures, and on <b data-draw="clear20" data-source="clear20">—</b> the 95% intervals don't even overlap. Spreading play across ten level types instead of one changed recovery by at most <b data-draw="variety" data-source="variety">—</b> (Spearman r) at equal time.</p>
+
+  <div class="bb-kpis" id="kpis">
+    <div class="bb-kpi" id="kpi-sf" style="--bb-kpi-c: #2a78d6">
+      <p class="bb-kpi-label">pSFT peak · 20 h play</p>
+      <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=long_20h&amp;parameter=mu">—</div>
+      <div class="bb-kpi-sub">Dedicated 10 min: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_10min&amp;parameter=mu">—</span></div>
+    </div>
+    <div class="bb-kpi" id="kpi-tau" style="--bb-kpi-c: #eb6834">
+      <p class="bb-kpi-label">Transient weight · 20 h play</p>
+      <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=long_20h&amp;parameter=tau">—</div>
+      <div class="bb-kpi-sub">Dedicated 10 min: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_10min&amp;parameter=tau">—</span></div>
+    </div>
+    <div class="bb-kpi" id="kpi-att" style="--bb-kpi-c: #1baf7a">
+      <p class="bb-kpi-label">Attention gain · 20 h play</p>
+      <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=long_20h&amp;parameter=a">—</div>
+      <div class="bb-kpi-sub">Dedicated 10 min: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_10min&amp;parameter=a">—</span></div>
+    </div>
+    <div class="bb-kpi" id="kpi-num" style="--bb-kpi-c: #eda100">
+      <p class="bb-kpi-label">Numerosity preference · 2 h play</p>
+      <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=game_2h&amp;parameter=num_mu">—</div>
+      <div class="bb-kpi-sub">Dedicated 10 min: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated&amp;parameter=num_mu">—</span></div>
+    </div>
+  </div>
+  <p class="bb-stat" style="margin-top: var(--cds-gap-md)">Every value is Spearman r between planted and fitted parameters across simulated voxels: 1 means the ordering of voxels is recovered perfectly.</p>
+  <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>BOLDBLASTER is a simulation. We play a first-person game, plant known tuning parameters in simulated voxels (the ground truth), generate BOLD with realistic noise, and fit the parameters back out exactly as one would with real data. Because the truth is known, we can score how well each experimental design recovers it.</p>
+<h4>How to read it</h4><p>The tiles compare the best gameplay result with the classic dedicated experiment for the same parameter (10 minutes, built for that one quantity). Spearman r measures whether voxels are put in the right order: 0.9 means the fitted values rank voxels almost exactly as the truth does; 0.3 means only a weak trend.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Treat differences under about 0.1 as noise for the 300-voxel rounds and under about 0.15 for the 120-voxel round 4. The sections below show 95% intervals so any comparison can be checked.</p></div>
+<h4>Caveats</h4><p>Everything here is simulated. The fitter knows each model's functional form (not its parameters), and some real-world noise sources are not simulated; see section 05.</p>
+</details>
+</header>
+
+<section class="bb-sec" id="recovery">
+  <div class="bb-sec-head">
+    <div>
+      <p class="bb-num">01 · Recovery</p>
+      <h2 class="bb-h2">Which design recovers which parameter?</h2>
+      <p class="bb-desc">Each row is one design: a dedicated experiment built for that parameter, the game with and without design levers, and up to 20 hours across ten levels. Dots are Spearman r; whiskers are bootstrap 95% intervals over voxels (not computed for the non-visual populations).</p>
+    </div>
+    <div class="bb-controls">
+      <label>Parameter
+        <select class="dash-select" data-param="param" aria-label="Parameter">
+          <optgroup label="V1">
+            <option value="mu">pSFT peak</option>
+            <option value="sig">pSFT bandwidth</option>
+            <option value="c50_eff">pCRF effective c50</option>
+            <option value="q">pCRF exponent</option>
+            <option value="k">Surround suppression k</option>
+            <option value="tau">Transient weight</option>
+            <option value="a">Attention gain</option>
+          </optgroup>
+          <optgroup label="Other populations">
+            <option value="num_mu">Numerosity preference</option>
+            <option value="num_sig">Numerosity tuning width</option>
+            <option value="mst_rotation_pref">Self-motion: rotation preference</option>
+            <option value="mst_expansion_frac">Self-motion: expansion share</option>
+            <option value="rpe_rpe_beta">Striatal RPE weight</option>
+          </optgroup>
+        </select>
+      </label>
+    </div>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
+    <p>Gameplay wins where a game naturally varies a quantity a lot or produces many events: transient responses (saccades, camera turns), numerosity (coin clusters) and reward outcomes. It needs hours, design levers or both to match dedicated experiments on SF tuning and attention. Parameters that interact (surround suppression, transient weight, CRF exponent) are barely recoverable one experiment at a time, so fitting them jointly is what matters.</p>
+  </div></div>
+  <div class="bb-card">
+    <p class="bb-dyn bb-stat">For <b data-draw="sel-param" data-source="recovery" data-field="parameter_label">—</b>, the best realistic design (no oracle) is <b data-draw="best-design" data-source="recovery" data-field="design_label">—</b> at r = <b data-draw="best-r" data-source="recovery" data-field="spearman">—</b>; the dedicated 10-minute experiment gives <b data-draw="ded-r" data-source="recovery" data-field="spearman">—</b>.</p>
+    <div class="bb-chart" id="forest" data-draw="forest" data-source="recovery" style="min-height: 380px"></div>
+    <div class="bb-legend">
+      <span>Dedicated experiment</span>
+      <span>Battery fit jointly</span>
+      <span>Game</span>
+      <span>Game + design levers</span>
+      <span>Ten levels (round 4)</span>
+    </div>
+    <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>For the parameter you pick, one row per experimental design and the Spearman r between planted and fitted values across voxels.</p><ul><li><b>Dedicated experiment</b>: the classic design built for that parameter (band-pass noise for pSFT, a contrast series for pCRF, discs and annuli for surround suppression, refresh rates for the transient channel, attend-left/right blocks for attention, dot arrays, optic-flow blocks, a reward task), 10 minutes, fitting only that parameter with the others fixed at population defaults.</li><li><b>Battery fit jointly</b>: all five V1 experiments (50 min) fitted together with every parameter free.</li><li><b>Game</b>: 1–2 h of the round-2 game. <b>Game + design levers</b>: the round-3 game with covert-attention cues and SF/contrast-decorrelated textures.</li><li><b>Oracle</b>: the same data fitted with true gaze and true pRFs, an upper bound on what better eye tracking and localizers would buy.</li><li><b>Ten levels</b>: round 4, 2–20 h across ten level types on a 120-voxel subset (its dedicated row is re-scored on those same voxels).</li></ul>
+<h4>How to read it</h4><p>Dots further right recover the parameter better. Horizontal lines separate rounds. Hover any row for minutes of data, voxel count and the interval.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Whiskers are bootstrap 95% intervals over voxels. The shaded column is the dedicated experiment's interval: a design whose whisker sits entirely outside it is convincingly better or worse; overlap means treat it as a tie. As a rule of thumb, r is uncertain by about ±0.1 with 300 voxels and ±0.15 with 120.</p></div>
+<h4>Caveats</h4><p>Compare within a round where possible (rounds 2–3 use 300 voxels, round 4 uses 120). Numerosity, self-motion and striatal rows have no intervals because their per-voxel fits were not saved, and their dedicated runs had 10 min against 60–120 min of play.</p>
+</details>
+  </div>
+</section>
+
+<section class="bb-sec" id="hours">
+  <div class="bb-sec-head">
+    <div>
+      <p class="bb-num">02 · Time</p>
+      <h2 class="bb-h2">How many hours of play does it take?</h2>
+      <p class="bb-desc">One simulated subject, ten 2-hour sessions, each a different level (Warehouse, Night ops, Open arena, Cathedral, Sprint, Treasure hunt, Fog bank, Mixed day, Boss rush, Dusk maze). The band is the dedicated 10-minute experiment on the same 120 voxels. Uses the parameter chosen above.</p>
+    </div>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
+    <p>Recovery climbs steeply up to about 10 hours, then flattens for SF peak, effective c50 and surround suppression: past that point the limit is gaze and pRF accuracy, not more play. Spreading the same 4 hours over ten level types instead of one changed recovery by at most <b data-draw="variety" data-source="variety">—</b> (r), well inside the noise.</p>
+  </div></div>
+  <div class="bb-grid2">
+    <div class="bb-card">
+      <p class="bb-note" data-when="nonv1" hidden>Rounds 3 and 4 simulated V1 parameters only. Pick a V1 parameter above.</p>
+      <div class="bb-chart" id="hours-chart" data-draw="hours" data-source="recovery" style="min-height: 300px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Spearman r for the chosen parameter as sessions accumulate: 2 h is session 1 (Warehouse), 5 h adds Night ops and half of Open arena, 10 h is five levels, 20 h all ten. Orange is gameplay with its 95% band; the blue dashed line and band are the dedicated 10-minute experiment on the same 120 voxels.</p>
+<h4>How to read it</h4><p>Where the orange line rises above the blue band, gameplay has overtaken the dedicated experiment. A line that keeps rising means more hours still help; a flat line means something other than data quantity is limiting.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Trust the overall trend from 2 to 10 to 20 h. Single steps can wobble: the 5 h point adds a dim, low-contrast level (Night ops), and with 120 voxels each point is uncertain by roughly ±0.15, so a dip of 0.1 between neighbours is not a real reversal.</p></div>
+<h4>Caveats</h4><p>One simulated subject. Each session also has its own response gain and noise level, and the fitter estimates one gain per session.</p>
+</details>
+    </div>
+    <div class="bb-card">
+      <p class="bb-stat">Same time, more variety? 4 h on one level type vs 4 h spread over ten.</p>
+      <div class="bb-chart" id="variety-chart" data-draw="varietychart" data-source="recovery" style="min-height: 300px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>A controlled test of level variety at equal time. Grey: 4 h of the Warehouse level (two sessions with different random seeds). Orange: 4 h made of about 24 minutes from each of the ten levels. Same voxels, same fitter.</p>
+<h4>How to read it</h4><p>Each row is one V1 parameter; the grey bar joins the two estimates. A long bar would mean variety matters for that parameter.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Every pair overlaps almost completely (hover for intervals): no parameter shows a detectable variety effect. The design levers already make each level sample SF, contrast and attention broadly, and the level themes mostly change global statistics such as lighting, fog and pace.</p></div>
+<h4>Caveats</h4><p>This does not test generalization (fitting on some levels and predicting an unseen one) or models whose variables one level under-samples, such as the range of coin counts. Variety may pay off there.</p>
+</details>
+    </div>
+  </div>
+</section>
+
+<section class="bb-sec" id="voxels">
+  <div class="bb-sec-head">
+    <div>
+      <p class="bb-num">03 · Voxels</p>
+      <h2 class="bb-h2">Planted vs fitted, voxel by voxel</h2>
+      <p class="bb-desc">Each dot is a simulated V1 voxel: the value planted in the ground truth against the value fitted from data. Points on the dashed line are perfect. Colour is eccentricity. Uses the parameter chosen above.</p>
+    </div>
+    <div class="bb-controls">
+      <label>Design
+        <select class="dash-select" data-param="design" aria-label="Design">
+          <option value="dedicated">Dedicated experiment (10 min)</option>
+          <option value="battery_joint">V1 battery, joint fit (50 min)</option>
+          <option value="game_1h">Game 1 h</option>
+          <option value="game_2h">Game 2 h</option>
+          <option value="game_2h_oracle">Game 2 h, oracle gaze + pRF</option>
+          <option value="levers_1h">Game + levers 1 h</option>
+          <option value="levers_2h">Game + levers 2 h</option>
+          <option value="levers_2h_oracle">Game + levers 2 h, oracle</option>
+          <option value="long_2h">Ten levels: 2 h</option>
+          <option value="long_5h">Ten levels: 5 h</option>
+          <option value="long_10h">Ten levels: 10 h</option>
+          <option value="long_20h">Ten levels: 20 h</option>
+          <option value="single_4h">One level type: 4 h</option>
+          <option value="varied_4h">Ten level types: 4 h</option>
+        </select>
+      </label>
+      <label>Eccentricity
+        <select class="dash-select" data-param="ecc" aria-label="Eccentricity">
+          <option value="all">All</option>
+          <option value="0-3">0–3°</option>
+          <option value="3-7">3–7°</option>
+          <option value="7-13">7–12°</option>
+        </select>
+      </label>
+    </div>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
+    <p>This is where you see <i>how</i> a design succeeds or fails. A tight cloud along the diagonal is good recovery. A flat, horizontal cloud means the parameter is not identifiable from that data. Dots piled against the top or bottom edge are fits stuck at a parameter bound, common for dedicated surround and transient fits whose other parameters are held fixed.</p>
+  </div></div>
+  <div class="bb-card">
+    <p class="bb-stat">Spearman r for this design and parameter (all voxels): <b data-draw="scatter-r" data-source="recovery" data-field="spearman">—</b></p>
+    <p class="bb-note" data-when="nonv1" hidden>Voxel-level values are exported for V1 parameters only. Pick a V1 parameter above.</p>
+    <div class="bb-chart" id="scatter" data-draw="scatter" data-source="v1_voxels" style="min-height: 380px"></div>
+    <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>One dot per simulated V1 voxel: its planted (true) value on the x-axis and the value fitted from the chosen design's data on the y-axis. Colour is eccentricity. Units: pSFT peak in log2 cycles/degree, bandwidth in octaves, effective c50 in contrast-energy units (log axes), CRF exponent unitless, surround suppression and transient weight as weights, attention as a fractional gain.</p>
+<h4>How to read it</h4><ul><li><b>Along the dashed diagonal</b>: recovered.</li><li><b>Diagonal but tilted flatter</b>: shrinkage, fitted values pulled toward the middle (typical when the data are weak).</li><li><b>Horizontal smear</b>: the data barely constrain the parameter.</li><li><b>Rows of dots at the top or bottom edge</b>: fits hit a parameter bound.</li></ul><p>Use the eccentricity filter to see whether failures concentrate in the fovea or periphery.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>The r above the plot is for all voxels of this design and parameter, from the results file; the filter changes what you see, not that number. A visible trend among a few dozen voxels in one eccentricity band can easily be chance.</p></div>
+<h4>Caveats</h4><p>Effective c50 is c50 / (1+k)<sup>1/q</sup>, the half-saturation point a contrast experiment can actually measure; raw c50 trades off with surround suppression and the exponent.</p>
+</details>
+  </div>
+</section>
+
+<section class="bb-sec" id="prf">
+  <div class="bb-sec-head">
+    <div>
+      <p class="bb-num">04 · Round 1</p>
+      <h2 class="bb-h2">pRFs from gameplay</h2>
+      <p class="bb-desc">Position error of fitted pRFs against eccentricity. Click a row to plot that design. The steps are the median error in each eccentricity band. Bars only reach 9°; eye movements carry the game screen further out.</p>
+    </div>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
+    <p>For plain pRF mapping, 30 minutes of gameplay gives <b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=game_eyetracker">—</b>° median position error, against <b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=bars">—</b>° for 15 minutes of bars, so bars win overall. Beyond 9°, where bars never reach, gameplay wins (<b data-draw="cell" data-source="prf_round1" data-field="pos_err_ecc_9_12" data-where="design=game_eyetracker">—</b>° vs <b data-draw="cell" data-source="prf_round1" data-field="pos_err_ecc_9_12" data-where="design=bars">—</b>°). Ignoring eye position is catastrophic (<b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=game_nogaze">—</b>°), and bars plus gameplay together is best (<b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=bars%2Bgame">—</b>°).</p>
+  </div></div>
+  <div class="bb-grid2">
+    <div class="bb-card bb-tablewrap">
+      <table class="bb-table" id="prf-table" data-source="prf_round1" data-row-key="design">
+        <thead><tr>
+          <th data-field="design_label">Design</th>
+          <th data-field="minutes">Min</th>
+          <th data-field="pos_err_median">Median error (°)</th>
+          <th data-field="pos_err_ecc_9_12">Error 9–12° (°)</th>
+          <th data-field="r2_frac_ceiling_bar">Held-out bar R² / ceiling</th>
+        </tr></thead>
+        <tbody data-draw="prftable"></tbody>
+      </table>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Round 1, the original question: can pRF centres and sizes be fitted from gameplay? This simulation used a simpler V1 (a compressive pRF, no SF tuning or transient channel) and 500 voxels. Rows: bars at fixation (5–15 min), gameplay with perfect gaze, a realistic in-bore eye tracker, or gaze ignored, without the arousal regressor, bars plus game, and the eye-tracker game from 5 min to 2 h.</p>
+<h4>How to read it</h4><ul><li><b>Median error</b>: distance between fitted and true pRF centre, in degrees, over all voxels.</li><li><b>Error 9–12°</b>: the same for the far periphery.</li><li><b>Held-out bar R² / ceiling</b>: how well the fitted pRFs predict a bar run they never saw, as a fraction of the best possible (1 = as good as the true pRFs).</li></ul>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Below about 0.5° is excellent; above about 2° the pRF position is essentially not recovered. A ceiling fraction near 0 means the fit carries no usable information about responses to new stimuli.</p></div>
+</details>
+    </div>
+    <div class="bb-card">
+      <p class="bb-stat">Showing: <b data-draw="prf-label" data-source="prf_round1" data-field="design_label">—</b></p>
+      <div class="bb-chart" id="prf-chart" data-draw="prfscatter" data-source="prf_voxels prf_round1" style="min-height: 320px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Each dot is one of 500 voxels: its true eccentricity against how far its fitted pRF centre landed from the truth (log scale). The black steps are the median error in each eccentricity band; the dashed line is the edge of the bar stimulus at 9°.</p>
+<h4>How to read it</h4><p>Click a row in the table to switch designs. Bars are low centrally and jump beyond 9°; gameplay is higher centrally but stays low in the periphery, because saccades carry the game screen out there.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>The steps summarise each band. Individual dots scatter by an order of magnitude even within a good design, so judge a design by its steps, not by outliers.</p></div>
+</details>
+    </div>
+  </div>
+</section>
+
+<section class="bb-sec" id="noise">
+  <div class="bb-sec-head">
+    <div>
+      <p class="bb-num">05 · Assumptions</p>
+      <h2 class="bb-h2">Signal, noise and what the fitter removes</h2>
+      <p class="bb-desc">All noise is in percent signal change at TR = 1.5 s, independent per voxel. Gameplay keeps V1 driven but modulates any one pRF far less than bars do, which is why hours matter.</p>
+    </div>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
+    <p>Gameplay keeps V1 driven but modulates any one voxel only <b data-draw="cell" data-source="signal_medians" data-field="median_sd" data-where="component=visual_game">—</b>% (SD over time), against <b data-draw="cell" data-source="signal_medians" data-field="median_sd" data-where="component=visual_bars">—</b>% for bars, below both the arousal signal (<b data-draw="cell" data-source="signal_medians" data-field="median_sd" data-where="component=systemic">—</b>%) and the noise (<b data-draw="cell" data-source="signal_medians" data-field="median_sd" data-where="component=noise">—</b>%). With noise removed, gameplay recovers pRFs to <b data-draw="cell" data-source="diagnostics" data-field="value" data-where="condition=visual only">—</b>°: the information is there, and the bottleneck is signal-to-noise. The noise model is moderate (about tSNR 110) and leaves out head motion and spatially correlated noise, so real data will need more time.</p>
+  </div></div>
+  <div class="bb-grid2">
+    <div class="bb-card">
+      <p class="bb-stat">Median SD over time across 500 round-1 voxels (%)</p>
+      <div class="bb-chart" id="signal-chart" data-draw="signal" data-source="signal_medians" style="min-height: 240px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>How big each part of a simulated voxel's time series is, as its standard deviation over time, median across 500 round-1 voxels: the visual response to bars, the visual response to gameplay, the arousal-linked systemic signal during gameplay, and the measurement noise.</p>
+<h4>How to read it</h4><p>The ratio of a visual bar to the noise bar is the per-voxel signal-to-noise. Gameplay's visual bar is about a quarter of bars', so each minute of play carries far less information about a pRF than a minute of bars; that is why the hours curve in section 02 matters.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>These are medians; individual voxels vary (peripheral voxels get relatively more gameplay modulation). The systemic signal is shared across voxels, so an event-locked regressor removes most of it; the noise is not removable.</p></div>
+<h4>Caveats</h4><p>Round 1 used a sustained-only V1. The transient channel added in later rounds raises gameplay's modulation (see the table beside this).</p>
+</details>
+    </div>
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">What limits gameplay pRF fits, and how much a transient V1 channel helps</p>
+      <table class="bb-table" id="diag-table" data-source="diagnostics" data-row-key="condition">
+        <thead><tr><th data-field="condition">Condition</th><th data-field="metric">Metric</th><th data-field="value">Value</th></tr></thead>
+        <tbody data-draw="diagtable"></tbody>
+      </table>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Two checks from round 1. The first five rows fit gameplay pRFs (120 voxels, 30 min, true gaze) adding one nuisance at a time: visual only (no noise at all), plus systemic arousal with and without the event-based regressor, plus measurement noise, and everything together. The last three rows give gameplay's visual modulation relative to bars for a sustained channel, a transient (change-driven) channel, and a 50/50 mix.</p>
+<h4>How to read it</h4><p>In the first block, compare each row with “visual only”: the jump tells you which nuisance does the damage. In the second, a ratio of 1 would mean gameplay modulates V1 as strongly as bars.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Noise, not arousal, is what breaks gameplay fits: the error jumps to several degrees only when noise is added. Arousal alone costs little once the logged-event regressor is used. A transient channel roughly triples gameplay's relative modulation, so the sustained-only round-1 numbers are pessimistic.</p></div>
+</details>
+    </div>
+  </div>
+  <div class="bb-card bb-tablewrap" style="margin-top: var(--cds-gap-md)">
+    <table class="bb-table" id="noise-table" data-source="noise_model" data-row-key="component">
+      <thead><tr>
+        <th data-field="component">Component</th><th data-field="applies_to">Applies to</th><th data-field="form">Form</th>
+        <th data-field="parameters">Parameters</th><th data-field="shared_across_voxels">Shared?</th><th data-field="handled_by_fit">What the fitter does</th>
+      </tr></thead>
+      <tbody data-draw="noisetable"></tbody>
+    </table>
+    <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Every noise and nuisance component in the simulation, where it applies, its form and parameters, whether it is shared across voxels, and what the fitter does about it.</p>
+<h4>How to read it</h4><p>Read across a row: a component the fitter models (drift, logged arousal, HRF timing, session gain) costs little; one it does not model (measurement noise, the slow global fluctuation) goes straight into the error. The last row lists what is not simulated at all.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Measurement noise of 0.6–1.2% per TR (AR(1), ρ = 0.3) is about tSNR 110: plausible for 7T at about 2 mm or a good 3T voxel, while many 3T voxels are noisier. The hours needed scale roughly with noise variance, so doubling the noise SD roughly quadruples the time.</p></div>
+<h4>Caveats</h4><p>Independent noise per voxel, no head motion and no separate cardiac or respiratory signals make this an optimistic noise model. Full details: NOISE.md in the repository.</p>
+</details>
+  </div>
+</section>
+
+<footer class="bb-foot" id="methods">
+  <details>
+    <summary>How the simulation works</summary>
+    <p>A numpy raycaster first-person game (rooms, textured walls, NPCs, explosions, coins, probabilistic shots, covert-attention cues) is rendered at 10 Hz on a 24×18° screen. Each frame becomes multi-band contrast energy, shifted into retinal coordinates by a fixation/saccade gaze model. Planted populations: V1 voxels with pRFs, SF tuning, a contrast response with surround normalization, a transient channel and attention gain; numerosity, self-motion and striatal RPE voxels driven by the game's logs. Fits use eye-tracker gaze (offset, drift, gain error, noise, blinks), pRFs from a 15-min bar localizer, the canonical HRF shape with a fitted per-voxel time scale, and nuisance regressors for drift and logged arousal events. Dedicated experiments (band-pass noise, contrast series, discs/annuli, refresh rates, attention blocks, dots, optic flow, a reward task) are simulated in the same voxels.</p>
+    <p>Best case for model form: the fitter knows each model's functional form, not its parameters. Not simulated: head motion, spatially correlated noise, separate cardiac and respiratory components. Code, noise model (NOISE.md) and CSVs: github.com/samuelling/boldblaster.</p>
+  </details>
+</footer>
+
+</div>
+
+
+</div>
+<script src="dash-shim.js"></script>
+<script src="core.js"></script>
+<script src="charts.js"></script>
+<script>window.__bbStart();</script>
+</body>
+</html>
