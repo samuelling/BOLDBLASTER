@@ -222,6 +222,7 @@ code{{font:13px 'JetBrains Mono',monospace;background:#f1f0ec;padding:1px 5px;bo
 {v2_section}
 {v3_section}
 {v4_section}
+<p class="note">Noise model: see <code>NOISE.md</code> in the repo (AR(1) ρ = 0.3 with per-voxel SD 0.6–1.2 %, Legendre drift, event-locked arousal, slow global fluctuation, HRF timing jitter, eye-tracker error; no head motion or spatially correlated noise).</p>
 <p class="note">Code: <code>github.com/samuelling/boldblaster</code>. Round 1: <code>python run_experiment.py</code>, <code>make_figures.py</code>. Round 2: <code>python run_v2.py data</code>, <code>python run_v2.py fit</code>, <code>make_figures_v2.py</code>. Then <code>build_report.py</code>.</p>
 </main></body></html>"""
 open(os.path.join(R, 'index.html'), 'w').write(html)
