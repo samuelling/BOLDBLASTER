@@ -5,7 +5,7 @@
   const FILES = {
     recovery: 'data/recovery.csv', v1_voxels: 'data/v1_voxels.csv', prf_round1: 'data/prf_round1.csv',
     prf_voxels: 'data/prf_voxels.csv', signal: 'data/signal_components.csv', noise_model: 'data/noise_model.csv',
-    diagnostics: 'data/diagnostics.csv',
+    diagnostics: 'data/diagnostics.csv', fair: 'data/fair.csv', budget: 'data/budget.csv',
   };
   const DEFAULTS = { param: 'mu', design: 'long_20h', ecc: 'all', r1: 'game_eyetracker' };
   const store = {};

@@ -2,6 +2,8 @@
 
 > Interactive dashboard: `docs/dashboard/` (served at https://samuelling.github.io/boldblaster/dashboard/ once GitHub Pages is on; rebuild with `python dashboard/standalone/build.py`). Source: [`dashboard/`](dashboard/) (page + scripts over the CSVs; `test_harness.js` runs it headless with jsdom). Noise assumptions: [NOISE.md](NOISE.md). Tidy CSVs of every result: [`dashboard_data/`](dashboard_data/) (regenerate with `python export_dashboard_data.py`).
 
+> **Headline (round 5):** against dedicated experiments of realistic length (30–60 min each), gameplay is not a per-parameter shortcut. At a matched 5 h budget the full dedicated battery recovers 3 of 7 V1 measures better, gameplay 1 (surround suppression), and 3 tie. Gameplay's case is breadth: one dataset serves every model at once. Earlier rounds used a 10-min dedicated baseline, which flattered gameplay.
+
 A simulation testbed for one question: **can model-based fMRI (here, V1 pRF
 mapping) be fit from free gameplay instead of a controlled localizer, and what
 does it take?**
@@ -71,7 +73,7 @@ whether gameplay recovers them as well as dedicated experiments:
 Spearman r between planted and fitted parameters (game uses eye-tracker gaze and
 bar-fitted pRFs; oracle uses true gaze and pRFs):
 
-| Parameter | Dedicated 10 min | V1 battery joint 50 min | Game 1 h | Game 2 h | Game 2 h oracle |
+| Parameter | Short dedicated (10 min) | V1 battery joint 50 min | Game 1 h | Game 2 h | Game 2 h oracle |
 |---|---|---|---|---|---|
 | pSFT peak | 0.72 | 0.75 | 0.38 | 0.47 | 0.65 |
 | pSFT bandwidth | 0.31 | 0.39 | 0.00 | 0.11 | 0.21 |
@@ -112,7 +114,7 @@ Treasure hunt, Fog bank, Mixed day, Boss rush, Dusk maze) with session-specific 
 noise (one gain per session in the fit); 120 V1 voxels. Spearman r (dedicated scored on
 the same voxels):
 
-| Parameter | Dedicated 10 min | 2 h | 5 h | 10 h | 20 h |
+| Parameter | Short dedicated (10 min) | 2 h | 5 h | 10 h | 20 h |
 |---|---|---|---|---|---|
 | pSFT peak | 0.69 | 0.37 | 0.55 | 0.78 | 0.77 |
 | pSFT bandwidth | 0.26 | 0.14 | 0.07 | 0.18 | 0.32 |
@@ -124,6 +126,62 @@ the same voxels):
 
 At equal time (4 h), varied levels vs one level type: all differences within ±0.08, all
 bootstrap CIs span zero. `python run_long.py data && python run_long.py fit && python long_summary.py`.
+
+## Round 5: a fair dedicated baseline
+
+Rounds 2–4 compared gameplay against dedicated experiments of only 10 min (2 × 5-min runs),
+which flatters gameplay: real pRF/pSFT/pCRF mapping takes 30–60+ min. `run_fair.py` extends
+each dedicated V1 experiment to 12 runs (60 min) and fits it at 10/30/60 min, alone (other
+parameters at population defaults, as in round 2) and as a joint battery of all five
+experiments (the 5 h battery spans three sessions with round-4 session gain/noise jitter).
+Everything is scored on the round-4 voxels (first 120); head-to-heads use a paired
+bootstrap over voxels (`export_fair.py`).
+
+| Parameter | Ded. 10 min | Ded. 30 min | Ded. 60 min | Battery 50 min | Battery 2.5 h | Battery 5 h | Game+levers 1 h | Play 5 h | Play 20 h |
+|---|---|---|---|---|---|---|---|---|---|
+| pSFT peak | 0.70 | 0.81 | 0.78 | 0.81 | 0.80 | 0.88 | 0.51 | 0.55 | 0.77 |
+| pSFT bandwidth | 0.26 | 0.30 | 0.25 | 0.45 | 0.52 | 0.50 | 0.10 | 0.07 | 0.32 |
+| pCRF effective c50 | 0.45 | 0.45 | 0.54 | 0.48 | 0.52 | 0.57 | 0.28 | 0.55 | 0.61 |
+| pCRF exponent | 0.17 | 0.33 | 0.32 | 0.18 | 0.24 | 0.40 | 0.32 | 0.36 | 0.49 |
+| Surround k | 0.19 | 0.17 | 0.16 | 0.14 | 0.17 | 0.19 | 0.16 | 0.57 | 0.60 |
+| Transient τ | 0.15 | 0.21 | 0.30 | 0.42 | 0.60 | 0.59 | 0.48 | 0.70 | 0.84 |
+| Attention gain | 0.58 | 0.69 | 0.80 | 0.60 | 0.70 | 0.81 | 0.16 | 0.54 | 0.70 |
+
+**Matched 1 h** (one dedicated experiment vs 1 h of the game with levers):
+
+| Parameter | Dedicated | Gameplay | Δ r [95% CI] | Verdict |
+|---|---|---|---|---|
+| pSFT peak | 0.78 | 0.51 | -0.27 [-0.49, -0.05] | Dedicated |
+| pSFT bandwidth | 0.25 | 0.10 | -0.15 [-0.39, +0.09] | Tie |
+| pCRF effective c50 | 0.54 | 0.28 | -0.26 [-0.45, -0.08] | Dedicated |
+| pCRF exponent | 0.32 | 0.32 | -0.00 [-0.23, +0.22] | Tie |
+| Surround suppression k | 0.16 | 0.16 | +0.01 [-0.22, +0.22] | Tie |
+| Transient weight | 0.30 | 0.48 | +0.19 [-0.06, +0.41] | Tie |
+| Attention gain | 0.80 | 0.16 | -0.64 [-0.82, -0.44] | Dedicated |
+
+**Matched 5 h** (full dedicated battery vs 5 h of varied-level play):
+
+| Parameter | Dedicated | Gameplay | Δ r [95% CI] | Verdict |
+|---|---|---|---|---|
+| pSFT peak | 0.88 | 0.55 | -0.33 [-0.50, -0.19] | Dedicated |
+| pSFT bandwidth | 0.50 | 0.07 | -0.43 [-0.63, -0.24] | Dedicated |
+| pCRF effective c50 | 0.57 | 0.55 | -0.02 [-0.14, +0.10] | Tie |
+| pCRF exponent | 0.40 | 0.36 | -0.03 [-0.25, +0.17] | Tie |
+| Surround suppression k | 0.19 | 0.57 | +0.38 [+0.20, +0.56] | Gameplay |
+| Transient weight | 0.59 | 0.70 | +0.11 [-0.03, +0.25] | Tie |
+| Attention gain | 0.81 | 0.54 | -0.27 [-0.44, -0.10] | Dedicated |
+
+Hour for hour, dedicated experiments win on SF peak, effective c50 and attention, and no V1
+measure is clearly better from an hour of play. At a matched 5 h budget the battery wins
+3 (SF peak, SF bandwidth, attention), gameplay wins 1 (surround suppression) and 3 tie
+(effective c50, CRF exponent, transient weight, which leans toward gameplay). Longer scans
+help the noise-limited parameters; one-at-a-time fits of transient weight, surround and SF
+bandwidth stay poor at 60 min because the other parameters are fixed, and only the joint
+battery rescues the transient weight. Non-visual (no CIs): RPE weight is better from 1 h of
+play (0.66) than 1 h of the reward task (0.50); dedicated optic flow beats play on self-motion
+(0.99 vs 0.88–0.92); numerosity ties. The case for gameplay is breadth, plus the quantities
+games sample richly, rather than per-parameter efficiency.
+`python run_fair.py data && python run_fair.py fit && python run_fair.py other && python export_fair.py`.
 
 Results JSON for every round is in `results/`; the built report is in `docs/`
 (enable GitHub Pages from `main` / `/docs` to serve it).

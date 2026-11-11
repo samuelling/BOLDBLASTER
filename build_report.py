@@ -123,12 +123,49 @@ if os.path.exists(SL):
 <p>One simulated subject plays ten 2-hour sessions (240 five-minute runs) of the levered game. Each session is a different level, the way a campaign varies: Warehouse, Night ops (dim, stealthy, frequent covert cues), Open arena (big rooms, fast), Cathedral (huge rooms, fine textures), Sprint, Treasure hunt, Fog bank, Mixed day, Boss rush and Dusk maze. Each session also has its own response gain (±10%) and noise level (±15%), and the fitter estimates one gain per session. A 24-run control repeats the Warehouse level, so 4 h of one level type can be compared with 4 h spread over all ten. The first 120 voxels of the round-2 V1 population are used throughout, including the dedicated baselines; brackets are bootstrap 95% CIs over voxels.</p>
 <img src="fig9_long.png" alt="Recovery vs hours and the variety test">
 <p></p>
-<table><thead><tr><th>Spearman r</th><th>dedicated 10 min</th><th>2 h</th><th>5 h</th><th>10 h</th><th>20 h</th></tr></thead><tbody>{rows4}</tbody></table>
+<table><thead><tr><th>Spearman r</th><th>short dedicated (10 min)</th><th>2 h</th><th>5 h</th><th>10 h</th><th>20 h</th></tr></thead><tbody>{rows4}</tbody></table>
 <div class="tldr"><b>Bottom line, round 4</b><ul>
-<li><b>By ~10 hours, gameplay matches or beats every dedicated experiment except SF bandwidth.</b> 20 h vs dedicated: transient τ {g4('long_20h','tau')} vs {g4('dedicated_10min','tau')}; surround k {g4('long_20h','k')} vs {g4('dedicated_10min','k')}; CRF exponent {g4('long_20h','q')} vs {g4('dedicated_10min','q')}; attention gain {g4('long_20h','a')} vs {g4('dedicated_10min','a')}; pSFT peak {g4('long_20h','mu')} vs {g4('dedicated_10min','mu')}.</li>
+<li><b>By ~10 hours, gameplay matches or beats a <i>short (10-minute)</i> dedicated experiment on every measure except SF bandwidth.</b> Round 5 below repeats this against dedicated experiments of realistic length, which changes the picture. 20 h vs 10-min dedicated: transient τ {g4('long_20h','tau')} vs {g4('dedicated_10min','tau')}; surround k {g4('long_20h','k')} vs {g4('dedicated_10min','k')}; CRF exponent {g4('long_20h','q')} vs {g4('dedicated_10min','q')}; attention gain {g4('long_20h','a')} vs {g4('dedicated_10min','a')}; pSFT peak {g4('long_20h','mu')} vs {g4('dedicated_10min','mu')}.</li>
 <li><b>Several measures plateau from 10 to 20 h</b> (pSFT peak, effective c50, surround k). The most likely limit there is model mismatch rather than data: eye-tracker gaze and bar-fitted pRFs. Round 3's oracle shows how much headroom better gaze and pRFs would give. Transient weight and attention keep improving.</li>
 <li><b>Variety did not help at equal time.</b> 4 h across ten levels vs 4 h of one level type: every difference is within ±{maxd:.2f}, and every 95% CI spans zero. The levers already make each level sample SF, contrast and attention broadly, and the themes mostly shift global statistics (lighting, fog, pace). Variety's payoff is more likely in generalization (models tested on unseen levels) and in models whose variables a single level under-samples (e.g., numerosity range), neither of which this test probes.</li>
 <li><b>pSFT bandwidth stays weak</b> in every design ({g4('long_20h','sig')} at 20 h). Recovering bandwidth probably needs a higher-resolution display and finer SF sampling than the sandbox's 8 px/deg.</li>
+</ul></div>
+"""
+
+v5_section = ''
+BP = os.path.join(ROOT, 'dashboard_data', 'budget.csv')
+FP = os.path.join(ROOT, 'dashboard_data', 'fair.csv')
+if os.path.exists(BP) and os.path.exists(FP):
+    import csv
+    B = list(csv.DictReader(open(BP)))
+    F = {(r['design'], r['parameter']): r for r in csv.DictReader(open(FP))}
+    PL = (('mu', 'pSFT peak'), ('sig', 'pSFT bandwidth'), ('c50_eff', 'pCRF effective c50'), ('q', 'pCRF exponent'),
+          ('k', 'Surround k'), ('tau', 'Transient τ'), ('a', 'Attention gain'))
+    f5 = lambda d, p: f"{float(F[(d, p)]['spearman']):.2f}"
+    rows5 = ''.join(f"<tr><td>{lab}</td>" + ''.join(f"<td>{f5(d, p)}</td>" for d in
+                    ('ded_10m', 'ded_30m', 'ded_60m', 'battery_60m', 'levers_1h', 'long_5h', 'long_20h')) + '</tr>' for p, lab in PL)
+    def h2h(b):
+        rr = [r for r in B if r['budget'] == b]
+        body = ''.join(f"<tr><td>{r['parameter_label']}</td><td>{float(r['ded_r']):.2f}</td><td>{float(r['game_r']):.2f}</td>"
+                       f"<td>{float(r['diff']):+.2f} [{float(r['diff_lo']):+.2f}, {float(r['diff_hi']):+.2f}]</td><td>{r['verdict']}</td></tr>" for r in rr)
+        cnt = {v: sum(r['verdict'] == v for r in rr) for v in ('Dedicated', 'Gameplay', 'Tie')}
+        return body, cnt
+    b1, c1 = h2h('1 h')
+    b5, c5 = h2h('5 h')
+    v5_section = f"""
+<h2 id="round-5">Round 5 · A fair dedicated baseline</h2>
+<p>Rounds 2–4 compared gameplay with dedicated experiments of only 10 minutes (two 5-minute runs). Real pRF, pSFT and pCRF mapping takes 30–60+ minutes. Here each dedicated V1 experiment is extended to 12 runs (60 min) and fitted at 10, 30 and 60 min, both on its own (other parameters at population defaults, as in round 2) and as a joint battery of all five experiments (50 min, 2.5 h, 5 h; the 5 h battery spans three sessions with the same gain and noise jitter as round 4). Everything is scored on the round-4 voxels (first 120). Head-to-heads use a paired bootstrap over voxels.</p>
+<table><thead><tr><th>Spearman r</th><th>dedicated 10 min</th><th>30 min</th><th>60 min</th><th>battery 5 h</th><th>game + levers 1 h</th><th>varied play 5 h</th><th>varied play 20 h</th></tr></thead><tbody>{rows5}</tbody></table>
+<h3>Matched 1 h: one dedicated experiment vs the game with levers</h3>
+<table><thead><tr><th>Parameter</th><th>dedicated</th><th>game</th><th>Δ r [95% CI]</th><th>verdict</th></tr></thead><tbody>{b1}</tbody></table>
+<h3>Matched 5 h: full dedicated battery vs varied-level play</h3>
+<table><thead><tr><th>Parameter</th><th>dedicated</th><th>game</th><th>Δ r [95% CI]</th><th>verdict</th></tr></thead><tbody>{b5}</tbody></table>
+<div class="tldr"><b>Bottom line, round 5</b><ul>
+<li><b>The 10-minute baseline flattered gameplay.</b> Hour for hour, a dedicated experiment wins on {c1['Dedicated']} of 7 V1 measures (SF peak, effective c50, attention) and gameplay on {c1['Gameplay']}.</li>
+<li><b>At a matched 5 h budget</b> the full dedicated battery wins {c5['Dedicated']} (SF peak and bandwidth, attention), gameplay wins {c5['Gameplay']} (surround suppression), and {c5['Tie']} tie (effective c50, CRF exponent, transient weight, the last leaning toward gameplay).</li>
+<li><b>Longer dedicated scans help the noise-limited parameters</b> (attention 0.58 → 0.80 from 10 to 60 min), but one-at-a-time fits of transient weight, surround and SF bandwidth stay poor at an hour because the other parameters are held at defaults. Fitting the battery jointly fixes the transient weight; surround suppression stays low even jointly (r ≈ {float(F[("battery_60m","k")]["spearman"]):.2f}), so our disc/annulus design may simply be a weak surround experiment.</li>
+<li><b>Non-visual models:</b> an hour of the reward task recovers RPE weights worse than an hour of play (play has many more outcomes); dedicated optic flow beats play on self-motion; numerosity ties.</li>
+<li><b>The case for gameplay is breadth, not per-parameter efficiency:</b> one dataset serves every model at once, and it is the better design for quantities games sample richly (surround context, transients, rewards).</li>
 </ul></div>
 """
 
@@ -158,7 +195,7 @@ code{{font:13px 'JetBrains Mono',monospace;background:#f1f0ec;padding:1px 5px;bo
 .note{{color:var(--ink2);font-size:13px}}
 </style></head><body><main>
 <h1>BOLD<span>BLASTER</span></h1>
-<p class="note"><b><a href="dashboard/">Interactive dashboard →</a></b> · Round 1: pRFs from gameplay (below). <a href="#round-2">Round 2: eight models from one game</a> · <a href="#round-3">Round 3: design levers</a>{' · <a href="#round-4">Round 4: twenty hours</a>' if v4_section else ''}.</p>
+<p class="note"><b><a href="dashboard/">Interactive dashboard →</a></b> · Round 1: pRFs from gameplay (below). <a href="#round-2">Round 2: eight models from one game</a> · <a href="#round-3">Round 3: design levers</a>{' · <a href="#round-4">Round 4: twenty hours</a>' if v4_section else ''}{' · <a href="#round-5">Round 5: fair baseline</a>' if v5_section else ''}.</p>
 <p class="sub">Simulation testbed: can V1 pRFs be recovered from free first-person gameplay, and what would a dynamic, NSD-style gaming dataset need?</p>
 
 <div class="tldr"><b>Bottom line</b><ul>
@@ -222,6 +259,7 @@ code{{font:13px 'JetBrains Mono',monospace;background:#f1f0ec;padding:1px 5px;bo
 {v2_section}
 {v3_section}
 {v4_section}
+{v5_section}
 <p class="note">Noise model: see <code>NOISE.md</code> in the repo (AR(1) ρ = 0.3 with per-voxel SD 0.6–1.2 %, Legendre drift, event-locked arousal, slow global fluctuation, HRF timing jitter, eye-tracker error; no head motion or spatially correlated noise).</p>
 <p class="note">Code: <code>github.com/samuelling/boldblaster</code>. Round 1: <code>python run_experiment.py</code>, <code>make_figures.py</code>. Round 2: <code>python run_v2.py data</code>, <code>python run_v2.py fit</code>, <code>make_figures_v2.py</code>. Then <code>build_report.py</code>.</p>
 </main></body></html>"""

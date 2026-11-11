@@ -4,7 +4,8 @@ dash.draw('forest', (el) => {
   el.replaceChildren();
   const P = BB.params();
   const order = ['dedicated', 'dedicated_10min', 'battery_joint', 'game_1h', 'game_2h', 'game_2h_oracle', 'levers_1h',
-    'levers_2h', 'levers_2h_oracle', 'long_2h', 'single_4h', 'varied_4h', 'long_5h', 'long_10h', 'long_20h'];
+    'levers_2h', 'levers_2h_oracle', 'long_2h', 'single_4h', 'varied_4h', 'long_5h', 'long_10h', 'long_20h',
+    'dedicated_30m', 'dedicated_60m', 'battery_5h'];
   const rows = dash.data('recovery').data.filter((r) => r.parameter === P.param)
     .sort((a, b) => order.indexOf(a.design) - order.indexOf(b.design));
   if (!rows.length) { const p = document.createElement('div'); p.className = 'bb-empty'; p.textContent = 'No rows for this parameter.'; el.appendChild(p); return; }
@@ -27,8 +28,8 @@ dash.draw('forest', (el) => {
         .style('stroke', 'var(--color-border-line)');
     }
   });
-  // shaded column: the dedicated experiment's 95% interval (round 2-3 voxels)
-  const dedRow = rows.find((r) => r.design === 'dedicated');
+  // shaded column: the realistic (60 min) dedicated experiment's 95% interval
+  const dedRow = rows.find((r) => r.design === 'dedicated_60m') || rows.find((r) => r.design === 'dedicated');
   if (dedRow && dedRow.ci_lo !== null && dedRow.ci_lo !== '') {
     s.insert('rect', ':first-child').attr('x', x(+dedRow.ci_lo)).attr('width', Math.max(1, x(+dedRow.ci_hi) - x(+dedRow.ci_lo)))
       .attr('y', top - 6).attr('height', H - bottom - top + 10).style('fill', BB.color('dedicated')).style('opacity', 0.1);
@@ -58,7 +59,8 @@ dash.draw('hours', (el) => {
   const rec = dash.data('recovery').data;
   const pts = [['long_2h', 2], ['long_5h', 5], ['long_10h', 10], ['long_20h', 20]]
     .map(([d, h]) => ({ h, row: BB.recRow(rec, d, P.param) })).filter((p) => p.row);
-  const ded = BB.recRow(rec, 'dedicated_10min', P.param);
+  const ded = BB.recRow(rec, 'dedicated_60m', P.param);
+  const ded10 = BB.recRow(rec, 'dedicated_10min', P.param);
   const H = 300, m = { l: 40, r: 64, t: 18, b: 36 };
   const { s, w } = BB.svg(el, H, 'Spearman r against hours of varied gameplay, with the dedicated experiment as a band');
   const x = d3.scaleLog().domain([1.7, 24]).range([m.l, w - m.r]);
@@ -72,7 +74,13 @@ dash.draw('hours', (el) => {
       .style('fill', cd).style('opacity', 0.12);
     s.append('line').attr('x1', m.l).attr('x2', w - m.r).attr('y1', y(+ded.spearman)).attr('y2', y(+ded.spearman))
       .style('stroke', cd).style('stroke-dasharray', '5 4').style('stroke-width', 1.5);
-    s.append('text').attr('x', w - m.r + 6).attr('y', y(+ded.spearman)).attr('dy', '0.32em').text('dedicated');
+    s.append('text').attr('x', w - m.r + 6).attr('y', y(+ded.spearman)).attr('dy', '0.32em').text('ded. 1 h');
+  }
+  if (ded10) {
+    s.append('line').attr('x1', m.l).attr('x2', w - m.r).attr('y1', y(+ded10.spearman)).attr('y2', y(+ded10.spearman))
+      .style('stroke', cd).style('stroke-dasharray', '1 4').style('stroke-width', 1.5).style('opacity', 0.8);
+    const close = ded && Math.abs(y(+ded10.spearman) - y(+ded.spearman)) < 12;
+    s.append('text').attr('x', w - m.r + 6).attr('y', y(+ded10.spearman) + (close ? (+ded10.spearman < +ded.spearman ? 10 : -10) : 0)).attr('dy', '0.32em').text('ded. 10 m');
   }
   const area = d3.area().x((p) => x(p.h)).y0((p) => y(+p.row.ci_lo)).y1((p) => y(+p.row.ci_hi));
   s.append('path').datum(pts).attr('d', area).style('fill', cl).style('opacity', 0.16);
@@ -81,12 +89,16 @@ dash.draw('hours', (el) => {
   const tip = BB.tip(el);
   s.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (p) => x(p.h)).attr('cy', (p) => y(+p.row.spearman)).attr('r', 5)
     .style('fill', cl).style('stroke', 'var(--color-panel)').style('stroke-width', 2);
-  s.append('g').selectAll('text').data(pts).join('text').attr('x', (p) => x(p.h)).attr('y', (p) => y(+p.row.spearman) - 11)
+  const refY = [ded, ded10].filter(Boolean).map((r) => y(+r.spearman));
+  // the 20 h label sits next to the right-margin labels: drop it below its point when they would collide
+  const labY = (p) => { const up = y(+p.row.spearman) - 11; return p.h === 20 && refY.some((v) => Math.abs(v - up) < 14) ? y(+p.row.spearman) + 18 : up; };
+  s.append('g').selectAll('text').data(pts).join('text').attr('x', (p) => x(p.h)).attr('y', labY)
     .attr('text-anchor', 'middle').text((p) => BB.f2(+p.row.spearman));
   s.append('g').selectAll('rect').data(pts).join('rect').attr('x', (p) => x(p.h) - 18).attr('width', 36).attr('y', m.t).attr('height', H - m.t - m.b)
     .style('fill', 'transparent')
     .on('pointermove', (evt, p) => tip.show(evt, [`${p.h} h of varied gameplay`, `r = ${BB.f2(+p.row.spearman)}  [${BB.f2(+p.row.ci_lo)}, ${BB.f2(+p.row.ci_hi)}]`,
-      ded ? `Dedicated 10 min: ${BB.f2(+ded.spearman)}  [${BB.f2(+ded.ci_lo)}, ${BB.f2(+ded.ci_hi)}]` : '']))
+      ded ? `Dedicated 60 min: ${BB.f2(+ded.spearman)}  [${BB.f2(+ded.ci_lo)}, ${BB.f2(+ded.ci_hi)}]` : '',
+      ded10 ? `Dedicated 10 min: ${BB.f2(+ded10.spearman)}` : '']))
     .on('pointerleave', () => tip.hide());
 });
 
@@ -220,4 +232,53 @@ dash.draw('signal', (el) => {
     .attr('width', (r) => Math.max(0, x(r.median_sd) - lw)).style('fill', (r) => cols[r.component])
     .style('opacity', (r) => (r.component === 'noise' ? 0.55 : 1));
   g.append('text').attr('x', (r) => x(r.median_sd) + 6).attr('dy', '0.32em').text((r) => r.median_sd.toFixed(2) + '%');
+});
+
+// ---------------------------------------------------------------- 02 fair baseline: recovery against scan time
+dash.draw('scantime', (el) => {
+  if (!BB.ready(el, ['fair'])) return;
+  el.replaceChildren();
+  const P = BB.params();
+  const rows = dash.data('fair').data.filter((r) => r.parameter === P.param);
+  if (!rows.length) { const p = document.createElement('div'); p.className = 'bb-empty'; p.textContent = 'No rows for this parameter.'; el.appendChild(p); return; }
+  const GROUPS = [['dedicated', 'Dedicated, one experiment', 'dedicated'], ['battery', 'Dedicated battery, joint', 'battery'],
+    ['levers', 'Game + levers', 'levers'], ['game', 'Game', 'game'], ['long', 'Varied-level gameplay', 'long']];
+  const series = GROUPS.map(([g, lab, fam]) => ({ g, lab, c: BB.color(fam),
+    pts: rows.filter((r) => r.group === g).map((r) => ({ m: +r.minutes, r: +r.spearman, lo: r.ci_lo === null || r.ci_lo === '' ? NaN : +r.ci_lo, hi: r.ci_hi === null || r.ci_hi === '' ? NaN : +r.ci_hi, row: r }))
+      .sort((a, b) => a.m - b.m) })).filter((s0) => s0.pts.length);
+  const H = 340, m = { l: 40, r: 18, t: 22, b: 40 };
+  const { s, w } = BB.svg(el, H, 'Spearman r against minutes of scanning, for dedicated experiments and gameplay');
+  const x = d3.scaleLog().domain([8, 1500]).range([m.l, w - m.r]);
+  const ymin = Math.min(0, d3.min(rows, (r) => (r.ci_lo !== null && r.ci_lo !== '' ? +r.ci_lo : +r.spearman)) - 0.05);
+  const y = d3.scaleLinear().domain([ymin, 1]).range([H - m.b, m.t]);
+  BB.grid(s.append('g'), y, y.ticks(5), m.l, w - m.r, true);
+  const TV = [10, 30, 60, 120, 300, 600, 1200];
+  const fmt = (v) => (v < 60 ? `${v} min` : `${v / 60} h`);
+  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues(TV).tickFormat(fmt).tickSizeOuter(0)));
+  BB.styleAxis(s.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSizeOuter(0)));
+  s.append('text').attr('x', w - m.r).attr('y', H - 4).attr('text-anchor', 'end').text('minutes of scanning (log)');
+  // the two matched comparisons
+  [[60, 'matched 1 h'], [300, 'matched 5 h']].forEach(([v, t]) => {
+    s.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', m.t).attr('y2', H - m.b)
+      .style('stroke', 'var(--cds-chart-axis)').style('stroke-dasharray', '3 4');
+    s.append('text').attr('x', x(v) + 4).attr('y', m.t - 8).text(t);
+  });
+  const area = d3.area().x((p) => x(p.m)).y0((p) => y(p.lo)).y1((p) => y(p.hi));
+  const line = d3.line().x((p) => x(p.m)).y((p) => y(p.r));
+  series.forEach((sr) => {
+    if (sr.pts.every((p) => isFinite(p.lo))) s.append('path').datum(sr.pts).attr('d', area).style('fill', sr.c).style('opacity', 0.12);
+    s.append('path').datum(sr.pts).attr('d', line).style('fill', 'none').style('stroke', sr.c).style('stroke-width', 2);
+    s.append('g').selectAll('circle').data(sr.pts).join('circle').attr('cx', (p) => x(p.m)).attr('cy', (p) => y(p.r)).attr('r', 4.5)
+      .style('fill', sr.c).style('stroke', 'var(--color-panel)').style('stroke-width', 2);
+    const last = sr.pts[sr.pts.length - 1];
+    s.append('text').attr('x', x(last.m) + (last.m > 900 ? 4 : 8)).attr('y', y(last.r) - (last.m > 900 ? 12 : 0)).attr('dy', '0.32em')
+      .attr('text-anchor', last.m > 900 ? 'end' : 'start').text(BB.f2(last.r));
+  });
+  const tip = BB.tip(el);
+  const all = series.flatMap((sr) => sr.pts.map((p) => Object.assign({ sr }, p)));
+  s.append('g').selectAll('circle').data(all).join('circle').attr('cx', (p) => x(p.m)).attr('cy', (p) => y(p.r)).attr('r', 13)
+    .style('fill', 'transparent')
+    .on('pointermove', (evt, p) => tip.show(evt, [p.row.design_label, p.row.parameter_label,
+      `r = ${BB.f2(p.r)}` + (isFinite(p.lo) ? `  [${BB.f2(p.lo)}, ${BB.f2(p.hi)}]` : ''), `${fmt(p.m)} of data · ${+p.row.n_voxels} voxels`]))
+    .on('pointerleave', () => tip.hide());
 });

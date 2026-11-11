@@ -10,7 +10,7 @@ window.BB = (function () {
   function family(design) {
     if (design.startsWith('dedicated')) return 'dedicated';
     if (design.startsWith('levers')) return 'levers';
-    if (design === 'battery_joint') return 'battery';
+    if (design.startsWith('battery')) return 'battery';
     if (design.startsWith('long') || design.endsWith('_4h')) return 'long';
     return 'game';
   }
@@ -121,31 +121,12 @@ dash.onData(() => {
   });
   const nonV1 = !BB.V1.includes(P.param);
   document.querySelectorAll('[data-when="nonv1"]').forEach((n) => { n.hidden = !nonV1; });
-  document.querySelectorAll('.bb-legend span').forEach((s, i) => {
-    const fam = ['dedicated', 'battery', 'game', 'levers', 'long'][i];
-    if (fam) s.style.setProperty('--bb-c', BB.color(fam));
+  document.querySelectorAll('.bb-legend span[data-fam]').forEach((s) => {
+    s.style.setProperty('--bb-c', BB.color(s.getAttribute('data-fam')));
   });
 });
 
 // ---------------------------------------------------------------- derived values (shown in the takeaway)
-dash.calc('wins20', {
-  title: 'V1 measures where 20 h of play beats the dedicated experiment',
-  description: 'Count of the seven V1 parameters whose Spearman r after 20 h of varied gameplay exceeds the dedicated 10-minute experiment on the same voxels.',
-  inputs: ['recovery'],
-  fn: (recovery) => {
-    const r = (design, p) => +(recovery.find((x) => x.design === design && x.parameter === p) || {}).spearman;
-    return ['mu', 'sig', 'c50_eff', 'q', 'k', 'tau', 'a'].filter((p) => r('long_20h', p) > r('dedicated_10min', p)).length;
-  },
-});
-dash.calc('clear20', {
-  title: 'V1 measures where the 20 h and dedicated intervals do not overlap',
-  description: 'Count of V1 parameters whose 20 h lower 95% bound exceeds the dedicated experiment\'s upper 95% bound.',
-  inputs: ['recovery'],
-  fn: (recovery) => {
-    const g = (design, p) => recovery.find((x) => x.design === design && x.parameter === p) || {};
-    return ['mu', 'sig', 'c50_eff', 'q', 'k', 'tau', 'a'].filter((p) => +g('long_20h', p).ci_lo > +g('dedicated_10min', p).ci_hi).length;
-  },
-});
 dash.calc('variety', {
   title: 'Largest effect of level variety at equal time',
   description: 'Largest absolute difference in Spearman r between 4 h spread over ten level types and 4 h of one level type, across V1 parameters.',
@@ -170,14 +151,25 @@ dash.calc('signal_medians', {
   },
 });
 
+dash.calc('h2h', {
+  title: 'Head-to-head verdicts by budget',
+  description: 'For each matched budget (1 h per experiment, 5 h in total), how many of the seven V1 parameters gameplay wins, the dedicated design wins, or tie: a win is a paired 95% interval on the difference in Spearman r that excludes zero.',
+  inputs: ['budget'],
+  fn: (budget) => {
+    const out = [];
+    for (const b of ['1 h', '5 h']) for (const v of ['Gameplay', 'Dedicated', 'Tie']) {
+      out.push({ budget: b, verdict: v, n: budget.filter((r) => r.budget === b && r.verdict === v).length });
+    }
+    return out;
+  },
+});
+
 function drawCalc(id, fmt) {
   dash.draw(id, (el) => {
     const c = dash.data(id);
     el.textContent = c.status === 'ok' && c.data !== null ? fmt(c.data) : '—';
   });
 }
-drawCalc('wins20', (v) => String(v));
-drawCalc('clear20', (v) => String(v));
 drawCalc('variety', (v) => (+v).toFixed(2));
 
 // ---------------------------------------------------------------- tiles
@@ -199,6 +191,15 @@ dash.draw('cell', (el) => {
   el.textContent = isFinite(v) ? BB.f2(v) : '—';
 });
 
+// integer count from a rows calc or dataset: data-source, data-field, data-where
+dash.draw('count', (el) => {
+  const src = (el.getAttribute('data-source') || '').split(' ')[0];
+  const d = dash.data(src);
+  const rows = d.status === 'ok' && Array.isArray(d.data) ? d.data : [];
+  const row = rows.find((r) => BB.match(r, BB.where(el)));
+  el.textContent = row ? String(+row[el.getAttribute('data-field')]) : '—';
+});
+
 // ---------------------------------------------------------------- best realistic design for the chosen parameter
 function bbBest() {
   const d = dash.data('recovery');
@@ -207,7 +208,8 @@ function bbBest() {
   const rows = d.data.filter((r) => r.parameter === P.param && BB.realistic(r) && !r.design.startsWith('dedicated'));
   const best = rows.reduce((a, r) => (!a || +r.spearman > +a.spearman ? r : a), null);
   const ded = d.data.find((r) => r.parameter === P.param && r.design === 'dedicated');
-  return { best, ded };
+  const ded60 = d.data.find((r) => r.parameter === P.param && r.design === 'dedicated_60m');
+  return { best, ded, ded60 };
 }
 function bbMark(el, row) {
   if (row) el.setAttribute('data-where', `design=${encodeURIComponent(row.design)}&parameter=${encodeURIComponent(row.parameter)}`);
@@ -216,6 +218,7 @@ dash.draw('sel-param', (el) => { const b = bbBest(); const r = b && (b.best || b
 dash.draw('best-design', (el) => { const b = bbBest(); bbMark(el, b && b.best); el.textContent = b && b.best ? b.best.design_label : '—'; });
 dash.draw('best-r', (el) => { const b = bbBest(); bbMark(el, b && b.best); el.textContent = b && b.best ? BB.f2(+b.best.spearman) : '—'; });
 dash.draw('ded-r', (el) => { const b = bbBest(); bbMark(el, b && b.ded); el.textContent = b && b.ded ? BB.f2(+b.ded.spearman) : '—'; });
+dash.draw('ded60-r', (el) => { const b = bbBest(); bbMark(el, b && b.ded60); el.textContent = b && b.ded60 ? BB.f2(+b.ded60.spearman) : '—'; });
 
 // ---------------------------------------------------------------- selected-row numbers
 dash.draw('scatter-r', (el) => {
@@ -257,6 +260,28 @@ dash.draw('prftable', (tb) => {
     tr.append(td(r.design_label), td(String(+r.minutes), true), td(BB.f2(+r.pos_err_median), true),
       td(BB.f2(+r.pos_err_ecc_9_12), true), td(BB.f2(+r.r2_frac_ceiling_bar), true));
     tr.addEventListener('click', () => dash.setParams({ r1: r.design }));
+    tb.appendChild(tr);
+  }
+});
+
+dash.draw('budgettable', (tb) => {
+  const d = dash.data('budget');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  const P = BB.params();
+  const b = BB.where(tb).budget;
+  const fam = { Gameplay: 'long', Dedicated: 'dedicated', Tie: null };
+  for (const r of d.data.filter((x) => x.budget === b)) {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', `${encodeURIComponent(r.budget)},${encodeURIComponent(r.parameter)}`);
+    tr.className = 'bb-click' + (r.parameter === P.param ? ' bb-sel' : '');
+    const sign = (v) => (v > 0 ? '+' : '') + BB.f2(v);
+    const vd = td(r.verdict);
+    vd.className = 'bb-verdict';
+    vd.style.setProperty('--bb-c', fam[r.verdict] ? BB.color(fam[r.verdict]) : 'var(--cds-chart-muted)');
+    tr.append(td(r.parameter_label), td(BB.f2(+r.ded_r), true), td(BB.f2(+r.game_r), true), td(sign(+r.diff), true),
+      td(sign(+r.diff_lo), true), td(sign(+r.diff_hi), true), vd);
+    tr.addEventListener('click', () => dash.setParams({ param: r.parameter }));
     tb.appendChild(tr);
   }
 });

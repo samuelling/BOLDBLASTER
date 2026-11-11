@@ -114,6 +114,11 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 .bb-explain ul { padding-left: 18px; }
 .bb-signal { border-left: 3px solid #1baf7a; padding-left: 10px; }
 .bb-dyn { margin: 0 0 var(--cds-gap-md); }
+.bb-verdict::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 0; background: var(--bb-c); }
+.bb-verdict { white-space: nowrap; }
+.bb-tablewrap { container-type: inline-size; }
+@container (max-width: 400px) { .bb-h2h th:nth-child(4), .bb-h2h td:nth-child(4) { display: none; } }
+@container (max-width: 520px) { .bb-h2h th:nth-child(5), .bb-h2h td:nth-child(5), .bb-h2h th:nth-child(6), .bb-h2h td:nth-child(6) { display: none; } }
 </style>
 
 <div class="bb" data-read lang="en">
@@ -121,36 +126,36 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 <header class="bb-hero" id="top">
   <p class="bb-eyebrow">Simulation testbed · gameplay fMRI · model recovery</p>
   <h1 class="bb-title">BOLD<span class="bb-accent">BLASTER</span>: what can a video game recover from visual cortex?</h1>
-  <p class="bb-lede" id="takeaway">With twenty hours of varied first-person gameplay, fitted V1 parameters beat a dedicated 10-minute experiment on <b data-draw="wins20" data-source="wins20">—</b> of 7 measures, and on <b data-draw="clear20" data-source="clear20">—</b> the 95% intervals don't even overlap. Spreading play across ten level types instead of one changed recovery by at most <b data-draw="variety" data-source="variety">—</b> (Spearman r) at equal time.</p>
+  <p class="bb-lede" id="takeaway">Against dedicated experiments of realistic length, gameplay is no shortcut for most V1 tuning. With the same 5 hours of scanning, the full dedicated battery recovers <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Dedicated">—</b> of 7 V1 measures better, gameplay <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Gameplay">—</b> (surround suppression), and <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Tie">—</b> are ties. Gameplay's case is breadth and the quantities games sample richly: one dataset serves every model at once, including surround, transient and reward signals. Spreading play across ten level types instead of one changed recovery by at most <b data-draw="variety" data-source="variety">—</b> (Spearman r) at equal time.</p>
 
   <div class="bb-kpis" id="kpis">
     <div class="bb-kpi" id="kpi-sf" style="--bb-kpi-c: #2a78d6">
       <p class="bb-kpi-label">pSFT peak · 20 h play</p>
       <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=long_20h&amp;parameter=mu">—</div>
-      <div class="bb-kpi-sub">Dedicated 10 min: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_10min&amp;parameter=mu">—</span></div>
+      <div class="bb-kpi-sub">Dedicated 1 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_60m&amp;parameter=mu">—</span><br>Full battery 5 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=battery_5h&amp;parameter=mu">—</span></div>
     </div>
     <div class="bb-kpi" id="kpi-tau" style="--bb-kpi-c: #eb6834">
       <p class="bb-kpi-label">Transient weight · 20 h play</p>
       <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=long_20h&amp;parameter=tau">—</div>
-      <div class="bb-kpi-sub">Dedicated 10 min: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_10min&amp;parameter=tau">—</span></div>
+      <div class="bb-kpi-sub">Dedicated 1 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_60m&amp;parameter=tau">—</span><br>Full battery 5 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=battery_5h&amp;parameter=tau">—</span></div>
     </div>
     <div class="bb-kpi" id="kpi-att" style="--bb-kpi-c: #1baf7a">
       <p class="bb-kpi-label">Attention gain · 20 h play</p>
       <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=long_20h&amp;parameter=a">—</div>
-      <div class="bb-kpi-sub">Dedicated 10 min: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_10min&amp;parameter=a">—</span></div>
+      <div class="bb-kpi-sub">Dedicated 1 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_60m&amp;parameter=a">—</span><br>Full battery 5 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=battery_5h&amp;parameter=a">—</span></div>
     </div>
-    <div class="bb-kpi" id="kpi-num" style="--bb-kpi-c: #eda100">
-      <p class="bb-kpi-label">Numerosity preference · 2 h play</p>
-      <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=game_2h&amp;parameter=num_mu">—</div>
-      <div class="bb-kpi-sub">Dedicated 10 min: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated&amp;parameter=num_mu">—</span></div>
+    <div class="bb-kpi" id="kpi-k" style="--bb-kpi-c: #eda100">
+      <p class="bb-kpi-label">Surround suppression · 20 h play</p>
+      <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=long_20h&amp;parameter=k">—</div>
+      <div class="bb-kpi-sub">Dedicated 1 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_60m&amp;parameter=k">—</span><br>Full battery 5 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=battery_5h&amp;parameter=k">—</span></div>
     </div>
   </div>
   <p class="bb-stat" style="margin-top: var(--cds-gap-md)">Every value is Spearman r between planted and fitted parameters across simulated voxels: 1 means the ordering of voxels is recovered perfectly.</p>
   <details class="bb-explain"><summary>What am I looking at?</summary>
 <h4>What it shows</h4><p>BOLDBLASTER is a simulation. We play a first-person game, plant known tuning parameters in simulated voxels (the ground truth), generate BOLD with realistic noise, and fit the parameters back out exactly as one would with real data. Because the truth is known, we can score how well each experimental design recovers it.</p>
-<h4>How to read it</h4><p>The tiles compare the best gameplay result with the classic dedicated experiment for the same parameter (10 minutes, built for that one quantity). Spearman r measures whether voxels are put in the right order: 0.9 means the fitted values rank voxels almost exactly as the truth does; 0.3 means only a weak trend.</p>
+<h4>How to read it</h4><p>The tiles compare 20 hours of gameplay with the classic dedicated experiment for the same parameter run for an hour, and with the full dedicated battery (all five V1 experiments, an hour each, fitted jointly). All three are scored on the same 120 voxels. Earlier versions compared against a 10-minute dedicated run, which flattered gameplay; section 02 has the fair comparison. Spearman r measures whether voxels are put in the right order: 0.9 means the fitted values rank voxels almost exactly as the truth does; 0.3 means only a weak trend.</p>
 <div class="bb-signal"><h4>Signal vs noise</h4><p>Treat differences under about 0.1 as noise for the 300-voxel rounds and under about 0.15 for the 120-voxel round 4. The sections below show 95% intervals so any comparison can be checked.</p></div>
-<h4>Caveats</h4><p>Everything here is simulated. The fitter knows each model's functional form (not its parameters), and some real-world noise sources are not simulated; see section 05.</p>
+<h4>Caveats</h4><p>Everything here is simulated. The fitter knows each model's functional form (not its parameters), and some real-world noise sources are not simulated; see section 06.</p>
 </details>
 </header>
 
@@ -185,23 +190,80 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
     </div>
   </div>
   <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
-    <p>Gameplay wins where a game naturally varies a quantity a lot or produces many events: transient responses (saccades, camera turns), numerosity (coin clusters) and reward outcomes. It needs hours, design levers or both to match dedicated experiments on SF tuning and attention. Parameters that interact (surround suppression, transient weight, CRF exponent) are barely recoverable one experiment at a time, so fitting them jointly is what matters.</p>
+    <p>Gameplay does best where a game naturally varies a quantity a lot or produces many events: surround suppression (objects of every size against every background), transient responses (saccades, camera turns) and reward outcomes. Against dedicated experiments of realistic length (rows at the bottom, and section 02) it loses on SF tuning, attention and self-motion, and roughly ties on contrast response and numerosity. Parameters that interact (surround, transient weight, CRF exponent) are poorly recovered one experiment at a time however long it runs, so fitting them jointly is what matters.</p>
   </div></div>
   <div class="bb-card">
-    <p class="bb-dyn bb-stat">For <b data-draw="sel-param" data-source="recovery" data-field="parameter_label">—</b>, the best realistic design (no oracle) is <b data-draw="best-design" data-source="recovery" data-field="design_label">—</b> at r = <b data-draw="best-r" data-source="recovery" data-field="spearman">—</b>; the dedicated 10-minute experiment gives <b data-draw="ded-r" data-source="recovery" data-field="spearman">—</b>.</p>
+    <p class="bb-dyn bb-stat">For <b data-draw="sel-param" data-source="recovery" data-field="parameter_label">—</b>, the best realistic design (no oracle) is <b data-draw="best-design" data-source="recovery" data-field="design_label">—</b> at r = <b data-draw="best-r" data-source="recovery" data-field="spearman">—</b>; the dedicated experiment gives <b data-draw="ded-r" data-source="recovery" data-field="spearman">—</b> in 10 minutes and <b data-draw="ded60-r" data-source="recovery" data-field="spearman">—</b> in 60 (120 voxels).</p>
     <div class="bb-chart" id="forest" data-draw="forest" data-source="recovery" style="min-height: 380px"></div>
     <div class="bb-legend">
-      <span>Dedicated experiment</span>
-      <span>Battery fit jointly</span>
-      <span>Game</span>
-      <span>Game + design levers</span>
-      <span>Ten levels (round 4)</span>
+      <span data-fam="dedicated">Dedicated experiment</span>
+      <span data-fam="battery">Dedicated battery, joint fit</span>
+      <span data-fam="game">Game</span>
+      <span data-fam="levers">Game + design levers</span>
+      <span data-fam="long">Ten levels (round 4)</span>
     </div>
     <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>For the parameter you pick, one row per experimental design and the Spearman r between planted and fitted values across voxels.</p><ul><li><b>Dedicated experiment</b>: the classic design built for that parameter (band-pass noise for pSFT, a contrast series for pCRF, discs and annuli for surround suppression, refresh rates for the transient channel, attend-left/right blocks for attention, dot arrays, optic-flow blocks, a reward task), 10 minutes, fitting only that parameter with the others fixed at population defaults.</li><li><b>Battery fit jointly</b>: all five V1 experiments (50 min) fitted together with every parameter free.</li><li><b>Game</b>: 1–2 h of the round-2 game. <b>Game + design levers</b>: the round-3 game with covert-attention cues and SF/contrast-decorrelated textures.</li><li><b>Oracle</b>: the same data fitted with true gaze and true pRFs, an upper bound on what better eye tracking and localizers would buy.</li><li><b>Ten levels</b>: round 4, 2–20 h across ten level types on a 120-voxel subset (its dedicated row is re-scored on those same voxels).</li></ul>
+<h4>What it shows</h4><p>For the parameter you pick, one row per experimental design and the Spearman r between planted and fitted values across voxels.</p><ul><li><b>Dedicated experiment</b>: the classic design built for that parameter (band-pass noise for pSFT, a contrast series for pCRF, discs and annuli for surround suppression, refresh rates for the transient channel, attend-left/right blocks for attention, dot arrays, optic-flow blocks, a reward task), only 10 minutes in rounds 2–4 (a short protocol; realistic lengths are in round 5), fitting only that parameter with the others fixed at population defaults.</li><li><b>Battery fit jointly</b>: all five V1 experiments (50 min) fitted together with every parameter free.</li><li><b>Game</b>: 1–2 h of the round-2 game. <b>Game + design levers</b>: the round-3 game with covert-attention cues and SF/contrast-decorrelated textures.</li><li><b>Oracle</b>: the same data fitted with true gaze and true pRFs, an upper bound on what better eye tracking and localizers would buy.</li><li><b>Ten levels</b>: round 4, 2–20 h across ten level types on a 120-voxel subset (its dedicated row is re-scored on those same voxels).</li><li><b>Round 5, realistic dedicated</b>: each dedicated experiment run for 30 and 60 min, and the full battery (an hour per experiment, 5 h, three sessions) fitted jointly, on the round-4 voxels. The shaded column is the 60-minute experiment's interval.</li></ul>
 <h4>How to read it</h4><p>Dots further right recover the parameter better. Horizontal lines separate rounds. Hover any row for minutes of data, voxel count and the interval.</p>
-<div class="bb-signal"><h4>Signal vs noise</h4><p>Whiskers are bootstrap 95% intervals over voxels. The shaded column is the dedicated experiment's interval: a design whose whisker sits entirely outside it is convincingly better or worse; overlap means treat it as a tie. As a rule of thumb, r is uncertain by about ±0.1 with 300 voxels and ±0.15 with 120.</p></div>
-<h4>Caveats</h4><p>Compare within a round where possible (rounds 2–3 use 300 voxels, round 4 uses 120). Numerosity, self-motion and striatal rows have no intervals because their per-voxel fits were not saved, and their dedicated runs had 10 min against 60–120 min of play.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Whiskers are bootstrap 95% intervals over voxels. The shaded column is the 60-minute dedicated experiment's interval: a design whose whisker sits entirely outside it is convincingly better or worse; overlap means treat it as a tie. As a rule of thumb, r is uncertain by about ±0.1 with 300 voxels and ±0.15 with 120.</p></div>
+<h4>Caveats</h4><p>Compare within a round where possible (rounds 2–3 use 300 voxels, round 4 uses 120). Numerosity, self-motion and striatal rows have no intervals because their per-voxel fits were not saved, and their round-2 dedicated runs had only 10 min (round 5 adds 30 and 60 min).</p>
+</details>
+  </div>
+</section>
+
+<section class="bb-sec" id="fair">
+  <div class="bb-sec-head">
+    <div>
+      <p class="bb-num">02 · Fair baseline</p>
+      <h2 class="bb-h2">Against dedicated experiments of realistic length</h2>
+      <p class="bb-desc">Real pRF, pSFT and pCRF mapping takes 30–60+ minutes, not 10. Here every dedicated experiment is run for 10, 30 and 60 minutes, fitted on its own and as a joint battery (all five V1 experiments, up to 5 h), and set against gameplay on the same 120 voxels. Uses the parameter chosen above.</p>
+    </div>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
+    <p>A fair baseline changes the headline. Hour for hour, a dedicated experiment beats an hour of gameplay on <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Dedicated">—</b> of 7 V1 measures (SF peak, effective c50, attention gain); none is clearly better from an hour of play (gameplay wins: <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Gameplay">—</b>). At a matched 5 h budget the full dedicated battery wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Dedicated">—</b> (SF peak and bandwidth, attention), gameplay wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Gameplay">—</b> (surround suppression: r = <b data-draw="cell" data-source="budget" data-field="game_r" data-where="budget=5%20h&amp;parameter=k">—</b> vs <b data-draw="cell" data-source="budget" data-field="ded_r" data-where="budget=5%20h&amp;parameter=k">—</b>), and <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Tie">—</b> tie, with transient weight leaning toward gameplay. Longer dedicated scans mostly help the noise-limited parameters; the one-at-a-time fits of transient weight, surround and SF bandwidth stay poor at 60 minutes because the other parameters are held at defaults.</p>
+    <p>For the non-visual models, an hour of the reward task gives RPE weights at r = <b data-draw="cell" data-source="fair" data-field="spearman" data-where="design=ded_60m&amp;parameter=rpe_rpe_beta">—</b> against <b data-draw="cell" data-source="fair" data-field="spearman" data-where="design=game_1h&amp;parameter=rpe_rpe_beta">—</b> for an hour of play (play has many more outcomes), dedicated optic flow beats play on self-motion, and numerosity ties. The case for gameplay is breadth: one 5 h dataset serves all of these models at once, where the dedicated protocol needs a separate experiment for each.</p>
+  </div></div>
+  <div class="bb-card">
+    <p class="bb-note" data-when="nonv1" hidden>Non-visual populations: dedicated experiments at 10, 30 and 60 min against 1–2 h of the round-2 game, on all their voxels, without intervals.</p>
+    <div class="bb-chart" id="scantime" data-draw="scantime" data-source="fair" style="min-height: 340px"></div>
+    <div class="bb-legend">
+      <span data-fam="dedicated">Dedicated, one experiment</span>
+      <span data-fam="battery">Dedicated battery, joint fit</span>
+      <span data-fam="game">Game</span>
+      <span data-fam="levers">Game + design levers</span>
+      <span data-fam="long">Varied-level gameplay</span>
+    </div>
+    <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Recovery (Spearman r, planted vs fitted) against minutes of scanning, on a log axis. The “dedicated, one experiment” line is the experiment built for this parameter, fitted on its own with the other parameters fixed at population defaults, at 10, 30 and 60 min. The battery line is all five V1 dedicated experiments fitted jointly with every parameter free, at 10, 30 and 60 min each (50 min, 2.5 h and 5 h in total). The gameplay lines are the round-3 game with design levers (1–2 h) and the round-4 varied levels (2–20 h).</p>
+<h4>How to read it</h4><p>Compare lines at the same x. The two dashed verticals are the matched comparisons in the tables below: 1 h of one dedicated experiment against 1 h of play, and the full 5 h dedicated battery against 5 h of play. A dedicated line that keeps climbing means its earlier deficit was just too little data; one that stays flat means the design cannot pin the parameter down however long it runs.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Bands are bootstrap 95% intervals over the 120 voxels (about ±0.1–0.15 in r). Lines are compared formally in the tables below with a paired bootstrap, which is much tighter because both designs share the same voxels.</p></div>
+<h4>Caveats</h4><p>Multi-session batteries get the same per-session gain and noise jitter as the round-4 gameplay sessions. The one-experiment fits hold the other parameters at population defaults, as a lab running one mapping experiment would; that is what makes surround, transient and exponent biased rather than noisy. The non-visual rows have no intervals because their per-voxel estimates were not saved.</p>
+</details>
+  </div>
+  <div class="bb-grid2" style="margin-top: var(--cds-gap-md)">
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">Matched 1 h: each dedicated experiment vs the game with levers. Gameplay wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Gameplay">—</b>, dedicated wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Dedicated">—</b>, ties <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Tie">—</b>.</p>
+      <table class="bb-table bb-h2h" id="budget1-table" data-source="budget" data-row-key="budget,parameter">
+        <thead><tr><th data-field="parameter_label">Parameter</th><th data-field="ded_r">Dedicated</th><th data-field="game_r">Game</th>
+          <th data-field="diff">Δ r</th><th data-field="diff_lo">95% low</th><th data-field="diff_hi">95% high</th><th data-field="verdict">Verdict</th></tr></thead>
+        <tbody data-draw="budgettable" data-where="budget=1%20h"></tbody>
+      </table>
+    </div>
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">Matched 5 h: the full dedicated battery vs varied-level play. Gameplay wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Gameplay">—</b>, dedicated wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Dedicated">—</b>, ties <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Tie">—</b>.</p>
+      <table class="bb-table bb-h2h" id="budget5-table" data-source="budget" data-row-key="budget,parameter">
+        <thead><tr><th data-field="parameter_label">Parameter</th><th data-field="ded_r">Dedicated</th><th data-field="game_r">Game</th>
+          <th data-field="diff">Δ r</th><th data-field="diff_lo">95% low</th><th data-field="diff_hi">95% high</th><th data-field="verdict">Verdict</th></tr></thead>
+        <tbody data-draw="budgettable" data-where="budget=5%20h"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="bb-card" style="margin-top: var(--cds-gap-md)">
+    <details class="bb-explain" open><summary>What am I looking at? (both tables)</summary>
+<h4>What it shows</h4><p>Two head-to-heads on the same 120 V1 voxels. <b>Matched 1 h</b>: for each parameter, one hour of the dedicated experiment built for it against one hour of the game with design levers, which recovers all seven at once. <b>Matched 5 h</b>: the whole dedicated protocol (one hour each of band-pass noise, a contrast series, discs and annuli, refresh rates and attention blocks, fitted jointly across three sessions) against five hours of varied-level gameplay.</p>
+<h4>How to read it</h4><p>Δ r is gameplay minus dedicated: positive favours gameplay. The verdict names a winner only when the 95% interval on Δ r excludes zero; otherwise it is a tie. Click a row to switch the whole dashboard to that parameter.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>The interval is a paired bootstrap: the same resampled voxels are scored under both designs, so voxel-to-voxel variation that affects both cancels. Differences of about 0.05 can be detected this way, but a tie is not proof the designs are equal.</p></div>
+<h4>Caveats</h4><p>The 1 h comparison is generous to gameplay in one way (one hour of play buys all seven parameters, the dedicated hour buys one or two) and to dedicated in another (each dedicated experiment is fitted only for its own parameters). The 5 h comparison is the cleaner test of a whole protocol. Gameplay here uses eye-tracker gaze and bar-fitted pRFs; dedicated experiments assume perfect fixation.</p>
 </details>
   </div>
 </section>
@@ -209,9 +271,9 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 <section class="bb-sec" id="hours">
   <div class="bb-sec-head">
     <div>
-      <p class="bb-num">02 · Time</p>
+      <p class="bb-num">03 · Time</p>
       <h2 class="bb-h2">How many hours of play does it take?</h2>
-      <p class="bb-desc">One simulated subject, ten 2-hour sessions, each a different level (Warehouse, Night ops, Open arena, Cathedral, Sprint, Treasure hunt, Fog bank, Mixed day, Boss rush, Dusk maze). The band is the dedicated 10-minute experiment on the same 120 voxels. Uses the parameter chosen above.</p>
+      <p class="bb-desc">One simulated subject, ten 2-hour sessions, each a different level (Warehouse, Night ops, Open arena, Cathedral, Sprint, Treasure hunt, Fog bank, Mixed day, Boss rush, Dusk maze). The band is the dedicated experiment run for an hour on the same 120 voxels; the dotted line is the same experiment at 10 minutes. Uses the parameter chosen above.</p>
     </div>
   </div>
   <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
@@ -222,8 +284,8 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
       <p class="bb-note" data-when="nonv1" hidden>Rounds 3 and 4 simulated V1 parameters only. Pick a V1 parameter above.</p>
       <div class="bb-chart" id="hours-chart" data-draw="hours" data-source="recovery" style="min-height: 300px"></div>
       <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>Spearman r for the chosen parameter as sessions accumulate: 2 h is session 1 (Warehouse), 5 h adds Night ops and half of Open arena, 10 h is five levels, 20 h all ten. Orange is gameplay with its 95% band; the blue dashed line and band are the dedicated 10-minute experiment on the same 120 voxels.</p>
-<h4>How to read it</h4><p>Where the orange line rises above the blue band, gameplay has overtaken the dedicated experiment. A line that keeps rising means more hours still help; a flat line means something other than data quantity is limiting.</p>
+<h4>What it shows</h4><p>Spearman r for the chosen parameter as sessions accumulate: 2 h is session 1 (Warehouse), 5 h adds Night ops and half of Open arena, 10 h is five levels, 20 h all ten. The solid line is gameplay with its 95% band; the dashed line and band are the dedicated experiment at 60 minutes, and the dotted line the same experiment at 10 minutes, all on the same 120 voxels.</p>
+<h4>How to read it</h4><p>Where the gameplay line rises above the dedicated band, gameplay has overtaken an hour of the dedicated experiment. A line that keeps rising means more hours still help; a flat line means something other than data quantity is limiting.</p>
 <div class="bb-signal"><h4>Signal vs noise</h4><p>Trust the overall trend from 2 to 10 to 20 h. Single steps can wobble: the 5 h point adds a dim, low-contrast level (Night ops), and with 120 voxels each point is uncertain by roughly ±0.15, so a dip of 0.1 between neighbours is not a real reversal.</p></div>
 <h4>Caveats</h4><p>One simulated subject. Each session also has its own response gain and noise level, and the fitter estimates one gain per session.</p>
 </details>
@@ -232,7 +294,7 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
       <p class="bb-stat">Same time, more variety? 4 h on one level type vs 4 h spread over ten.</p>
       <div class="bb-chart" id="variety-chart" data-draw="varietychart" data-source="recovery" style="min-height: 300px"></div>
       <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>A controlled test of level variety at equal time. Grey: 4 h of the Warehouse level (two sessions with different random seeds). Orange: 4 h made of about 24 minutes from each of the ten levels. Same voxels, same fitter.</p>
+<h4>What it shows</h4><p>A controlled test of level variety at equal time. Grey dots: 4 h of the Warehouse level (two sessions with different random seeds). Coloured dots: 4 h made of about 24 minutes from each of the ten levels. Same voxels, same fitter.</p>
 <h4>How to read it</h4><p>Each row is one V1 parameter; the grey bar joins the two estimates. A long bar would mean variety matters for that parameter.</p>
 <div class="bb-signal"><h4>Signal vs noise</h4><p>Every pair overlaps almost completely (hover for intervals): no parameter shows a detectable variety effect. The design levers already make each level sample SF, contrast and attention broadly, and the level themes mostly change global statistics such as lighting, fog and pace.</p></div>
 <h4>Caveats</h4><p>This does not test generalization (fitting on some levels and predicting an unseen one) or models whose variables one level under-samples, such as the range of coin counts. Variety may pay off there.</p>
@@ -244,15 +306,17 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 <section class="bb-sec" id="voxels">
   <div class="bb-sec-head">
     <div>
-      <p class="bb-num">03 · Voxels</p>
+      <p class="bb-num">04 · Voxels</p>
       <h2 class="bb-h2">Planted vs fitted, voxel by voxel</h2>
       <p class="bb-desc">Each dot is a simulated V1 voxel: the value planted in the ground truth against the value fitted from data. Points on the dashed line are perfect. Colour is eccentricity. Uses the parameter chosen above.</p>
     </div>
     <div class="bb-controls">
       <label>Design
         <select class="dash-select" data-param="design" aria-label="Design">
-          <option value="dedicated">Dedicated experiment (10 min)</option>
+          <option value="dedicated">Short dedicated protocol (10 min)</option>
+          <option value="dedicated_60m">Dedicated experiment (60 min)</option>
           <option value="battery_joint">V1 battery, joint fit (50 min)</option>
+          <option value="battery_5h">Full dedicated battery, joint (5 h)</option>
           <option value="game_1h">Game 1 h</option>
           <option value="game_2h">Game 2 h</option>
           <option value="game_2h_oracle">Game 2 h, oracle gaze + pRF</option>
@@ -296,7 +360,7 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 <section class="bb-sec" id="prf">
   <div class="bb-sec-head">
     <div>
-      <p class="bb-num">04 · Round 1</p>
+      <p class="bb-num">05 · Round 1</p>
       <h2 class="bb-h2">pRFs from gameplay</h2>
       <p class="bb-desc">Position error of fitted pRFs against eccentricity. Click a row to plot that design. The steps are the median error in each eccentricity band. Bars only reach 9°; eye movements carry the game screen further out.</p>
     </div>
@@ -337,7 +401,7 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 <section class="bb-sec" id="noise">
   <div class="bb-sec-head">
     <div>
-      <p class="bb-num">05 · Assumptions</p>
+      <p class="bb-num">06 · Assumptions</p>
       <h2 class="bb-h2">Signal, noise and what the fitter removes</h2>
       <p class="bb-desc">All noise is in percent signal change at TR = 1.5 s, independent per voxel. Gameplay keeps V1 driven but modulates any one pRF far less than bars do, which is why hours matter.</p>
     </div>
@@ -351,7 +415,7 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
       <div class="bb-chart" id="signal-chart" data-draw="signal" data-source="signal_medians" style="min-height: 240px"></div>
       <details class="bb-explain"><summary>What am I looking at?</summary>
 <h4>What it shows</h4><p>How big each part of a simulated voxel's time series is, as its standard deviation over time, median across 500 round-1 voxels: the visual response to bars, the visual response to gameplay, the arousal-linked systemic signal during gameplay, and the measurement noise.</p>
-<h4>How to read it</h4><p>The ratio of a visual bar to the noise bar is the per-voxel signal-to-noise. Gameplay's visual bar is about a quarter of bars', so each minute of play carries far less information about a pRF than a minute of bars; that is why the hours curve in section 02 matters.</p>
+<h4>How to read it</h4><p>The ratio of a visual bar to the noise bar is the per-voxel signal-to-noise. Gameplay's visual bar is about a quarter of bars', so each minute of play carries far less information about a pRF than a minute of bars; that is why the hours curve in section 03 matters.</p>
 <div class="bb-signal"><h4>Signal vs noise</h4><p>These are medians; individual voxels vary (peripheral voxels get relatively more gameplay modulation). The systemic signal is shared across voxels, so an event-locked regressor removes most of it; the noise is not removable.</p></div>
 <h4>Caveats</h4><p>Round 1 used a sustained-only V1. The transient channel added in later rounds raises gameplay's modulation (see the table beside this).</p>
 </details>
@@ -389,7 +453,7 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 <footer class="bb-foot" id="methods">
   <details>
     <summary>How the simulation works</summary>
-    <p>A numpy raycaster first-person game (rooms, textured walls, NPCs, explosions, coins, probabilistic shots, covert-attention cues) is rendered at 10 Hz on a 24×18° screen. Each frame becomes multi-band contrast energy, shifted into retinal coordinates by a fixation/saccade gaze model. Planted populations: V1 voxels with pRFs, SF tuning, a contrast response with surround normalization, a transient channel and attention gain; numerosity, self-motion and striatal RPE voxels driven by the game's logs. Fits use eye-tracker gaze (offset, drift, gain error, noise, blinks), pRFs from a 15-min bar localizer, the canonical HRF shape with a fitted per-voxel time scale, and nuisance regressors for drift and logged arousal events. Dedicated experiments (band-pass noise, contrast series, discs/annuli, refresh rates, attention blocks, dots, optic flow, a reward task) are simulated in the same voxels.</p>
+    <p>A numpy raycaster first-person game (rooms, textured walls, NPCs, explosions, coins, probabilistic shots, covert-attention cues) is rendered at 10 Hz on a 24×18° screen. Each frame becomes multi-band contrast energy, shifted into retinal coordinates by a fixation/saccade gaze model. Planted populations: V1 voxels with pRFs, SF tuning, a contrast response with surround normalization, a transient channel and attention gain; numerosity, self-motion and striatal RPE voxels driven by the game's logs. Fits use eye-tracker gaze (offset, drift, gain error, noise, blinks), pRFs from a 15-min bar localizer, the canonical HRF shape with a fitted per-voxel time scale, and nuisance regressors for drift and logged arousal events. Dedicated experiments (band-pass noise, contrast series, discs/annuli, refresh rates, attention blocks, dots, optic flow, a reward task) are simulated in the same voxels, at 10, 30 and 60 minutes each.</p>
     <p>Best case for model form: the fitter knows each model's functional form, not its parameters. Not simulated: head motion, spatially correlated noise, separate cardiac and respiratory components. Code, noise model (NOISE.md) and CSVs: github.com/samuelling/boldblaster.</p>
   </details>
 </footer>

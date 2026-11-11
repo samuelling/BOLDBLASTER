@@ -10,7 +10,7 @@ w.eval(fs.readFileSync('/tmp/dashtest/node_modules/d3/dist/d3.min.js', 'utf8'));
 Object.defineProperty(w.HTMLElement.prototype, 'clientWidth', { get() { return 720; } });
 w.SVGElement.prototype.getComputedTextLength = function () { return (this.textContent || '').length * 6.5; };
 const files = { recovery: 'recovery.csv', v1_voxels: 'v1_voxels.csv', prf_round1: 'prf_round1.csv', prf_voxels: 'prf_voxels.csv',
-  signal: 'signal_components.csv', noise_model: 'noise_model.csv', diagnostics: 'diagnostics.csv' };
+  signal: 'signal_components.csv', noise_model: 'noise_model.csv', diagnostics: 'diagnostics.csv', fair: 'fair.csv', budget: 'budget.csv' };
 const data = {};
 for (const [k, f] of Object.entries(files)) { const rows = dsv.csvParse(fs.readFileSync(path.join(DATA, f), 'utf8')); data[k] = rows.map(r => { const o = {}; for (const c of rows.columns) o[c] = r[c] === '' ? null : r[c]; return o; }); }
 const calcs = {}, draws = {}, onData = [];
@@ -46,3 +46,12 @@ params.param = 'num_mu'; runAll('nonv1');
 console.log('nonv1 notes visible:', [...w.document.querySelectorAll('[data-when="nonv1"]')].map(n => !n.hidden).join(','), ' forest rows:', q('#forest').querySelectorAll('circle').length);
 for (const d of ['bars', 'game_et_2h', 'bars+game', 'game_nogaze']) { params.r1 = d; runAll('r1 ' + d); }
 console.log('errors:', errors.length ? errors : 'none');
+params = { param: 'tau', design: 'long_20h', ecc: 'all', r1: 'game_eyetracker' }; runAll('tldr');
+console.log('dyn:', q('.bb-dyn').textContent.replace(/\s+/g,' ').trim());
+console.log('tldrs:', [...w.document.querySelectorAll('.bb-tldr')].map(t => t.textContent.replace(/\s+/g,' ').trim().slice(0,400)).join('\n---\n'));
+console.log('forest shaded band:', !!q('#forest svg rect'));
+console.log('scantime circles:', q('#scantime').querySelectorAll('circle').length, ' budget rows:', [...w.document.querySelectorAll('[data-draw="budgettable"]')].map(t=>t.children.length).join(','));
+console.log('budget5:', [...w.document.querySelectorAll('[data-draw="budgettable"]')][1].textContent.slice(0,300));
+console.log('counts:', [...w.document.querySelectorAll('[data-draw="count"]')].map(e=>e.textContent).join(' '));
+console.log('fair tldr:', q('#fair .bb-tldr').textContent.replace(/\s+/g,' ').trim());
+console.log('errors2:', errors.length ? errors : 'none');

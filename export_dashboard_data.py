@@ -14,12 +14,12 @@ PLAB = dict(mu='pSFT peak', sig='pSFT bandwidth', c50_eff='pCRF effective c50', 
             k='Surround suppression k', tau='Transient weight', a='Attention gain')
 DED = dict(mu='psft', sig='psft', c50_eff='crf', q='crf', k='size', tau='temporal', a='attn')
 V1_DESIGNS = [  # (round, key, label, minutes)
-    (2, 'dedicated', 'Dedicated experiment (10 min)', 10), (2, 'battery_joint', 'V1 battery, joint fit', 50),
+    (2, 'dedicated', 'Short dedicated protocol (10 min)', 10), (2, 'battery_joint', 'V1 battery, joint fit', 50),
     (2, 'game_1h', 'Game 1 h', 60), (2, 'game_2h', 'Game 2 h', 120),
     (2, 'game_2h_oracle', 'Game 2 h, oracle gaze + pRF', 120),
     (3, 'levers_1h', 'Game + levers 1 h', 60), (3, 'levers_2h', 'Game + levers 2 h', 120),
     (3, 'levers_2h_oracle', 'Game + levers 2 h, oracle', 120)]
-LONG_DESIGNS = [(4, 'dedicated_10min', 'Dedicated experiment (10 min), same 120 voxels', 10),
+LONG_DESIGNS = [(4, 'dedicated_10min', 'Short dedicated protocol (10 min), same 120 voxels', 10),
                 (4, 'long_2h', 'Varied levels 2 h', 120), (4, 'long_5h', 'Varied levels 5 h', 300),
                 (4, 'long_10h', 'Varied levels 10 h', 600), (4, 'long_20h', 'Varied levels 20 h', 1200),
                 (4, 'single_4h', 'One level type 4 h', 240), (4, 'varied_4h', 'Ten level types 4 h', 240)]
@@ -85,13 +85,32 @@ def main():
            ('mst', 'Self-motion', [('rotation_pref', 'Rotation preference'), ('expansion_frac', 'Expansion share')]),
            ('rpe', 'Striatal RPE', [('rpe_beta', 'RPE weight')])]
     for pre, popname, prms in NON:
-        for suf, lab in (('dedicated', 'Dedicated experiment (10 min)'), ('game_1h', 'Game 1 h'), ('game_2h', 'Game 2 h')):
+        for suf, lab in (('dedicated', 'Short dedicated protocol (10 min)'), ('game_1h', 'Game 1 h'), ('game_2h', 'Game 2 h')):
             res = r2[f'{pre}_{suf}']
             for p, plab in prms:
                 sc = res['scores'][p]
                 rec.append([2, 'dedicated' if suf == 'dedicated' else suf, lab, popname, f'{pre}_{p}', plab,
                             res['minutes'], {'num': 150, 'mst': 150, 'rpe': 100}[pre], sc['spearman'], '', '',
                             sc['median_abs_err']])
+    # ---- round 5: realistic dedicated protocols (first 120 voxels, from export_fair.py -> fair.csv)
+    import csv as _csv
+    R5 = dict(ded_30m=('dedicated_30m', 'Dedicated experiment (30 min)'), ded_60m=('dedicated_60m', 'Dedicated experiment (60 min)'),
+              battery_60m=('battery_5h', 'Full dedicated battery, joint (5 h)'))
+    POPN = dict(num='Numerosity', mst='Self-motion', rpe='Striatal RPE')
+    fair = list(_csv.DictReader(open(os.path.join(OUT, 'fair.csv'))))
+    for r in fair:
+        if r['design'] not in R5:
+            continue
+        key, lab = R5[r['design']]
+        popname = 'V1' if r['parameter'] in PARAMS else POPN[r['parameter'].split('_')[0]]
+        rec.append([5, key, lab, popname, r['parameter'], r['parameter_label'], int(float(r['minutes'])),
+                    int(float(r['n_voxels'])), float(r['spearman']), r['ci_lo'], r['ci_hi'], ''])
+    for src, key in (('ded', 'dedicated_60m'), ('battery', 'battery_5h')):
+        for p in PARAMS:
+            f = os.path.join(D2, f'fitfair_ded_{DED[p]}_60m.npz' if src == 'ded' else 'fitfair_battery_60m.npz')
+            e = vals(dict(np.load(f)), p)[:120]
+            for v in range(120):
+                vox.append([5, key, p, v, ecc[v], pa[v], truth_all[p][v], e[v]])
     write('recovery.csv', ['round', 'design', 'design_label', 'population', 'parameter', 'parameter_label', 'minutes',
                            'n_voxels', 'spearman', 'ci_lo', 'ci_hi', 'median_abs_err'], rec)
     write('v1_voxels.csv', ['round', 'design', 'parameter', 'voxel', 'ecc', 'polar_angle', 'planted', 'fitted'], vox)
