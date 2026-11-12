@@ -79,8 +79,9 @@ dash.draw('hours', (el) => {
   if (ded10) {
     s.append('line').attr('x1', m.l).attr('x2', w - m.r).attr('y1', y(+ded10.spearman)).attr('y2', y(+ded10.spearman))
       .style('stroke', cd).style('stroke-dasharray', '1 4').style('stroke-width', 1.5).style('opacity', 0.8);
-    const close = ded && Math.abs(y(+ded10.spearman) - y(+ded.spearman)) < 12;
-    s.append('text').attr('x', w - m.r + 6).attr('y', y(+ded10.spearman) + (close ? (+ded10.spearman < +ded.spearman ? 10 : -10) : 0)).attr('dy', '0.32em').text('ded. 10 m');
+    const yd = ded ? y(+ded.spearman) : -99, y10 = y(+ded10.spearman);
+    const close = ded && Math.abs(y10 - yd) < 15;
+    s.append('text').attr('x', w - m.r + 6).attr('y', close ? yd + (+ded10.spearman < +ded.spearman ? 15 : -15) : y10).attr('dy', '0.32em').text('ded. 10 m');
   }
   const area = d3.area().x((p) => x(p.h)).y0((p) => y(+p.row.ci_lo)).y1((p) => y(+p.row.ci_hi));
   s.append('path').datum(pts).attr('d', area).style('fill', cl).style('opacity', 0.16);
@@ -223,8 +224,9 @@ dash.draw('signal', (el) => {
   const { s, w } = BB.svg(el, H, 'Median SD over time of visual signal, systemic signal and noise');
   const lw = BB.textWidth(s, rows.map((r) => r.label)) + 12;
   const x = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.median_sd) * 1.15]).range([lw, w - 40]);
-  BB.grid(s.append('g'), x, x.ticks(4), 0, H - 26, false);
-  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - 26})`).call(d3.axisBottom(x).ticks(4).tickFormat((d) => d + '%').tickSizeOuter(0)));
+  const nt = Math.max(2, Math.floor((w - 40 - lw) / 70));
+  BB.grid(s.append('g'), x, x.ticks(nt), 0, H - 26, false);
+  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - 26})`).call(d3.axisBottom(x).ticks(nt).tickFormat((d) => d + '%').tickSizeOuter(0)));
   const cols = { visual_bars: BB.color('dedicated'), visual_game: BB.color('game'), systemic: 'var(--cds-chart-muted)', noise: 'var(--cds-chart-muted)' };
   const g = s.append('g').selectAll('g').data(rows).join('g').attr('transform', (r, i) => `translate(0,${i * rowH + rowH / 2})`);
   g.append('text').attr('class', 'bb-lab').attr('dy', '0.32em').text((r) => r.label);
@@ -246,7 +248,7 @@ dash.draw('scantime', (el) => {
   const series = GROUPS.map(([g, lab, fam]) => ({ g, lab, c: BB.color(fam),
     pts: rows.filter((r) => r.group === g).map((r) => ({ m: +r.minutes, r: +r.spearman, lo: r.ci_lo === null || r.ci_lo === '' ? NaN : +r.ci_lo, hi: r.ci_hi === null || r.ci_hi === '' ? NaN : +r.ci_hi, row: r }))
       .sort((a, b) => a.m - b.m) })).filter((s0) => s0.pts.length);
-  const H = 340, m = { l: 40, r: 18, t: 22, b: 40 };
+  const H = 352, m = { l: 40, r: 18, t: 34, b: 40 };
   const { s, w } = BB.svg(el, H, 'Spearman r against minutes of scanning, for dedicated experiments and gameplay');
   const x = d3.scaleLog().domain([8, 1500]).range([m.l, w - m.r]);
   const ymin = Math.min(0, d3.min(rows, (r) => (r.ci_lo !== null && r.ci_lo !== '' ? +r.ci_lo : +r.spearman)) - 0.05);
@@ -261,7 +263,7 @@ dash.draw('scantime', (el) => {
   [[60, 'matched 1 h'], [300, 'matched 5 h']].forEach(([v, t]) => {
     s.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', m.t).attr('y2', H - m.b)
       .style('stroke', 'var(--cds-chart-axis)').style('stroke-dasharray', '3 4');
-    s.append('text').attr('x', x(v) + 4).attr('y', m.t - 8).text(t);
+    s.append('text').attr('x', x(v) + 4).attr('y', m.t - 16).text(t);
   });
   const area = d3.area().x((p) => x(p.m)).y0((p) => y(p.lo)).y1((p) => y(p.hi));
   const line = d3.line().x((p) => x(p.m)).y((p) => y(p.r));
