@@ -220,7 +220,7 @@ def render_world(m, tex, px, py, ang, fog=9.0, cgain=None):
     img = np.where(wall, img, fc)
     dist = np.where(wall, dist, np.broadcast_to(rowd, (H, W)))
     img = 0.5 + (img - 0.5) * np.exp(-dist / fog)
-    return img.astype(np.float32), perp, (dx, dy, plx, ply)
+    return img.astype(np.float32), perp, (dx, dy, plx, ply), wt, wall
 
 
 def project(px, py, cam, sx, sy):
@@ -238,8 +238,10 @@ def _bbox(cx, cy, hw, hh):
     return x0, x1, y0, y1
 
 
-def draw_npc(img, zbuf, tx, ty):
-    """Returns screen-deg position of the NPC if any part is visible, else None."""
+def draw_npc(img, zbuf, tx, ty, catbuf=None):
+    """Returns screen-deg position of the NPC if any part is visible, else None.
+    catbuf, if given, gets a matching 1.0 written wherever the NPC is drawn (content-map
+    channel for the ventral/temporal population)."""
     if ty < 0.2:
         return None
     scrx = (W / 2) * (1 + tx / ty)
@@ -265,6 +267,9 @@ def draw_npc(img, zbuf, tx, ty):
         return None
     sub = img[y0:y1, x0:x1]
     sub[vis] = lum[vis]
+    if catbuf is not None:
+        csub = catbuf[y0:y1, x0:x1]
+        csub[vis] = 1.0
     ccol = int(np.clip(scrx, 0, W - 1))
     center_visible = (0 <= scrx < W) and ty < zbuf[ccol]
     return ((scrx - W / 2) / PX_PER_DEG, (H / 2 - (top + 0.45 * hpx)) / PX_PER_DEG,
@@ -456,7 +461,7 @@ def simulate_run(seed, duration=300.0, frame_sink=None, keep_frames=0):
     buf = []
     for f in range(nf):
         px, py = pos[f]
-        img, zbuf, cam = render_world(m, tex, px, py, ang[f])
+        img, zbuf, cam, _wt, _wall = render_world(m, tex, px, py, ang[f])
         npcs.step(1 / FPS, pos[f])
         vis = []
         for i in np.where(npcs.alive)[0]:
@@ -497,7 +502,8 @@ def simulate_run(seed, duration=300.0, frame_sink=None, keep_frames=0):
                 map=m, pos=pos, ang=ang)
 
 
-def simulate_run_v2(seed, duration=300.0, frame_sink=None, keep_frames=0, levers=False, theme=None):
+def simulate_run_v2(seed, duration=300.0, frame_sink=None, keep_frames=0, levers=False, theme=None,
+                    content_sink=None):
     """v2 run: v1 game plus coin clusters, probabilistic shots, and per-frame logs.
     Logs: n_coins (visible coins), n_npcs, fwd (cells/s), yaw (rad/s),
     salient onsets (t, x, y, kind: 0 NPC appears, 1 explosion),
@@ -527,13 +533,23 @@ def simulate_run_v2(seed, duration=300.0, frame_sink=None, keep_frames=0, levers
     gaze = np.zeros((nf, 2), np.float32)
     n_coins = np.zeros(nf, np.int16)
     n_npcs = np.zeros(nf, np.int16)
-    events, salient, shots, explosions, kept, buf = [], [], [], [], [], []
+    events, salient, shots, explosions, kept, buf, cbuf = [], [], [], [], [], [], []
     last_seen = np.full(len(npcs.pos), -1e9)
     cooldown = 0.0
+    lower_rows = (_ROWS + 0.5 > H / 2)      # (H,1), frame-independent
     for f in range(nf):
         t = f / FPS
         px, py = pos[f]
-        img, zbuf, cam = render_world(m, tex, px, py, ang[f], fog=fog, cgain=cgain)
+        img, zbuf, cam, wt, wall = render_world(m, tex, px, py, ang[f], fog=fog, cgain=cgain)
+        cat = None
+        if content_sink is not None:
+            # content-map channels for the ventral/temporal population: NPC presence (filled
+            # below, via draw_npc's catbuf), 4 wall-texture identities, floor, ceiling.
+            cat = np.zeros((7, H, W), np.float32)
+            for k in range(1, 5):
+                cat[k] = wall & (wt[None, :] == k)
+            cat[5] = (~wall) & lower_rows
+            cat[6] = (~wall) & ~lower_rows
         npcs.step(1 / FPS, pos[f])
         coins.step(1 / FPS, pos[f])
         if t >= next_cue and cue is None:          # covert-attention episode
@@ -559,7 +575,7 @@ def simulate_run_v2(seed, duration=300.0, frame_sink=None, keep_frames=0, levers
         vis = []
         for i in np.where(npcs.alive)[0]:
             tx, ty = project(px, py, cam, *npcs.pos[i])
-            r = draw_npc(img, zbuf, tx, ty)
+            r = draw_npc(img, zbuf, tx, ty, catbuf=(cat[0] if cat is not None else None))
             if r is not None:
                 vis.append(r + (i,))
                 if r[3]:
@@ -607,10 +623,15 @@ def simulate_run_v2(seed, duration=300.0, frame_sink=None, keep_frames=0, levers
         if f < keep_frames:
             kept.append(img.copy())
         buf.append(img)
+        if cat is not None:
+            cbuf.append(cat)
         if len(buf) == 50 or f == nf - 1:
             if frame_sink is not None:
                 frame_sink(np.stack(buf))
             buf = []
+            if content_sink is not None and cbuf:
+                content_sink(np.stack(cbuf))
+                cbuf = []
     yaw = np.gradient(np.unwrap(ang)) * FPS
     return dict(gaze=gaze, events=np.array(events).reshape(-1, 3), frames=np.array(kept),
                 n_coins=n_coins, n_npcs=n_npcs, fwd=speed.astype(np.float32),

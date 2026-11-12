@@ -69,6 +69,48 @@ def attention_trace(salient, gaze, x, y, sigma=2.0, dur=1.5):
     return np.minimum(att, 1.0)
 
 
+def attention_impulses(salient, gaze, x, y, sigma=2.0):
+    """(nf,V) impulse train: spatial Gaussian weight at the single onset frame of each
+    salient event (NPC-appear / kill / covert cue), summed when events coincide.
+    Feeds attention_dynamic; replaces the fixed-duration box of attention_trace with
+    a per-voxel temporal kernel applied downstream."""
+    nf = len(gaze)
+    imp = np.zeros((nf, len(x)), np.float32)
+    for t, ex, ey, kind in salient:
+        f0 = int(round(t * FPS))
+        if f0 >= nf:
+            continue
+        rx = ex - gaze[f0, 0]
+        ry = ey - gaze[f0, 1]
+        d2 = (x - rx) ** 2 + (y - ry) ** 2
+        imp[f0] += np.exp(-d2 / (2 * sigma ** 2))
+    return imp
+
+
+def attn_kernel(tr, td, fps=FPS, length=8.0):
+    """Per-voxel asymmetric rise(tr)/decay(td) kernel, peak-normalized to 1. tr, td: (V,)."""
+    nk = int(length * fps)
+    t = (np.arange(nk) / fps)[:, None]
+    tr, td = np.maximum(np.asarray(tr, float), 1e-3), np.maximum(np.asarray(td, float), 1e-3)
+    K = (1 - np.exp(-t / tr[None, :])) * np.exp(-t / td[None, :])
+    return (K / np.maximum(K.max(0, keepdims=True), 1e-9)).astype(np.float32)
+
+
+def attention_dynamic(imp, tr, td, fps=FPS, length=8.0):
+    """imp (nf,V) event impulses -> (nf,V) attention-gain field via convolution with each
+    voxel's own rise/decay kernel (exogenous, event-locked attention). Vectorized over
+    voxels and time via an explicit tap loop (kernel is short: length*fps samples)."""
+    K = attn_kernel(tr, td, fps, length)          # (nk, V)
+    nk = K.shape[0]
+    out = np.zeros_like(imp)
+    for l in range(nk):
+        if l == 0:
+            out += imp * K[0]
+        else:
+            out[l:] += imp[:-l] * K[l]
+    return np.minimum(out, 1.0)
+
+
 def attention_blocks(side, x):
     """Controlled attention: side (nf,) in {-1,0,1}; pRF x (V,) -> (nf,V)."""
     return (np.abs(side)[:, None] / (1 + np.exp(-side[:, None] * x[None] / 0.5))).astype(np.float32)
@@ -172,6 +214,97 @@ def starts_for(free, rng, n=3):
         s.update(mu=rng.uniform(-1.5, 1.2), sig=rng.uniform(0.7, 1.6), c50=np.exp(rng.uniform(-2.5, -0.7)),
                  q=rng.uniform(1.2, 3.0), k=rng.uniform(0, 1.5), tau=rng.uniform(0, 1.2), a=rng.uniform(0, 0.4))
         out.append(s)
+    return out
+
+
+# ----------------------------------------------------------------- attention dynamics
+# Isolates recovery of the attention-gain time course (a, rise tr, decay td) with every
+# other V1 mechanism held at M.DEFAULT (not ground truth) -- the same "one model at a
+# time, generic elsewhere" convention as the dedicated single-parameter fits above.
+ATTN_DEFAULT = dict(a=0.2, tr=0.25, td=1.0)
+ATTN_BOUNDS = dict(a=(-0.5, 1.5), tr=(0.02, 1.5), td=(0.1, 5.0))
+
+
+def core_drive(Ec, Es, Tc, mu=None, sig=None, c50=None, q=None, k=None, tau=None):
+    """(nf,V,NB) features -> (nf,V) attention-free drive. Params default to the single,
+    generic M.DEFAULT value (same scalar for every voxel -- the 'nothing else known' case),
+    but may instead be given as per-voxel (V,) arrays, e.g. plugged in from a prior joint
+    fit on the same data, to isolate attention-dynamics recovery without also forcing a
+    generic-tuning mismatch onto every voxel."""
+    V = Ec.shape[1]
+    d = DEFAULT
+    mu = np.full(V, d['mu']) if mu is None else np.asarray(mu)
+    sig = np.full(V, d['sig']) if sig is None else np.asarray(sig)
+    c50 = np.full(V, d['c50']) if c50 is None else np.asarray(c50)
+    q = np.full(V, d['q']) if q is None else np.asarray(q)
+    k = np.full(V, d['k']) if k is None else np.asarray(k)
+    tau = np.full(V, d['tau']) if tau is None else np.asarray(tau)
+    w = sf_weights(mu, sig)                        # (V, NB)
+    Dc = np.einsum('nvb,vb->nv', Ec, w)
+    Ds = np.einsum('nvb,vb->nv', Es, w)
+    Dt = np.einsum('nvb,vb->nv', Tc, w)
+    num = Dc ** q[None] + tau[None] * Dt ** q[None]
+    den = c50[None] ** q[None] + Dc ** q[None] + k[None] * Ds ** q[None]
+    return (num / den).astype(np.float32)
+
+
+class AttnDynFitter:
+    """Per-voxel fit of (a, tr, td) against a precomputed attention-free 'core' drive and
+    a precomputed event-impulse train (both at 10 Hz); the dynamic attention-gain field is
+    recomputed from (tr, td) on every optimizer step."""
+
+    def __init__(self, runs, free=('a', 'tr', 'td')):
+        # runs: dict(core (nf,V), imp (nf,V), Y (TR,V), Q)
+        self.runs, self.free = runs, list(free)
+        self.edges = np.cumsum([0] + [r['imp'].shape[0] for r in runs])
+
+    def fit_voxel(self, v, fixed, starts):
+        runs = self.runs
+        core = np.concatenate([r['core'][:, v] for r in runs])
+        imp = np.concatenate([r['imp'][:, v] for r in runs])
+        y = np.concatenate([r['Y'][:, v] - r['Q'] @ (r['Q'].T @ r['Y'][:, v]) for r in runs])
+        lo = np.array([ATTN_BOUNDS[k][0] for k in self.free])
+        hi = np.array([ATTN_BOUNDS[k][1] for k in self.free])
+        edges = self.edges
+        h = hrf(0.5, 1.0)
+
+        def pred(P):
+            attn = attention_dynamic(imp[:, None], np.array([P['tr']]), np.array([P['td']]))[:, 0]
+            d = core * (1 + P['a'] * attn)
+            out = []
+            for i, r in enumerate(runs):
+                seg = d[edges[i]:edges[i + 1]]
+                seg = seg[:len(seg) // 5 * 5].reshape(-1, 5).mean(1)
+                out.append(_to_bold(seg, r['Y'].shape[0], r['Q'], h))
+            return np.concatenate(out)
+
+        def res(theta):
+            P = dict(fixed)
+            P.update(zip(self.free, theta))
+            p = pred(P)
+            g = max(p @ y / max(p @ p, 1e-12), 0)
+            return y - g * p
+
+        best = None
+        for s in starts:
+            x0 = np.clip([s[k] for k in self.free], lo + 1e-6, hi - 1e-6)
+            try:
+                r = least_squares(res, x0, bounds=(lo, hi), max_nfev=50, x_scale='jac')
+            except Exception:
+                continue
+            if best is None or r.cost < best.cost:
+                best = r
+        out = dict(fixed)
+        if best is not None:
+            out.update(zip(self.free, best.x))
+        return out
+
+
+def attn_starts(rng, n=4):
+    base = dict(ATTN_DEFAULT)
+    out = [dict(base)]
+    for _ in range(n - 1):
+        out.append(dict(a=rng.uniform(0.0, 0.6), tr=rng.uniform(0.05, 0.8), td=rng.uniform(0.2, 3.0)))
     return out
 
 

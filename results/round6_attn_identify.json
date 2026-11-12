@@ -1,0 +1,35 @@
+{
+ "block_s": 15.0,
+ "tr_fixed": 0.25,
+ "td_grid": [
+  0.2,
+  0.5,
+  1.0,
+  2.0,
+  3.0,
+  4.0,
+  6.0,
+  8.0,
+  10.0,
+  15.0,
+  20.0,
+  30.0,
+  50.0
+ ],
+ "corr": [
+  0.1572636819203209,
+  0.23742275277737573,
+  0.32477610289133324,
+  0.45503433638017055,
+  0.559148472655411,
+  0.641469406161507,
+  0.7500846471588607,
+  0.8077146114694443,
+  0.8358008795866685,
+  0.8441277648088589,
+  0.8179169290119958,
+  0.7502156417915821,
+  0.6518183339979923
+ ],
+ "note": "correlation rises monotonically across the entire biologically plausible range used in gameplay (td 0.4-2.5 s -> corr 0.24-0.46) and only peaks once td approaches the 15 s block length itself (corr 0.84 at td=10-15 s), then falls again as the kernel outlasts the block. A fit to this design would be pulled toward a 10-15 s decay regardless of the true, much shorter value -- and the plateau near that peak (0.80-0.84 for td 8-20 s) means even block-scale decays are not sharply resolved. The design simply cannot tell a transient, event-locked decay from a sustained, block-locked one."
+}

@@ -183,5 +183,69 @@ play (0.66) than 1 h of the reward task (0.50); dedicated optic flow beats play 
 games sample richly, rather than per-parameter efficiency.
 `python run_fair.py data && python run_fair.py fit && python run_fair.py other && python export_fair.py`.
 
+## Round 6: attention dynamics, a ventral/temporal gaze-tolerance test, and one game lever
+
+Three follow-ups (`run_round6.py`), reusing round-5's voxels, cached game logs and band
+energy wherever possible (no re-rendering needed for part A).
+
+**A. Can the *time course* of attention be recovered, not just its gain?** Every V1 voxel
+gets a rise/decay kernel (τ_rise ~ U(0.1,0.5) s, τ_decay ~ U(0.4,2.5) s) applied to
+event-locked (NPC-appear/kill/covert-cue) attention instead of the old fixed box; a new
+`AttnDynFitter` recovers (a, τ_rise, τ_decay) per voxel, other parameters held at a prior
+joint-fit estimate (not ground truth — the same "isolate one mechanism" convention as the
+dedicated fits). Gain is weakly but increasingly recoverable from gameplay (oracle: 0.13 →
+0.17 → 0.21 spearman at 20/40/60 min); the *shape* is not — τ_decay stays ~0.08–0.15 and
+τ_rise is indistinguishable from noise (−0.08 to +0.03) at every duration, oracle or
+realistic. The reason is visible in the ground truth itself: the attention term is only
+~4.5% of the core visual drive's SD (median voxel), a small multiplicative ripple on a much
+larger signal plus comparable measurement noise — more naturalistic event timing can't fix
+a signal that's intrinsically this small relative to noise and to TR/HRF smoothing at the
+sub-2-s scale these kernels live on.
+
+The dedicated attn block design is worse off on principle, not just power: its ground truth
+(`attention_blocks`) has *no temporal shape at all* within a 15 s block, so nothing about it
+can inform a decay constant. Convolving its block-onsets with the same kernel and
+correlating against the true box confirms this analytically — correlation climbs
+monotonically across the entire biologically-plausible range (τ_decay 0.4→2.5 s: r
+0.24→0.46) and only peaks once τ_decay approaches the block length itself (r 0.84 at 10–15
+s), with a broad plateau either side (r 0.80–0.84 for 8–20 s). A fit to this design would be
+pulled toward a 10–15 s decay regardless of the true value, and even that peak isn't sharply
+resolved. Gameplay's irregular timing is the only one of the two designs that could ever see
+transient dynamics — it just doesn't see them well *in this model*, because the effect size
+is small.
+
+**B. Do large, foveal-biased receptive fields buy gaze tolerance?** A new category-selective
+"ventral" population (200 voxels, `boldblaster/ventral.py`) pools game-engine content maps
+(NPC presence, 4 wall-texture identities, floor, ceiling — a toy stand-in for object/scene
+category, via new `content_sink` support in `simulate_run_v2`) through large (σ ≈ 1.5–4+ deg),
+foveally-biased pRFs instead of V1's small ones, with each voxel preferring one category.
+Recovering the 7-way weight vector by per-voxel GLM, at a matched 40 min, the oracle-vs-
+eye-tracker-gaze gap is tiny (preferred-weight spearman 0.33 → 0.31; full-vector correlation
+0.543 → 0.535), versus V1's much larger gap at the *same* 40 min (pSFT peak 0.38 → 0.26,
+computed fresh for this comparison since no prior round used exactly 40 min) — gaze
+measurement error costs V1 six times more spearman than it costs the large-RF population.
+Pairwise regressor correlations stay low (|r| ≤ 0.19) except the mechanically-forced
+floor/ceiling anti-correlation (−0.55); NPC-selectivity in particular shows no inflation from
+the gaze-content confound (people fixate NPCs) at this pooling scale. Absolute recovery is
+still modest at 40 min (r ≈ 0.3–0.5) — category selectivity from gameplay is data-hungry —
+but the gaze-tolerance prediction holds.
+
+**C. One game-measure-improvement lever, tested rather than just proposed.** Of the six
+ideas for narrowing the gap in round 5 (embedding probes in mechanics, adaptive design,
+crosshair-anchored stimuli, stronger attention cues, more response variance, hierarchical
+fitting), the cheapest to test against existing infrastructure was strengthening the covert
+cue: tightening the inter-cue interval from 6–10 s to 3–5 s. It didn't help — attention-gain
+spearman on 1 h of that gameplay (0.20) is no better than the original schedule (0.23),
+plausibly because cues this frequent are hard to space efficiently against an ~8 s
+hemodynamic response (the same event-spacing/collinearity trade-off that limits any
+closely-packed fMRI design) — a reminder that "more cues" isn't free, and that the remaining
+five levers (especially embedding probes directly in mechanics, and adaptive per-session
+design) are likely to matter more than cue frequency alone.
+
+`python run_round6.py pop && python run_round6.py attn_data && python run_round6.py attn_fit
+&& python run_round6.py attn_identify && python run_round6.py vent && python run_round6.py
+lever`. Results JSON: `results_attn.json`, `results_attn_identify.json`, `results_vent.json`,
+`results_lever.json`, `results_v1_match40.json` (the matched-duration V1 comparison for B).
+
 Results JSON for every round is in `results/`; the built report is in `docs/`
 (enable GitHub Pages from `main` / `/docs` to serve it).

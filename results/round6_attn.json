@@ -1,0 +1,122 @@
+{
+ "_diagnostic": {
+  "frac_frames_attn_active": 0.19886444444444445,
+  "median_attn_modulation_frac_of_core_sd": 0.0445002098485361,
+  "median_noise_sd_over_amp": 0.3938821605032628,
+  "note": "the attention term is a few percent of the core visual drive's SD -- a small multiplicative perturbation riding on top of a much larger signal plus comparable measurement noise, independent of event timing richness."
+ },
+ "attn_oracle_20m": {
+  "minutes": 20,
+  "cond": "oracle",
+  "scores": {
+   "a": {
+    "spearman": 0.12528094756608404,
+    "median_abs_err": 0.4644512912155584
+   },
+   "tr": {
+    "spearman": -0.008703439708712924,
+    "median_abs_err": 0.5797871113079509
+   },
+   "td": {
+    "spearman": 0.12075014250181622,
+    "median_abs_err": 1.5270345092328639
+   }
+  },
+  "seconds": 21.3699152469635
+ },
+ "attn_real_20m": {
+  "minutes": 20,
+  "cond": "real",
+  "scores": {
+   "a": {
+    "spearman": 0.06950121668018533,
+    "median_abs_err": 0.3932372605845687
+   },
+   "tr": {
+    "spearman": 0.02594474425038057,
+    "median_abs_err": 0.5241275727118984
+   },
+   "td": {
+    "spearman": 0.109916566841473,
+    "median_abs_err": 1.4440653363594746
+   }
+  },
+  "seconds": 33.757880210876465
+ },
+ "attn_oracle_40m": {
+  "minutes": 40,
+  "cond": "oracle",
+  "scores": {
+   "a": {
+    "spearman": 0.17040589339881554,
+    "median_abs_err": 0.3681992886551264
+   },
+   "tr": {
+    "spearman": -0.07811775686396515,
+    "median_abs_err": 0.5263251173830858
+   },
+   "td": {
+    "spearman": 0.10589095434393715,
+    "median_abs_err": 1.4118288337799623
+   }
+  },
+  "seconds": 53.62017107009888
+ },
+ "attn_real_40m": {
+  "minutes": 40,
+  "cond": "real",
+  "scores": {
+   "a": {
+    "spearman": 0.13871531905910067,
+    "median_abs_err": 0.3231471828886717
+   },
+   "tr": {
+    "spearman": 0.034892832142579364,
+    "median_abs_err": 0.4658883588022893
+   },
+   "td": {
+    "spearman": 0.14760187864330568,
+    "median_abs_err": 1.3776338893864537
+   }
+  },
+  "seconds": 62.13726329803467
+ },
+ "attn_oracle_60m": {
+  "minutes": 60,
+  "cond": "oracle",
+  "scores": {
+   "a": {
+    "spearman": 0.20579339770441893,
+    "median_abs_err": 0.33837271345360387
+   },
+   "tr": {
+    "spearman": -0.07684819574086378,
+    "median_abs_err": 0.418674326904235
+   },
+   "td": {
+    "spearman": 0.0769306411105285,
+    "median_abs_err": 1.3069425028001451
+   }
+  },
+  "seconds": 125.501944065094
+ },
+ "attn_real_60m": {
+  "minutes": 60,
+  "cond": "real",
+  "scores": {
+   "a": {
+    "spearman": 0.1293503261147346,
+    "median_abs_err": 0.2827604480710886
+   },
+   "tr": {
+    "spearman": 0.02485849842776031,
+    "median_abs_err": 0.4658595203742184
+   },
+   "td": {
+    "spearman": 0.05062100690007666,
+    "median_abs_err": 1.3895629314271776
+   }
+  },
+  "seconds": 146.42562627792358
+ }
+}
