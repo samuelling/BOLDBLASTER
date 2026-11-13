@@ -474,6 +474,55 @@
   </div>
 </section>
 
+<section class="bb-sec" id="round7">
+  <div class="bb-sec-head">
+    <div>
+      <p class="bb-num">08 · Round 7</p>
+      <h2 class="bb-h2">Spatiotemporal (CST) pRF: can gameplay separate sustained from transient?</h2>
+      <p class="bb-desc">After Kim/Kupers/Grill-Spector's compressive spatiotemporal pRF: the old instantaneous transient term is replaced by two channels with their own memory — a sustained low-pass of the centre drive (τ<sub>s</sub>) and a transient low-pass of the frame-difference drive (τ<sub>t</sub>), mixed by a per-voxel weight w<sub>s</sub>. A dedicated SEQ-SIM design (two full-field probes, shown together or apart at several gaps) stands in for Kupers' own sequential-vs-simultaneous bar paradigm as the controlled comparison.</p>
+    </div>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
+    <p>The channel-mixing weight (w<sub>s</sub>) is the one piece of this model gameplay gets any traction on at all (oracle gaze: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=20&amp;parameter=ws">—</b> → <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=40&amp;parameter=ws">—</b> → <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=60&amp;parameter=ws">—</b> at 20/40/60 min); both time constants stay low throughout (τ<sub>s</sub> oracle, 60 min: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=60&amp;parameter=taus">—</b>; τ<sub>t</sub>: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=60&amp;parameter=taut">—</b>). The dedicated SEQ-SIM design, run at the same durations, does not rescue this — if anything it does <i>no better</i> than gameplay (w<sub>s</sub>, 60 min: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=seqsim&amp;minutes=60&amp;parameter=ws">—</b>). The likely reason is not a failure of timing control but of duty cycle: the sustained and transient channels are at least as correlated with each other under SEQ-SIM's brief, mostly-blank probes as they are under gameplay's continuous content (<b data-draw="cell" data-source="round7_diagnostic" data-field="corr" data-where="design=Gameplay">—</b> vs <b data-draw="cell" data-source="round7_diagnostic" data-field="corr" data-where="design=Dedicated%20SEQ-SIM">—</b>), so the controlled design buys no extra separation between w<sub>s</sub> and the overall response gain, while paying a real cost in total driven signal.</p>
+  </div></div>
+
+  <div class="bb-grid2">
+    <div class="bb-card">
+      <p class="bb-stat">Channel-mixing weight (w<sub>s</sub>) recovery, gameplay (oracle gaze, eye tracker) versus the dedicated SEQ-SIM design, by duration.</p>
+      <div class="bb-chart" id="r7ws-chart" data-draw="r7ws" data-source="round7" style="min-height: 300px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Spearman r between planted and fitted w<sub>s</sub> (the sustained-channel weight in the two-channel CST drive) at 20/40/60 minutes, for three designs: gameplay under oracle gaze, gameplay under realistic eye-tracker gaze, and a dedicated SEQ-SIM run (two full-field probes, shown together or with a gap, at several gaps). All three isolate the mechanism the same way round 6 isolated attention: mu/sig/c50/q/k come from the existing joint fit, not ground truth, and attention is switched off.</p>
+<h4>How to read it</h4><p>All three lines sit in the same modest band and climb slowly with duration; SEQ-SIM is not systematically above gameplay the way a cleanly-controlled design is supposed to be.</p>
+<h4>Caveats</h4><p>This SEQ-SIM is a simplified, full-field stand-in for Kupers' own retinotopic bar paradigm (chosen so every pRF, at any eccentricity, is driven the same way) — a higher-duty-cycle or longer-probe version might do better; see the diagnostic below.</p>
+</details>
+    </div>
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">Full breakdown: all three CST parameters, all three designs, by duration.</p>
+      <table class="bb-table" id="r7cst-table" data-source="round7" data-row-key="minutes,condition">
+        <thead><tr><th>Min</th><th>Design</th><th>τ<sub>s</sub> r</th><th>τ<sub>t</sub> r</th><th>w<sub>s</sub> r</th></tr></thead>
+        <tbody data-draw="r7csttable"></tbody>
+      </table>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>The same fits as the chart, every parameter and every design, by duration.</p>
+<h4>How to read it</h4><p>τ<sub>s</sub> and τ<sub>t</sub> stay close to zero everywhere; w<sub>s</sub> is the only parameter that climbs meaningfully above zero, and only under gameplay (oracle gaze most of all).</p>
+</details>
+    </div>
+  </div>
+
+  <div class="bb-card" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">Why the controlled design doesn't win: how collinear are the sustained and transient channels, over time, under each design?</p>
+    <table class="bb-table" id="r7diag-table" data-source="round7_diagnostic" data-row-key="design">
+      <thead><tr><th>Design</th><th>Sustained–transient correlation</th></tr></thead>
+      <tbody data-draw="r7diagtable"></tbody>
+    </table>
+    <details class="bb-explain" open><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>A ground-truth check, not a fit: filter the centre drive (sustained channel) and the frame-difference drive (transient channel) at the population-median time constants, under each design's actual visual input, and correlate them over time, per voxel (median across voxels shown). A high correlation means the two channels move together — w<sub>s</sub> (their relative weight) trades off against the overall response gain and becomes hard to pin down, independent of noise or amount of data.</p>
+<h4>How to read it</h4><p>SEQ-SIM's channels are no less collinear than gameplay's — the sequential-vs-simultaneous manipulation, in this full-field, mostly-blank form, doesn't buy the separation Kupers' retinotopic bar version does. Gameplay's continuous, always-on content drives both channels throughout the run, which turns out to cost about as much independence as SEQ-SIM's sparse on/off probes, while delivering far more total driven signal — which is plausibly why gameplay edges SEQ-SIM out on w<sub>s</sub> rather than losing to it.</p>
+<h4>Caveats</h4><p>This diagnostic explains the channel-mixing (w<sub>s</sub>) result; it says nothing about why the time constants themselves (τ<sub>s</sub>, τ<sub>t</sub>) stay low under every design — that looks like the same low-SNR story as round 6's attention time constants, a small-ripple-on-a-big-signal problem rather than a design-identifiability one.</p>
+</details>
+  </div>
+</section>
+
 <footer class="bb-foot" id="methods">
   <details>
     <summary>How the simulation works</summary>

@@ -308,6 +308,142 @@ def attn_starts(rng, n=4):
     return out
 
 
+# ----------------------------------------------------------------- spatiotemporal (CST) pRF
+# Compressive-spatiotemporal extension (after Kim/Kupers/Grill-Spector): the single
+# instantaneous tau*Dt^q term in v1_drive/core_drive is replaced by two parallel channels
+# with their OWN memory -- a sustained channel (causal low-pass of the centre drive Dc,
+# time constant taus) and a transient channel (causal low-pass of the frame-difference
+# drive Dt, time constant taut) -- each compressed by the existing exponent q and mixed by
+# a per-voxel weight ws. Isolates (taus, taut, ws) with every other V1 mechanism held at a
+# plugin or generic value and attention switched off entirely, the same "one model at a
+# time, generic elsewhere" convention as the attention-dynamics block above.
+CST_DEFAULT = dict(taus=0.12, taut=0.08, ws=0.6)
+CST_BOUNDS = dict(taus=(0.02, 0.6), taut=(0.02, 0.6), ws=(0.0, 1.0))
+
+
+def causal_filter(x, tau, fps=FPS, length=3.0):
+    """x: (nf,V) signal; tau: (V,) per-voxel causal single-exponential low-pass time
+    constant (s), unit-area (DC gain 1). Same explicit-tap-loop style as attention_dynamic."""
+    nk = max(2, int(length * fps))
+    t = (np.arange(nk) / fps)[:, None]
+    tau = np.maximum(np.asarray(tau, float), 1e-3)
+    K = np.exp(-t / tau[None, :])
+    K = (K / np.maximum(K.sum(0, keepdims=True), 1e-9)).astype(np.float32)
+    out = np.zeros_like(x)
+    for l in range(nk):
+        if l == 0:
+            out += x * K[0]
+        else:
+            out[l:] += x[:-l] * K[l]
+    return out
+
+
+def core_dcs(Ec, Es, Tc, mu=None, sig=None):
+    """(nf,V,NB) features -> SF-weighted (Dc, Ds, Dt), each (nf,V). Params default to the
+    single generic M.DEFAULT value or may be given as per-voxel (V,) arrays (e.g. a plugin
+    from a prior joint fit), exactly like core_drive's mu/sig."""
+    V = Ec.shape[1]
+    d = DEFAULT
+    mu = np.full(V, d['mu']) if mu is None else np.asarray(mu)
+    sig = np.full(V, d['sig']) if sig is None else np.asarray(sig)
+    w = sf_weights(mu, sig)
+    Dc = np.einsum('nvb,vb->nv', Ec, w)
+    Ds = np.einsum('nvb,vb->nv', Es, w)
+    Dt = np.einsum('nvb,vb->nv', Tc, w)
+    return Dc.astype(np.float32), Ds.astype(np.float32), Dt.astype(np.float32)
+
+
+def cst_combine(Dc, Ds, Dt, c50, q, k, taus, taut, ws):
+    """(Dc,Ds,Dt) (...,V) + per-voxel CST/CRF params (V,) -> attention-free drive (...,V).
+    Two-channel compressive-spatiotemporal combination, replacing the single instantaneous
+    tau*Dt^q term: a sustained channel (low-pass Dc, taus) and a transient channel
+    (low-pass Dt, taut), each compressed by q and mixed by ws, normalized as before."""
+    Sc = causal_filter(Dc, taus)
+    Tt = causal_filter(Dt, taut)
+    num = ws[None] * Sc ** q[None] + (1 - ws[None]) * Tt ** q[None]
+    den = c50[None] ** q[None] + Dc ** q[None] + k[None] * Ds ** q[None]
+    return (num / den).astype(np.float32)
+
+
+def cst_drive(Ec, Es, Tc, mu=None, sig=None, c50=None, q=None, k=None, taus=None, taut=None, ws=None):
+    """(nf,V,NB) features -> (nf,V) attention-free CST drive, ground-truth or plugin
+    params as for core_drive/core_dcs."""
+    V = Ec.shape[1]
+    d, cd = DEFAULT, CST_DEFAULT
+    c50 = np.full(V, d['c50']) if c50 is None else np.asarray(c50)
+    q = np.full(V, d['q']) if q is None else np.asarray(q)
+    k = np.full(V, d['k']) if k is None else np.asarray(k)
+    taus = np.full(V, cd['taus']) if taus is None else np.asarray(taus)
+    taut = np.full(V, cd['taut']) if taut is None else np.asarray(taut)
+    ws = np.full(V, cd['ws']) if ws is None else np.asarray(ws)
+    Dc, Ds, Dt = core_dcs(Ec, Es, Tc, mu, sig)
+    return cst_combine(Dc, Ds, Dt, c50, q, k, taus, taut, ws)
+
+
+class CSTFitter:
+    """Per-voxel fit of (taus, taut, ws) against precomputed (Dc, Ds, Dt) SF-weighted
+    energy streams (10 Hz); c50/q/k come from `fixed` (plugin or M.DEFAULT), attention is
+    switched off. The channel filtering + mixing is recomputed from (taus, taut, ws) on
+    every optimizer step, exactly as attention_dynamic is recomputed in AttnDynFitter."""
+
+    def __init__(self, runs, free=('taus', 'taut', 'ws')):
+        # runs: dict(Dc, Ds, Dt (nf,V), Y (TR,V), Q)
+        self.runs, self.free = runs, list(free)
+        self.edges = np.cumsum([0] + [r['Dc'].shape[0] for r in runs])
+
+    def fit_voxel(self, v, fixed, starts):
+        runs = self.runs
+        Dc = np.concatenate([r['Dc'][:, v] for r in runs])
+        Ds = np.concatenate([r['Ds'][:, v] for r in runs])
+        Dt = np.concatenate([r['Dt'][:, v] for r in runs])
+        y = np.concatenate([r['Y'][:, v] - r['Q'] @ (r['Q'].T @ r['Y'][:, v]) for r in runs])
+        lo = np.array([CST_BOUNDS[k][0] for k in self.free])
+        hi = np.array([CST_BOUNDS[k][1] for k in self.free])
+        edges = self.edges
+        h = hrf(0.5, 1.0)
+        c50v, qv, kv = np.array([fixed['c50']]), np.array([fixed['q']]), np.array([fixed['k']])
+
+        def pred(P):
+            taus, taut = np.array([P['taus']]), np.array([P['taut']])
+            ws = np.array([P['ws']])
+            d = cst_combine(Dc[:, None], Ds[:, None], Dt[:, None], c50v, qv, kv, taus, taut, ws)[:, 0]
+            out = []
+            for i, r in enumerate(runs):
+                seg = d[edges[i]:edges[i + 1]]
+                seg = seg[:len(seg) // 5 * 5].reshape(-1, 5).mean(1)
+                out.append(_to_bold(seg, r['Y'].shape[0], r['Q'], h))
+            return np.concatenate(out)
+
+        def res(theta):
+            P = dict(fixed)
+            P.update(zip(self.free, theta))
+            p = pred(P)
+            g = max(p @ y / max(p @ p, 1e-12), 0)
+            return y - g * p
+
+        best = None
+        for s in starts:
+            x0 = np.clip([s[k] for k in self.free], lo + 1e-6, hi - 1e-6)
+            try:
+                r = least_squares(res, x0, bounds=(lo, hi), max_nfev=50, x_scale='jac')
+            except Exception:
+                continue
+            if best is None or r.cost < best.cost:
+                best = r
+        out = dict(fixed)
+        if best is not None:
+            out.update(zip(self.free, best.x))
+        return out
+
+
+def cst_starts(rng, n=4):
+    base = dict(CST_DEFAULT)
+    out = [dict(base)]
+    for _ in range(n - 1):
+        out.append(dict(taus=rng.uniform(0.03, 0.5), taut=rng.uniform(0.03, 0.5), ws=rng.uniform(0.1, 0.9)))
+    return out
+
+
 # ----------------------------------------------------------------- numerosity
 def num_tuning(N, mu, sig):
     N = np.asarray(N, float)

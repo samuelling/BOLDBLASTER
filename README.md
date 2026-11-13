@@ -247,5 +247,47 @@ design) are likely to matter more than cue frequency alone.
 lever`. Results JSON: `results_attn.json`, `results_attn_identify.json`, `results_vent.json`,
 `results_lever.json`, `results_v1_match40.json` (the matched-duration V1 comparison for B).
 
+## Round 7: spatiotemporal (CST) pRF — can gameplay separate sustained from transient?
+
+Following Kim/Kupers/Grill-Spector's compressive spatiotemporal pRF, the V1 drive's old
+instantaneous transient term is replaced by two memory channels: a sustained low-pass of the
+centre drive (time constant τ_s) and a transient low-pass of the frame-difference drive
+(τ_t), mixed by a per-voxel weight w_s, each still passing through the existing compressive
+nonlinearity (`boldblaster/models.py`: `causal_filter`, `core_dcs`, `cst_combine`,
+`cst_drive`, `CSTFitter`). As with round 6's attention isolation, mu/sig/c50/q/k come from
+the existing joint fit (or generic defaults for SEQ-SIM), not ground truth, and attention is
+switched off — this test is about the new mechanism alone.
+
+A dedicated SEQ-SIM design (`boldblaster/controlled.py`: `run_seqsim_experiment`) stands in
+for Kupers' own sequential-vs-simultaneous retinotopic-bar paradigm: two full-field noise
+flashes, 0.35 s each, shown either together or offset by a gap (0, 0.15, 0.3, 0.6 s). The
+first version of this design used two small, fixed-location disc probes instead — a mistake
+worth recording: with pRFs scattered across 0–12° eccentricity and all polar angles, two
+small apertures only drive the handful of voxels whose pRF happens to overlap them, starving
+the rest of signal and producing spuriously near-zero recoverability unrelated to the actual
+timing question. Switching to full-field probes fixed that, and is the version reported here.
+
+Even full-field, the dedicated design does not win. Across 20/40/60 minutes, the
+channel-mixing weight w_s is the only one of the three parameters gameplay (oracle gaze) gets
+real traction on at all, and SEQ-SIM does no better — if anything slightly worse — at every
+duration; both time constants (τ_s, τ_t) stay indistinguishable from noise under every
+design. A ground-truth diagnostic (no fitting) explains why: filtering the sustained and
+transient drive channels at the population-median time constants and correlating them over
+time shows SEQ-SIM's channels are *no less collinear* than gameplay's (median voxel
+correlation comparable under both). The sequential-vs-simultaneous manipulation, in this
+full-field, mostly-blank form, doesn't buy the channel separation Kupers' retinotopic bar
+version does — its low duty cycle (brief probes against a mostly-blank screen) plausibly
+costs more total driven signal than its clean timing control buys back, while gameplay's
+continuous, always-on content drives both channels throughout the run. This is a genuine,
+surprising result, reported as found rather than adjusted to fit the original hypothesis
+that a controlled design should win on temporal identifiability; it's also only a test of
+this specific full-field stand-in, not of Kupers' actual retinotopic-bar version, which could
+behave differently.
+
+`python run_round7.py pop && python run_round7.py cst_data && python run_round7.py cst_fit
+&& python run_round7.py seqsim_data && python run_round7.py seqsim_fit && python
+run_round7.py diagnostic`. Results JSON: `results_cst.json`, `results_cst_seqsim.json`,
+`results_cst_diagnostic.json`.
+
 Results JSON for every round is in `results/`; the built report is in `docs/`
 (enable GitHub Pages from `main` / `/docs` to serve it).

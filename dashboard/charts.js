@@ -365,3 +365,43 @@ dash.draw('r6gaze', (el) => {
     gg.append('text').attr('x', 9).text(t);
   });
 });
+
+// ---------------------------------------------------------------- round 7: CST channel-weight (ws) recovery
+dash.draw('r7ws', (el) => {
+  if (!BB.ready(el, ['round7'])) return;
+  el.replaceChildren();
+  const rows = dash.data('round7').data;
+  const series = { oracle: [], real: [], seqsim: [] };
+  for (const cond of Object.keys(series)) {
+    for (const mins of [20, 40, 60]) {
+      const r = rows.find((x) => x.condition === cond && String(x.minutes) === String(mins) && x.parameter === 'ws');
+      series[cond].push({ m: mins, v: r ? +r.spearman : NaN });
+    }
+  }
+  const H = 300, m = { l: 40, r: 16, t: 24, b: 36 };
+  const { s, w } = BB.svg(el, H, 'Spearman r for the sustained-channel weight ws, by duration, gameplay (oracle, eye tracker) versus dedicated SEQ-SIM');
+  const x = d3.scaleLinear().domain([15, 65]).range([m.l, w - m.r]);
+  const allV = Object.values(series).flat().map((p) => p.v).filter(isFinite);
+  const y = d3.scaleLinear().domain([Math.min(0, d3.min(allV)), Math.max(0.1, d3.max(allV)) * 1.1]).range([H - m.b, m.t]);
+  BB.grid(s.append('g'), y, y.ticks(5), m.l, w - m.r, true);
+  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues([20, 40, 60]).tickFormat((d) => d + ' min').tickSizeOuter(0)));
+  BB.styleAxis(s.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSizeOuter(0)));
+  const COND = [['oracle', 'Gameplay, oracle gaze', BB.color('dedicated')], ['real', 'Gameplay, eye tracker', BB.color('long')],
+    ['seqsim', 'Dedicated SEQ-SIM', BB.color('levers')]];
+  const tip = BB.tip(el);
+  COND.forEach(([k, label, c]) => {
+    const pts = series[k].filter((p) => isFinite(p.v));
+    s.append('path').datum(pts).attr('d', d3.line().x((p) => x(p.m)).y((p) => y(p.v)))
+      .style('fill', 'none').style('stroke', c).style('stroke-width', 2.5);
+    s.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (p) => x(p.m)).attr('cy', (p) => y(p.v)).attr('r', 5)
+      .style('fill', c).style('stroke', 'var(--color-panel)').style('stroke-width', 2)
+      .on('pointermove', (evt, p) => tip.show(evt, [`${label}, ${p.m} min`, `r = ${BB.f2(p.v)}`]))
+      .on('pointerleave', () => tip.hide());
+  });
+  const lg = s.append('g').attr('transform', `translate(${m.l},${m.t - 16})`);
+  COND.forEach(([k, label, c], i) => {
+    const gg = lg.append('g').attr('transform', `translate(${i * 160},0)`);
+    gg.append('circle').attr('r', 4.5).attr('cy', -4).style('fill', c);
+    gg.append('text').attr('x', 9).text(label);
+  });
+});

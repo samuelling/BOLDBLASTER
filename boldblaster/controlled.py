@@ -155,6 +155,84 @@ def flow_design(seed, duration=300.0):
     return fwd, yaw
 
 
+# ----------------------------------------------------------------- SEQ-SIM (CST)
+# Mirrors Kim/Kupers' real-data paradigm that dissociates sustained from transient
+# temporal summation: two brief full-field contrast probes (A, B; independent noise
+# samples) are each shown for a fixed `probe` duration, either SIMULTANEOUSLY (one
+# combined onset/offset -- A and B's presentations coincide exactly, so a pooling
+# population sees a single transient) or SEQUENTIALLY (A, then a gap of `soa`, then B --
+# two separate onsets/offsets) -- varying only WHEN the two probes occur, not how much
+# contrast energy appears or where. Full-field (unlike a spatially localized probe pair)
+# so every pRF, whatever its eccentricity or polar angle, is driven the same way; a
+# population's sustained channel integrates both probes into roughly the same total
+# response regardless of order, while its transient channel fires once per onset/offset
+# it actually sees, so SEQ-SIM is the controlled, fair counterpart to gameplay's
+# uncontrolled transient timing.
+SEQSIM_PROBE = 0.35
+SEQSIM_SOAS = (0.0, 0.15, 0.3, 0.6)
+SEQSIM_OFF = 1.2
+
+
+def seqsim_trials(rng, duration, probe=SEQSIM_PROBE, soas=SEQSIM_SOAS, off=SEQSIM_OFF):
+    """List of (t0, mode, soa): mode 0 = SEQ, 1 = SIM. Conditions (mode x soa, 2*len(soas)
+    of them) cycle through random permutations, as trial_schedule does for fixed-length
+    blocks -- here each condition's own total trial length differs (SIM = probe; SEQ =
+    2*probe + soa), so the schedule is built directly rather than reusing trial_schedule."""
+    conds = [(m, s) for m in (0, 1) for s in soas]
+    trial_len = [probe if m == 1 else 2 * probe + s for m, s in conds]
+    t, order, trials = 0.0, [], []
+    while True:
+        if not order:
+            order = list(rng.permutation(len(conds)))
+        c = order.pop()
+        tl = trial_len[c]
+        if t + tl > duration - off:
+            break
+        m, s = conds[c]
+        trials.append((t, m, s))
+        t += tl + off
+    return trials
+
+
+def run_seqsim_experiment(seed, duration=300.0, frame_sink=None, probe=SEQSIM_PROBE,
+                          soas=SEQSIM_SOAS, off=SEQSIM_OFF):
+    rng = np.random.default_rng(seed)
+    nf = int(duration * FPS)
+    gaze = fixation_gaze(rng, nf)
+    trials = seqsim_trials(rng, duration, probe, soas, off)
+    on1, on2 = np.zeros(nf, bool), np.zeros(nf, bool)      # on1: first probe; on2: second
+    cond = np.full(nf, -1, int)
+    for t0, m, s in trials:
+        f0 = int(round(t0 * FPS))
+        f1 = int(round((t0 + probe) * FPS))
+        ci = soas.index(s) + (len(soas) if m == 1 else 0)
+        on1[f0:f1] = True
+        if m == 1:                     # SIM: A and B's onsets coincide -- one transient
+            on2[f0:f1] = True
+            cond[f0:f1] = ci
+        else:                          # SEQ: B follows A after the gap `s`
+            fb0 = int(round((t0 + probe + s) * FPS))
+            fb1 = int(round((t0 + 2 * probe + s) * FPS))
+            on2[fb0:fb1] = True
+            cond[f0:fb1] = ci
+    design = dict(kind='seqsim', trials=np.array(trials, np.float32), probe=probe,
+                 soas=np.array(soas), cond=cond)
+    buf, cur, active, last_active = [], None, False, False
+    for f in range(nf):
+        active = on1[f] or on2[f]
+        if active and (cur is None or not last_active or f % 2 == 0):
+            cur = noise(rng, 'pink', rms=0.5 * RMS_FULL)
+        last_active = active
+        img = cur.copy() if active else np.full((H, W), 0.5, np.float32)
+        img[FIX] = 0.25
+        buf.append(img)
+        if len(buf) == 50 or f == nf - 1:
+            if frame_sink is not None:
+                frame_sink(np.stack(buf))
+            buf = []
+    return dict(gaze=gaze, design=design, events=np.zeros((0, 3)))
+
+
 def reward_design(seed, duration=300.0):
     """Returns shots-like array (t_outcome, p, outcome, 0, 0)."""
     rng = np.random.default_rng(seed)

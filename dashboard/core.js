@@ -388,3 +388,32 @@ dash.draw('r6levertable', (tb) => {
     tb.appendChild(tr);
   }
 });
+
+// ---------------------------------------------------------------- round 7: spatiotemporal (CST) pRF
+dash.draw('r7csttable', (tb) => {
+  const d = dash.data('round7');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  const rows = d.data;
+  const get = (cond, mins, p) => { const r = rows.find((x) => x.condition === cond && String(x.minutes) === String(mins) && x.parameter === p); return r ? BB.f2(+r.spearman) : '—'; };
+  const LAB = { oracle: 'Gameplay, oracle gaze', real: 'Gameplay, eye tracker', seqsim: 'Dedicated SEQ-SIM' };
+  for (const mins of [20, 40, 60]) for (const cond of ['oracle', 'real', 'seqsim']) {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', `${mins},${cond}`);
+    tr.append(td(String(mins), true), td(LAB[cond]), td(get(cond, mins, 'taus'), true),
+      td(get(cond, mins, 'taut'), true), td(get(cond, mins, 'ws'), true));
+    tb.appendChild(tr);
+  }
+});
+
+dash.draw('r7diagtable', (tb) => {
+  const d = dash.data('round7_diagnostic');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  for (const r of d.data) {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', encodeURIComponent(r.design));
+    tr.append(td(r.design), td(BB.f2(+r.corr), true));
+    tb.appendChild(tr);
+  }
+});
