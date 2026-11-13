@@ -309,3 +309,82 @@ dash.draw('noisetable', (tb) => {
     tb.appendChild(tr);
   }
 });
+
+// ---------------------------------------------------------------- round 6: attention dynamics, ventral gaze tolerance, cue lever
+const R6 = (rows) => (part, where) => rows.filter((r) => r.part === part && Object.keys(where || {}).every((k) => String(r[k]) === String(where[k])));
+
+dash.draw('r6attntable', (tb) => {
+  const d = dash.data('round6');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  const by = R6(d.data);
+  for (const mins of [20, 40, 60]) {
+    const o = by('attn', { condition: 'oracle', minutes: mins });
+    const re = by('attn', { condition: 'real', minutes: mins });
+    const get = (rows, p) => { const r = rows.find((x) => x.parameter === p); return r ? BB.f2(+r.spearman) : '—'; };
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', String(mins));
+    tr.append(td(String(mins), true), td(get(o, 'a'), true), td(get(re, 'a'), true), td(get(o, 'tr'), true),
+      td(get(re, 'tr'), true), td(get(o, 'td'), true), td(get(re, 'td'), true));
+    tb.appendChild(tr);
+  }
+});
+
+dash.draw('r6venttable', (tb) => {
+  const d = dash.data('round6');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  const by = R6(d.data);
+  for (const mins of [10, 20, 40]) for (const [cond, lab] of [['oracle', 'Oracle gaze+pRF'], ['eyetracker', 'Eye tracker']]) {
+    const rows = by('vent', { condition: cond, minutes: mins });
+    const get = (p) => { const r = rows.find((x) => x.parameter === p); return r ? BB.f2(+r.spearman) : '—'; };
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', `${mins},${cond}`);
+    tr.append(td(String(mins), true), td(lab), td(get('pref_weight'), true), td(get('full_vector_corr'), true), td(get('pref_category_frac'), true));
+    tb.appendChild(tr);
+  }
+});
+
+dash.calc('r6gap', {
+  title: 'Gaze-measurement cost at matched 40 minutes, V1 vs the large-RF ventral population',
+  description: 'Spearman r under oracle gaze/pRFs minus r under realistic eye-tracker gaze, for the headline parameter of each population, both scored at 40 minutes.',
+  inputs: ['round6'],
+  fn: (round6) => {
+    const get = (part, where) => { const r = round6.find((x) => x.part === part && Object.keys(where).every((k) => String(x[k]) === String(where[k]))); return r ? +r.spearman : NaN; };
+    const v1o = get('v1match40', { condition: 'oracle', parameter: 'mu' }), v1r = get('v1match40', { condition: 'realistic', parameter: 'mu' });
+    const vo = get('vent', { condition: 'oracle', minutes: 40, parameter: 'pref_weight' }), vr = get('vent', { condition: 'eyetracker', minutes: 40, parameter: 'pref_weight' });
+    return [
+      { population: 'V1 (pSFT peak)', oracle_r: v1o, realistic_r: v1r, gap: v1o - v1r },
+      { population: 'Ventral (preferred category)', oracle_r: vo, realistic_r: vr, gap: vo - vr },
+    ];
+  },
+});
+dash.draw('r6gaptable', (tb) => {
+  const c = dash.data('r6gap');
+  tb.replaceChildren();
+  if (c.status !== 'ok' || !c.data) return;
+  for (const r of c.data) {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', encodeURIComponent(r.population));
+    tr.append(td(r.population), td(BB.f2(r.oracle_r), true), td(BB.f2(r.realistic_r), true), td(BB.f2(r.gap), true));
+    tb.appendChild(tr);
+  }
+});
+
+dash.draw('r6levertable', (tb) => {
+  const d = dash.data('round6');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  const by = R6(d.data);
+  const lev = by('lever', { design: 'lever_cue_1h' }), base = by('lever', { design: 'levers_1h' });
+  for (const p of BB.V1) {
+    const l = lev.find((x) => x.parameter === p), b = base.find((x) => x.parameter === p);
+    if (!l || !b) continue;
+    const diff = +l.spearman - +b.spearman;
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', p);
+    tr.append(td(l.parameter_label), td(BB.f2(+l.spearman), true), td(BB.f2(+b.spearman), true),
+      td((diff > 0 ? '+' : '') + BB.f2(diff), true));
+    tb.appendChild(tr);
+  }
+});

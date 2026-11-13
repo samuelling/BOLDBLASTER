@@ -284,3 +284,84 @@ dash.draw('scantime', (el) => {
       `r = ${BB.f2(p.r)}` + (isFinite(p.lo) ? `  [${BB.f2(p.lo)}, ${BB.f2(p.hi)}]` : ''), `${fmt(p.m)} of data · ${+p.row.n_voxels} voxels`]))
     .on('pointerleave', () => tip.hide());
 });
+
+// ---------------------------------------------------------------- round 6a: dedicated block design can't identify decay time
+dash.draw('r6identify', (el) => {
+  if (!BB.ready(el, ['round6_identify'])) return;
+  el.replaceChildren();
+  const pts = dash.data('round6_identify').data.map((r) => ({ td: +r.td, corr: +r.corr })).sort((a, b) => a.td - b.td);
+  const H = 300, m = { l: 40, r: 16, t: 18, b: 36 };
+  const { s, w } = BB.svg(el, H, 'Correlation between the fitted and true decay time, against the true decay time, for the dedicated block design');
+  const x = d3.scaleLog().domain([0.2, 50]).range([m.l, w - m.r]);
+  const y = d3.scaleLinear().domain([0, 1]).range([H - m.b, m.t]);
+  BB.grid(s.append('g'), y, y.ticks(5), m.l, w - m.r, true);
+  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(6, '~g').tickSizeOuter(0)));
+  BB.styleAxis(s.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSizeOuter(0)));
+  s.append('text').attr('x', w - m.r).attr('y', H - 4).attr('text-anchor', 'end').text('decay time tau_decay, seconds (log)');
+  s.append('text').attr('transform', `translate(11,${(m.t + H - m.b) / 2}) rotate(-90)`).attr('text-anchor', 'middle').text('correlation with truth');
+  // shaded band: the biologically-plausible range actually used in the gameplay fits (0.4-2.5 s)
+  s.insert('rect', ':first-child').attr('x', x(0.4)).attr('width', x(2.5) - x(0.4)).attr('y', m.t).attr('height', H - m.t - m.b)
+    .style('fill', BB.color('game')).style('opacity', 0.1);
+  s.append('text').attr('x', (x(0.4) + x(2.5)) / 2).attr('y', m.t - 4).attr('text-anchor', 'middle').text('gameplay range');
+  // dashed vertical: the dedicated block length (15 s), where the curve peaks
+  s.append('line').attr('x1', x(15)).attr('x2', x(15)).attr('y1', m.t).attr('y2', H - m.b)
+    .style('stroke', 'var(--cds-chart-axis)').style('stroke-dasharray', '3 4');
+  s.append('text').attr('x', x(15) + 4).attr('y', m.t + 10).text('block length (15 s)');
+  s.append('path').datum(pts).attr('d', d3.line().x((p) => x(p.td)).y((p) => y(p.corr)))
+    .style('fill', 'none').style('stroke', BB.color('dedicated')).style('stroke-width', 2.5);
+  const tip = BB.tip(el);
+  s.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (p) => x(p.td)).attr('cy', (p) => y(p.corr)).attr('r', 5)
+    .style('fill', BB.color('dedicated')).style('stroke', 'var(--color-panel)').style('stroke-width', 2)
+    .on('pointermove', (evt, p) => tip.show(evt, [`True decay time ${p.td} s`, `Correlation with truth: ${BB.f2(p.corr)}`]))
+    .on('pointerleave', () => tip.hide());
+});
+
+// ---------------------------------------------------------------- round 6b: ventral gaze tolerance vs V1, across duration
+dash.draw('r6gaze', (el) => {
+  if (!BB.ready(el, ['round6'])) return;
+  el.replaceChildren();
+  const rows = dash.data('round6').data;
+  const by = (part, where) => rows.filter((r) => r.part === part && Object.keys(where).every((k) => String(r[k]) === String(where[k])));
+  const vpts = [10, 20, 40].map((m) => ({
+    m,
+    oracle: +(by('vent', { condition: 'oracle', minutes: m, parameter: 'pref_weight' })[0] || {}).spearman,
+    real: +(by('vent', { condition: 'eyetracker', minutes: m, parameter: 'pref_weight' })[0] || {}).spearman,
+  }));
+  const v1 = {
+    oracle: +(by('v1match40', { condition: 'oracle', parameter: 'mu' })[0] || {}).spearman,
+    real: +(by('v1match40', { condition: 'realistic', parameter: 'mu' })[0] || {}).spearman,
+  };
+  const H = 300, m = { l: 40, r: 70, t: 18, b: 36 };
+  const { s, w } = BB.svg(el, H, 'Spearman r for oracle versus realistic gaze, ventral population across duration and V1 at a matched 40 minutes');
+  const x = d3.scaleLinear().domain([8, 44]).range([m.l, w - m.r]);
+  const y = d3.scaleLinear().domain([0, 0.65]).range([H - m.b, m.t]);
+  BB.grid(s.append('g'), y, y.ticks(5), m.l, w - m.r, true);
+  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues([10, 20, 40]).tickFormat((d) => d + ' min').tickSizeOuter(0)));
+  BB.styleAxis(s.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSizeOuter(0)));
+  const co = BB.color('dedicated'), cr = BB.color('long');
+  const line = (k, c) => s.append('path').datum(vpts).attr('d', d3.line().x((p) => x(p.m)).y((p) => y(p[k])))
+    .style('fill', 'none').style('stroke', c).style('stroke-width', 2.5);
+  line('oracle', co); line('real', cr);
+  const tip = BB.tip(el);
+  ['oracle', 'real'].forEach((k) => {
+    s.append('g').selectAll('circle').data(vpts).join('circle').attr('cx', (p) => x(p.m)).attr('cy', (p) => y(p[k])).attr('r', 5)
+      .style('fill', k === 'oracle' ? co : cr).style('stroke', 'var(--color-panel)').style('stroke-width', 2)
+      .on('pointermove', (evt, p) => tip.show(evt, [`Ventral, ${k === 'oracle' ? 'oracle gaze+pRF' : 'eye tracker'}, ${p.m} min`, `r = ${BB.f2(p[k])}`]))
+      .on('pointerleave', () => tip.hide());
+  });
+  // V1 at 40 min: two isolated points, offset slightly right, for a matched comparison
+  const vx = x(40) + 14;
+  [['oracle', co], ['real', cr]].forEach(([k, c]) => {
+    s.append('circle').attr('cx', vx).attr('cy', y(v1[k])).attr('r', 5).attr('stroke-dasharray', '1 1')
+      .style('fill', 'none').style('stroke', c).style('stroke-width', 2)
+      .on('pointermove', (evt) => tip.show(evt, [`V1 pSFT peak, ${k === 'oracle' ? 'oracle gaze+pRF' : 'eye tracker'}, 40 min`, `r = ${BB.f2(v1[k])}`]))
+      .on('pointerleave', () => tip.hide());
+  });
+  s.append('text').attr('x', vx + 10).attr('y', (y(v1.oracle) + y(v1.real)) / 2).attr('dy', '0.32em').text('V1 (40 min)');
+  const lg = s.append('g').attr('transform', `translate(${m.l},${m.t - 2})`);
+  [['Oracle gaze+pRF', co], ['Realistic gaze', cr]].forEach(([t, c], i) => {
+    const gg = lg.append('g').attr('transform', `translate(${i * 150},0)`);
+    gg.append('circle').attr('r', 4.5).attr('cy', -4).style('fill', c);
+    gg.append('text').attr('x', 9).text(t);
+  });
+});

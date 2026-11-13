@@ -396,6 +396,84 @@
   </div>
 </section>
 
+<section class="bb-sec" id="round6">
+  <div class="bb-sec-head">
+    <div>
+      <p class="bb-num">07 · Round 6</p>
+      <h2 class="bb-h2">Attention dynamics, ventral gaze tolerance, and one game lever</h2>
+      <p class="bb-desc">Three follow-ups on the round-5 baseline: can gameplay recover the time course (not just the gain) of attention; do large, foveally-biased receptive fields buy gaze tolerance; and does tightening one game cue actually help.</p>
+    </div>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
+    <p>Attention <i>gain</i> is weakly recoverable from gameplay and improves with duration (oracle gaze: <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=attn&amp;condition=oracle&amp;minutes=20&amp;parameter=a">—</b> → <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=attn&amp;condition=oracle&amp;minutes=40&amp;parameter=a">—</b> → <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=attn&amp;condition=oracle&amp;minutes=60&amp;parameter=a">—</b> at 20/40/60 min), but its rise and decay time constants are not: the attention term is only a few percent of the core visual drive's size, too small a ripple for its shape to come through. The dedicated block design is worse off on principle, not just power: a block has no temporal shape inside it for a decay time to show up in. A large, foveally-biased ventral population loses only <b data-draw="cell" data-source="r6gap" data-field="gap" data-where="population=Ventral%20(preferred%20category)">—</b> Spearman r to realistic eye-tracker gaze at 40 minutes, against <b data-draw="cell" data-source="r6gap" data-field="gap" data-where="population=V1%20(pSFT%20peak)">—</b> for V1 at the same duration — gaze tolerance does scale with receptive-field size, as hypothesized. Tightening the covert cue's spacing (6–10 s → 3–5 s) did not help attention-gain recovery (<b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=lever&amp;design=lever_cue_1h&amp;parameter=a">—</b> versus <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=lever&amp;design=levers_1h&amp;parameter=a">—</b> for the original schedule), plausibly an fMRI design-efficiency cost of packing events too close together.</p>
+  </div></div>
+
+  <div class="bb-grid2">
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">A · Attention-dynamics kernel fit from gameplay: gain (a), rise time and decay time, oracle gaze versus eye tracker.</p>
+      <table class="bb-table" id="r6attn-table" data-source="round6" data-row-key="minutes">
+        <thead><tr><th>Min</th><th>Gain, oracle</th><th>Gain, eye tracker</th><th>Rise τ, oracle</th><th>Rise τ, eye tracker</th><th>Decay τ, oracle</th><th>Decay τ, eye tracker</th></tr></thead>
+        <tbody data-draw="r6attntable"></tbody>
+      </table>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Spearman r between planted and fitted values for a per-voxel rise/decay attention kernel (replacing round 2's fixed-duration box) fitted to event-locked attention at NPC appearances, kills and covert cues, at 20/40/60 min of gameplay. Other V1 parameters are held at a prior joint-fit estimate, not ground truth, isolating this one mechanism.</p>
+<h4>How to read it</h4><p>Gain climbs gently with duration; rise and decay stay near zero at every duration and condition.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>The attention term is only a few percent of the core drive's SD (median voxel) — a small multiplicative ripple riding on a much larger signal plus comparable measurement noise. That is a genuine low-SNR finding, confirmed by comparing the achieved fit against plugging in the true (a, rise, decay) into the same mismatched core: both give nearly the same prediction correlation, meaning the ridge is flat (non-identifiable), not under-optimized.</p></div>
+<h4>Caveats</h4><p>Gameplay's irregular event timing is the one of the two designs that could in principle see transient dynamics — it just doesn't see them well in this model, because the effect size is small, not because events are too regular.</p>
+</details>
+    </div>
+    <div class="bb-card">
+      <p class="bb-stat">The dedicated block design cannot identify decay time at all: correlation between a fitted and the true decay time, analytically, as a function of the true decay time.</p>
+      <div class="bb-chart" id="r6identify-chart" data-draw="r6identify" data-source="round6_identify" style="min-height: 300px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>The dedicated attention task's ground truth is a flat 15-second block with no temporal shape inside it. Convolving a decay kernel against that block's onsets and correlating against the true box, across a grid of decay times, shows what a fit to this design alone could ever recover — no noisy per-voxel optimization needed.</p>
+<h4>How to read it</h4><p>Correlation climbs across the entire biologically plausible range used in the gameplay fits (shaded) and only peaks once the decay time approaches the 15 s block length itself, then falls as the kernel outlasts the block. A fit to this design would be pulled toward a 10–15 s decay regardless of the true, much shorter value, and the broad plateau near the peak means even block-scale decays are not sharply resolved.</p>
+<h4>Caveats</h4><p>This is the design's ceiling, not a fitted result: it says what information is there to find, independent of noise or optimizer behavior.</p>
+</details>
+    </div>
+  </div>
+
+  <div class="bb-grid2" style="margin-top: var(--cds-gap-md)">
+    <div class="bb-card">
+      <p class="bb-stat">B · Large receptive fields buy gaze tolerance: a category-selective ventral population (200 voxels, large foveally-biased pRFs) versus V1 at a matched 40 minutes.</p>
+      <div class="bb-chart" id="r6gaze-chart" data-draw="r6gaze" data-source="round6" style="min-height: 300px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>A new population pools game-engine content maps (NPC presence, four wall textures, floor, ceiling — a toy stand-in for object/scene category) through large (σ ≈ 1.5–4°+), foveally-biased pRFs, one preferred category per voxel. Spearman r for the preferred-category weight, oracle gaze+pRFs versus realistic eye-tracker gaze, at 10/20/40 minutes; V1's pSFT peak at the same 40 minutes (round 5's game-fit machinery, freshly matched to 40 min) is plotted alongside for scale.</p>
+<h4>How to read it</h4><p>The gap between the two ventral lines barely moves with more data; the gap between V1's two isolated points is far larger. Gaze-measurement error costs the large-RF population much less than it costs V1.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Absolute recovery is still modest at 40 min (r ≈ 0.3–0.5): category selectivity from gameplay is data-hungry. The claim here is about the <i>gap</i> between oracle and realistic gaze, not the absolute level.</p></div>
+<h4>Caveats</h4><p>Pairwise regressor correlations among the seven content channels stay low (|r| ≤ 0.2) except a mechanically forced floor/ceiling anti-correlation; NPC selectivity shows no inflation from the gaze–content confound (people fixate NPCs) at this pooling scale.</p>
+</details>
+    </div>
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">Gap in Spearman r between oracle and realistic gaze, matched at 40 minutes.</p>
+      <table class="bb-table" id="r6gap-table" data-source="r6gap" data-row-key="population">
+        <thead><tr><th>Population</th><th>Oracle r</th><th>Realistic r</th><th>Gap</th></tr></thead>
+        <tbody data-draw="r6gaptable"></tbody>
+      </table>
+      <p class="bb-stat" style="margin-top: var(--cds-gap-md)">Full ventral numbers by duration and condition.</p>
+      <div class="bb-tablewrap">
+      <table class="bb-table" id="r6vent-table" data-row-key="minutes,condition">
+        <thead><tr><th>Min</th><th>Condition</th><th>Pref-weight r</th><th>Full-vector r</th><th>Frac. correct category</th></tr></thead>
+        <tbody data-draw="r6venttable" data-source="round6"></tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="bb-card bb-tablewrap" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">C · One game-measure lever, tested: tightening the covert-attention cue's spacing (6–10 s → 3–5 s), one hour of gameplay.</p>
+    <table class="bb-table" id="r6lever-table" data-source="round6" data-row-key="parameter">
+      <thead><tr><th>Parameter</th><th>Tightened cue</th><th>Original cue</th><th>Δ r</th></tr></thead>
+      <tbody data-draw="r6levertable"></tbody>
+    </table>
+    <details class="bb-explain" open><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Of six ideas for narrowing the round-5 gap (embedding probes in mechanics, adaptive design, crosshair-anchored stimuli, stronger attention cues, more response variance, hierarchical fitting), this tests the cheapest against existing infrastructure: a tighter covert-cue schedule.</p>
+<h4>How to read it</h4><p>Δr is tightened minus original; a negative value anywhere means the lever did not help that parameter.</p>
+<h4>Caveats</h4><p>The likely cause is a design-efficiency cost: cues this close together are hard to space well against an ~8 s hemodynamic response, the same event-spacing/collinearity trade-off that limits any closely packed fMRI design. The other five levers, especially embedding probes directly in mechanics and adaptive per-session design, remain untested and are likely to matter more than cue frequency alone.</p>
+</details>
+  </div>
+</section>
+
 <footer class="bb-foot" id="methods">
   <details>
     <summary>How the simulation works</summary>
