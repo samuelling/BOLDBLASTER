@@ -405,3 +405,79 @@ dash.draw('r7ws', (el) => {
     gg.append('text').attr('x', 9).text(label);
   });
 });
+
+// ---------------------------------------------------------------- round 8: Betamax vs the raycaster, V1 recovery
+dash.draw('r8v1', (el) => {
+  if (!BB.ready(el, ['round8_v1'])) return;
+  el.replaceChildren();
+  const all = dash.data('round8_v1').data;
+  const mins = d3.max(all.filter((r) => all.some((q) => q.game === 'betamax' && +q.minutes === +r.minutes)), (r) => +r.minutes);
+  const rows = all.filter((r) => +r.minutes === mins);
+  const order = ['mu', 'sig', 'c50_eff', 'q', 'k', 'tau', 'a'];
+  const lab = (p) => (rows.find((r) => r.parameter === p) || {}).parameter_label || p;
+  const get = (g, c, p) => { const r = rows.find((x) => x.game === g && x.condition === c && x.parameter === p); return r ? +r.spearman : NaN; };
+  const cRC = BB.color('game'), cBM = dash.colors[0];
+  const rowH = 30, top = 52, bottom = 30;
+  const H = top + bottom + order.length * rowH;
+  const { s, w } = BB.svg(el, H, `Spearman r per V1 parameter at a matched ${mins} minutes, Betamax versus the raycaster, realistic and oracle gaze`);
+  const lw = Math.min(BB.textWidth(s, order.map(lab)) + 14, w * 0.4);
+  const x = d3.scaleLinear().domain([Math.min(-0.1, d3.min(rows, (r) => +r.spearman) - 0.05), 1]).range([lw, w - 16]);
+  const y = (i) => top + i * rowH + rowH / 2;
+  BB.grid(s.append('g'), x, x.ticks(5), top - 6, H - bottom + 4, false);
+  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - bottom + 4})`).call(d3.axisBottom(x).ticks(5).tickSizeOuter(0)));
+  s.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', top - 6).attr('y2', H - bottom + 4).style('stroke', 'var(--cds-chart-axis)');
+  const tip = BB.tip(el);
+  const MK = [['raycaster', 'realistic', cRC, true, 'Raycaster, eye tracker'], ['betamax', 'realistic', cBM, true, 'Betamax, eye tracker'],
+    ['raycaster', 'oracle', cRC, false, 'Raycaster, oracle gaze'], ['betamax', 'oracle', cBM, false, 'Betamax, oracle gaze']];
+  order.forEach((p, i) => {
+    const g = s.append('g').attr('transform', `translate(0,${y(i)})`);
+    g.append('text').attr('class', 'bb-lab').attr('x', 0).attr('dy', '0.32em').text(lab(p));
+    for (const gm of ['raycaster', 'betamax']) {   // connector from realistic to oracle: the gaze-measurement cost
+      const a = get(gm, 'realistic', p), b = get(gm, 'oracle', p), dy = gm === 'raycaster' ? -5 : 5;
+      if (isFinite(a) && isFinite(b)) g.append('line').attr('x1', x(a)).attr('x2', x(b)).attr('y1', dy).attr('y2', dy)
+        .style('stroke', gm === 'raycaster' ? cRC : cBM).style('stroke-width', 1.5).style('opacity', 0.5);
+    }
+    MK.forEach(([gm, c, col, filled, name]) => {
+      const v = get(gm, c, p); if (!isFinite(v)) return;
+      g.append('circle').attr('cx', x(v)).attr('cy', gm === 'raycaster' ? -5 : 5).attr('r', filled ? 5.5 : 4.5)
+        .style('fill', filled ? col : 'var(--color-panel)').style('stroke', filled ? 'var(--color-panel)' : col).style('stroke-width', 2)
+        .on('pointermove', (evt) => tip.show(evt, [lab(p), name, `r = ${BB.f2(v)}`, `${mins} min of play`]))
+        .on('pointerleave', () => tip.hide());
+    });
+  });
+  const lg = s.append('g').attr('transform', `translate(${lw},${14})`);
+  MK.forEach(([gm, c, col, filled, name], i) => {
+    const gg = lg.append('g').attr('transform', `translate(${(i % 2) * 175},${Math.floor(i / 2) * 18})`);
+    gg.append('circle').attr('r', 4.5).attr('cy', -4).style('fill', filled ? col : 'var(--color-panel)').style('stroke', filled ? 'var(--color-panel)' : col).style('stroke-width', 2);
+    gg.append('text').attr('x', 9).style('font-size', 'var(--cds-font-size-caption)').text(name);
+  });
+});
+
+// ---------------------------------------------------------------- round 8: spatial-frequency content of the two games
+dash.draw('r8bands', (el) => {
+  if (!BB.ready(el, ['round8_bands'])) return;
+  el.replaceChildren();
+  const rows = dash.data('round8_bands').data;
+  const H = 260, m = { l: 44, r: 16, t: 24, b: 40 };
+  const { s, w } = BB.svg(el, H, 'Mean band energy by spatial frequency, each game normalised to its own peak, Betamax versus the raycaster');
+  const fx = rows.map((r) => +r.band_cpd);
+  const x = d3.scaleLog().domain([d3.min(fx) / 1.1, d3.max(fx) * 1.1]).range([m.l, w - m.r]);
+  const y = d3.scaleLinear().domain([0, 1.05]).range([H - m.b, m.t]);
+  BB.grid(s.append('g'), y, y.ticks(5), m.l, w - m.r, true);
+  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues([...new Set(fx)]).tickFormat(d3.format('.2~f')).tickSizeOuter(0)));
+  BB.styleAxis(s.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSizeOuter(0)));
+  s.append('text').attr('x', w - m.r).attr('y', H - 6).attr('text-anchor', 'end').style('font-size', 'var(--cds-font-size-caption)').style('fill', 'var(--cds-text-secondary)').text('spatial frequency (cycles/deg)');
+  const tip = BB.tip(el);
+  const G = [['Raycaster', BB.color('game')], ['Betamax', dash.colors[0]]];
+  G.forEach(([gl, c], i) => {
+    const pts = rows.filter((r) => r.game_label === gl).map((r) => ({ f: +r.band_cpd, v: +r.energy_rel }));
+    s.append('path').datum(pts).attr('d', d3.line().x((p) => x(p.f)).y((p) => y(p.v))).style('fill', 'none').style('stroke', c).style('stroke-width', 2.5);
+    s.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (p) => x(p.f)).attr('cy', (p) => y(p.v)).attr('r', 4.5)
+      .style('fill', c).style('stroke', 'var(--color-panel)').style('stroke-width', 2)
+      .on('pointermove', (evt, p) => tip.show(evt, [gl, `${d3.format('.2~f')(p.f)} cycles/deg`, `energy ${BB.f2(p.v)} of peak`]))
+      .on('pointerleave', () => tip.hide());
+    const gg = s.append('g').attr('transform', `translate(${m.l + 10 + i * 110},${m.t - 8})`);
+    gg.append('circle').attr('r', 4.5).attr('cy', -4).style('fill', c);
+    gg.append('text').attr('x', 9).style('font-size', 'var(--cds-font-size-caption)').text(gl);
+  });
+});

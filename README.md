@@ -289,5 +289,58 @@ behave differently.
 run_round7.py diagnostic`. Results JSON: `results_cst.json`, `results_cst_seqsim.json`,
 `results_cst_diagnostic.json`.
 
+## Round 8: a real game -- Betamax's beach battle as the stimulus
+
+Every earlier round used BOLDBLASTER's own numpy raycaster. Round 8 swaps in
+[Betamax](https://github.com/samuelling/betamax)'s Mayflower Beach battle, played **forward**
+(time runs in order, the men you kill stay down, no rewind and no taking bodies; if you fall you
+carry on as the nearest man of your side), and refits every model unchanged.
+
+*How it's rendered* (`tools/betamax/`): Betamax is rebuilt with one added hook
+(`betamax-harness-hook.patch`, exposing `window.BWfwd(actor, tapeTime)`) and run headed under
+Xvfb in Chrome on Mesa's llvmpipe (3.5x faster than SwiftShader for this geometry-bound scene),
+stepped deterministically with the game's own `BWstep` at 2 x 50 ms ticks per 10 Hz frame, VCR
+filter off, shadows on, soldier instances outside the view culled (render-only). A bot
+(`bot.js`) plays a Cape Cod defender: it acquires the nearest visible Texan with a 150-400 ms
+reaction delay, turns with first-order pursuit plus tremor, fires bursts once on target, strafes
+and crouches, and scans/walks within 28 m of where each life began. When the tape runs out it
+restarts as a random defender at a random tape time. Each frame is captured with `readPixels`, reduced to
+192 x 144 Rec.709 luma (the raycaster's 24 x 18 deg screen) with the raycaster's crosshair drawn
+in, and logged with every soldier on screen (screen position, distance, terrain line of sight)
+and every burst (distance, aim error, whether a round landed, from the game's own hit
+registration). ~1 s/frame/worker on 2 CPUs, so a 5-min run takes ~50 min to render.
+
+*How it's fitted* (`run_betamax.py`): the logs become exactly the files `run_v2.py` writes for the
+raycaster. Gaze comes from the same `GazeModel`, fed Betamax's enemies; salient onsets are enemies
+appearing within 60 m plus kills; arousal events are kills; numerosity counts enemies visible
+within 60 m; self-motion is speed and turn rate, zeroed across camera cuts (deaths, restarts);
+the RPE "prediction" is each burst's hit probability from a logistic fit of hit on log distance
+and aim error (fitted once on runs 0-1, then fixed). Matched comparisons use the first six
+raycaster runs.
+
+*Result at a matched 30 min (eye-tracker gaze, raycaster -> Betamax):* effective c50 0.34 ->
+0.66, CRF exponent 0.06 -> 0.33, attention gain 0.06 -> 0.31, SF peak 0.27 -> 0.37, SF bandwidth
+0.00 -> 0.13, transient weight 0.46 -> 0.53; surround suppression is the exception (0.21 -> 0.15).
+With oracle gaze every V1 parameter improves (e.g. SF peak 0.33 -> 0.56, surround 0.29 -> 0.36).
+On contrast response and attention, 30 min of Betamax beats round 4's two hours of raycaster.
+Striatal RPE jumps 0.53 -> 0.93 (4x the shot outcomes per minute); numerosity (0.98 vs 0.99) and
+self-motion (rotation 0.84 vs 0.81) tie. CST (round 7's sustained/transient channels, plug-in
+tuning from each game's own joint fit): sustained weight 0.44 (realistic) / 0.55 (oracle), above
+the raycaster's 20-40 min average (0.28 / 0.35). The frames explain it: Betamax's contrast energy
+falls off with spatial frequency like a natural scene (the raycaster's textures are flat-to-rising),
+and its contrast drive at the pRFs spans a much wider range (10th-90th percentile 0.10-0.99 vs
+0.29-0.85; median V1 SNR 0.34 vs 0.20) -- dawn glare and haze against dark silhouettes and muzzle
+flash. It is also a far busier game: 9 kills, 40 bursts and 97 salient onsets per minute, vs 3, 11
+and 12.
+
+*Caveats:* a scripted bot, not a person, and its gaze is model-generated; one level and one
+scripted battle (each restart replays the same recording from a different body and time); a
+one-off scale bug (band energy computed before `V2.calibrate()`) briefly made Betamax look
+10x weaker and was fixed before any result here.
+
+`bash tools/betamax/queue.sh 0 12 & bash tools/betamax/queue.sh 1 12` (renders; see the header of
+`tools/betamax/run.mjs` for setup), then `python run_betamax.py all 6 && python export_round8.py`.
+Results JSON: `results/round8_betamax.json`, `round8_betamax_stats.json`, `round8_betamax_phit.json`.
+
 Results JSON for every round is in `results/`; the built report is in `docs/`
 (enable GitHub Pages from `main` / `/docs` to serve it).

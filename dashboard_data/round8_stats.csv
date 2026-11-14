@@ -1,0 +1,11 @@
+measure,label,betamax,raycaster
+kills_per_min,Kills per minute,9.2,2.9
+bursts_per_min,Shots (bursts) per minute,40.1,10.7
+hit_rate,Shot hit rate,0.42,0.27
+salient_per_min,Salient onsets per minute,96.6,12.3
+items_mean,Items on screen (mean),4.6,6.6
+items_sd,Items on screen (SD),5.3,7.7
+fwd_mean,Forward speed (raycaster units),0.55,1.26
+yaw_sd,Turn rate SD (rad/s),0.79,0.44
+transient_to_sustained,Transient / sustained energy,0.28,0.29
+gaze_sd,"Gaze spread, x / y (deg SD)",2.7 / 1.9,3.9 / 1.9

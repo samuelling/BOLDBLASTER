@@ -6,6 +6,7 @@
     recovery: 'data/recovery.csv', v1_voxels: 'data/v1_voxels.csv', prf_round1: 'data/prf_round1.csv',
     prf_voxels: 'data/prf_voxels.csv', signal: 'data/signal_components.csv', noise_model: 'data/noise_model.csv',
     diagnostics: 'data/diagnostics.csv', fair: 'data/fair.csv', budget: 'data/budget.csv',
+    round6: 'data/round6.csv', round6_identify: 'data/round6_identify.csv', round7: 'data/round7.csv', round7_diagnostic: 'data/round7_diagnostic.csv', round8_bands: 'data/round8_bands.csv', round8_other: 'data/round8_other.csv', round8_stats: 'data/round8_stats.csv', round8_v1: 'data/round8_v1.csv',
   };
   const DEFAULTS = { param: 'mu', design: 'long_20h', ecc: 'all', r1: 'game_eyetracker' };
   const store = {};

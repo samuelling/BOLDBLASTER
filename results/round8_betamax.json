@@ -1,0 +1,286 @@
+{
+ "rc_30m": {
+  "game": "raycaster",
+  "minutes": 30,
+  "cond": "realistic",
+  "scores": {
+   "c50_eff": {
+    "spearman": 0.3412749409743397,
+    "median_abs_err": 0.7810921157426689
+   },
+   "mu": {
+    "spearman": 0.27132729384367993,
+    "median_abs_err": 0.7511927382647741
+   },
+   "sig": {
+    "spearman": 0.0018368868998649877,
+    "median_abs_err": 0.7002579012656662
+   },
+   "c50": {
+    "spearman": 0.32988647639047064,
+    "median_abs_err": 0.794389173575003
+   },
+   "q": {
+    "spearman": 0.0556817303021478,
+    "median_abs_err": 0.8381285746732118
+   },
+   "k": {
+    "spearman": 0.20523526049636379,
+    "median_abs_err": 0.6829217709910861
+   },
+   "tau": {
+    "spearman": 0.45808047401421126,
+    "median_abs_err": 0.28048385466792974
+   },
+   "a": {
+    "spearman": 0.056609026037297054,
+    "median_abs_err": 0.41975757624995536
+   }
+  },
+  "seconds": 245.2423973083496
+ },
+ "rc_30m_oracle": {
+  "game": "raycaster",
+  "minutes": 30,
+  "cond": "oracle",
+  "scores": {
+   "c50_eff": {
+    "spearman": 0.5640338225980288,
+    "median_abs_err": 0.5308933860309755
+   },
+   "mu": {
+    "spearman": 0.327296808402698,
+    "median_abs_err": 0.547134709249391
+   },
+   "sig": {
+    "spearman": 0.07063471694004077,
+    "median_abs_err": 0.6841144900304792
+   },
+   "c50": {
+    "spearman": 0.525206560651406,
+    "median_abs_err": 0.5822562222552183
+   },
+   "q": {
+    "spearman": 0.10009727923772327,
+    "median_abs_err": 0.609791820444032
+   },
+   "k": {
+    "spearman": 0.2929033960837589,
+    "median_abs_err": 0.5918023228774454
+   },
+   "tau": {
+    "spearman": 0.543883618210753,
+    "median_abs_err": 0.25371812490682566
+   },
+   "a": {
+    "spearman": 0.04553069482998517,
+    "median_abs_err": 0.53196366167822
+   }
+  },
+  "seconds": 223.39679217338562
+ },
+ "bm_30m": {
+  "game": "betamax",
+  "minutes": 30,
+  "cond": "realistic",
+  "scores": {
+   "c50_eff": {
+    "spearman": 0.6574677496416625,
+    "median_abs_err": 0.42579311668047426
+   },
+   "mu": {
+    "spearman": 0.36948410537894866,
+    "median_abs_err": 0.7105711147815692
+   },
+   "sig": {
+    "spearman": 0.12653897516401313,
+    "median_abs_err": 0.645518806247325
+   },
+   "c50": {
+    "spearman": 0.5436940410449005,
+    "median_abs_err": 0.5519438515135642
+   },
+   "q": {
+    "spearman": 0.32867413289860453,
+    "median_abs_err": 0.3838524616722955
+   },
+   "k": {
+    "spearman": 0.1510501899133206,
+    "median_abs_err": 0.6769185180276001
+   },
+   "tau": {
+    "spearman": 0.5339543772708586,
+    "median_abs_err": 0.3294952966282336
+   },
+   "a": {
+    "spearman": 0.3138137355706402,
+    "median_abs_err": 0.13754143815925346
+   }
+  },
+  "seconds": 186.2971363067627
+ },
+ "bm_30m_oracle": {
+  "game": "betamax",
+  "minutes": 30,
+  "cond": "oracle",
+  "scores": {
+   "c50_eff": {
+    "spearman": 0.7176866409626773,
+    "median_abs_err": 0.3253640254878587
+   },
+   "mu": {
+    "spearman": 0.5609627396929711,
+    "median_abs_err": 0.4570621074244968
+   },
+   "sig": {
+    "spearman": 0.20214794991964866,
+    "median_abs_err": 0.5755993366954516
+   },
+   "c50": {
+    "spearman": 0.5967417415749063,
+    "median_abs_err": 0.40193474728621886
+   },
+   "q": {
+    "spearman": 0.40656051733908155,
+    "median_abs_err": 0.25448338874860044
+   },
+   "k": {
+    "spearman": 0.36063022922476917,
+    "median_abs_err": 0.5287803124082648
+   },
+   "tau": {
+    "spearman": 0.5734948166090733,
+    "median_abs_err": 0.22053306425641678
+   },
+   "a": {
+    "spearman": 0.36309843721331103,
+    "median_abs_err": 0.12917576700400407
+   }
+  },
+  "seconds": 168.66734766960144
+ },
+ "num_bm_30m": {
+  "population": "numerosity",
+  "minutes": 30,
+  "scores": {
+   "mu": {
+    "spearman": 0.9877898534051148,
+    "median_abs_err": 0.08212079921110436
+   },
+   "sig": {
+    "spearman": 0.796306121767395,
+    "median_abs_err": 0.0527186760513525
+   }
+  },
+  "game": "betamax"
+ },
+ "mst_bm_30m": {
+  "population": "self-motion",
+  "minutes": 30,
+  "scores": {
+   "rotation_pref": {
+    "spearman": 0.8080732476998977,
+    "median_abs_err": 0.13719262466624813
+   },
+   "expansion_frac": {
+    "spearman": 0.7992906351393396,
+    "median_abs_err": 0.054956488278619264
+   }
+  },
+  "game": "betamax"
+ },
+ "rpe_bm_30m": {
+  "population": "striatal RPE",
+  "minutes": 30,
+  "n_outcomes": 1203,
+  "scores": {
+   "rpe_beta": {
+    "spearman": 0.9306570657065706,
+    "median_abs_err": 0.1283954342268552
+   }
+  },
+  "game": "betamax"
+ },
+ "num_rc_30m": {
+  "population": "numerosity",
+  "minutes": 30,
+  "scores": {
+   "mu": {
+    "spearman": 0.9802197914615223,
+    "median_abs_err": 0.09497883252678654
+   },
+   "sig": {
+    "spearman": 0.7503571956637284,
+    "median_abs_err": 0.07423397036140558
+   }
+  },
+  "game": "raycaster"
+ },
+ "mst_rc_30m": {
+  "population": "self-motion",
+  "minutes": 30,
+  "scores": {
+   "rotation_pref": {
+    "spearman": 0.8416025970958453,
+    "median_abs_err": 0.13841935049091061
+   },
+   "expansion_frac": {
+    "spearman": 0.8491630739143963,
+    "median_abs_err": 0.06485472851509416
+   }
+  },
+  "game": "raycaster"
+ },
+ "rpe_rc_30m": {
+  "population": "striatal RPE",
+  "minutes": 30,
+  "n_outcomes": 322,
+  "scores": {
+   "rpe_beta": {
+    "spearman": 0.5276207620762076,
+    "median_abs_err": 0.6403297933911363
+   }
+  },
+  "game": "raycaster"
+ },
+ "cst_bm_oracle_30m": {
+  "game": "betamax",
+  "minutes": 30,
+  "cond": "oracle",
+  "scores": {
+   "taus": {
+    "spearman": 0.43511843855136867,
+    "median_abs_err": 0.07418086809402699
+   },
+   "taut": {
+    "spearman": 0.19030146893870814,
+    "median_abs_err": 0.12456671269034204
+   },
+   "ws": {
+    "spearman": 0.5480781506548051,
+    "median_abs_err": 0.16663755512628137
+   }
+  },
+  "seconds": 87.91325426101685
+ },
+ "cst_bm_real_30m": {
+  "game": "betamax",
+  "minutes": 30,
+  "cond": "real",
+  "scores": {
+   "taus": {
+    "spearman": 0.28706109597595364,
+    "median_abs_err": 0.08950982787904413
+   },
+   "taut": {
+    "spearman": 0.1101426917599473,
+    "median_abs_err": 0.1258885078444758
+   },
+   "ws": {
+    "spearman": 0.43876874481484707,
+    "median_abs_err": 0.16717360707798437
+   }
+  },
+  "seconds": 88.38622307777405
+ }
+}

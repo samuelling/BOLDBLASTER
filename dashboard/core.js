@@ -417,3 +417,57 @@ dash.draw('r7diagtable', (tb) => {
     tb.appendChild(tr);
   }
 });
+
+// ---------------------------------------------------------------- round 8: Betamax vs the raycaster
+dash.draw('r8v1table', (tb) => {
+  const d = dash.data('round8_v1');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  const rows = d.data;
+  const get = (g, c, m, p) => { const r = rows.find((x) => x.game === g && x.condition === c && +x.minutes === m && x.parameter === p); return r ? +r.spearman : NaN; };
+  const fmt = (v) => (isFinite(v) ? BB.f2(v) : '—');
+  const dfmt = (v) => (isFinite(v) ? (v > 0 ? '+' : '') + BB.f2(v) : '—');
+  const mins = [...new Set(rows.filter((r) => r.game === 'betamax').map((r) => +r.minutes))].sort((a, b) => a - b);
+  for (const m of mins) for (const p of ['mu', 'sig', 'c50_eff', 'q', 'k', 'tau', 'a']) {
+    const lab = (rows.find((r) => r.parameter === p) || {}).parameter_label || p;
+    const rr = get('raycaster', 'realistic', m, p), br = get('betamax', 'realistic', m, p);
+    const ro = get('raycaster', 'oracle', m, p), bo = get('betamax', 'oracle', m, p);
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', `${m},${p}`);
+    tr.append(td(String(m), true), td(lab), td(fmt(rr), true), td(fmt(br), true), td(dfmt(br - rr), true),
+      td(fmt(ro), true), td(fmt(bo), true));
+    tb.appendChild(tr);
+  }
+});
+
+dash.draw('r8othertable', (tb) => {
+  const d = dash.data('round8_other');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  const bmMins = new Set(d.data.filter((r) => r.game_label === 'Betamax').map((r) => String(r.minutes)));
+  const rows = d.data.filter((r) => bmMins.has(String(r.minutes)));   // only durations Betamax has reached
+  const keys = [];
+  for (const r of rows) { const k = `${r.minutes}|${r.model}|${r.measure}|${r.condition}`; if (!keys.includes(k)) keys.push(k); }
+  for (const k of keys) {
+    const [m, model, meas, cond] = k.split('|');
+    const sel = rows.filter((r) => String(r.minutes) === m && r.model === model && r.measure === meas && r.condition === cond);
+    const bm = sel.find((r) => r.game_label === 'Betamax'), rc = sel.find((r) => r.game_label.startsWith('Raycaster'));
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', encodeURIComponent(k));
+    tr.append(td(m, true), td(model), td((bm || rc).measure_label + (cond === 'oracle' ? ' (oracle)' : '')),
+      td(rc ? BB.f2(+rc.spearman) + (rc.game_label !== 'Raycaster' ? '*' : '') : '—', true), td(bm ? BB.f2(+bm.spearman) : '—', true));
+    tb.appendChild(tr);
+  }
+});
+
+dash.draw('r8statstable', (tb) => {
+  const d = dash.data('round8_stats');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  for (const r of d.data) {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', r.measure);
+    tr.append(td(r.label), td(String(r.raycaster), true), td(String(r.betamax), true));
+    tb.appendChild(tr);
+  }
+});

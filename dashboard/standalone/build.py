@@ -84,6 +84,6 @@ for f in ('core.js', 'charts.js'):
     shutil.copy(os.path.join(SRC, f), os.path.join(OUT, f))
 shutil.copy(os.path.join(HERE, 'dash-shim.js'), os.path.join(OUT, 'dash-shim.js'))
 for f in os.listdir(DATA):
-    if f.endswith('.csv'):
+    if f.endswith(('.csv', '.png')):
         shutil.copy(os.path.join(DATA, f), os.path.join(OUT, 'data', f))
 print('built', OUT)

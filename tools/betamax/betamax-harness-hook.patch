@@ -1,0 +1,11 @@
+--- a/src/main.js	2026-11-14 13:51:51.719859656 -0500
++++ b/src/main.js	2026-11-14 13:57:11.533395096 -0500
+@@ -1145,6 +1145,8 @@
+ }
+ // test hook: advance the game deterministically
+ window.BWstep = (n, dt = 1 / 30, draw = true) => { for (let i = 0; i < n; i++) tick(dt, draw && i === n - 1); };
++// BOLDBLASTER harness: start forward play as actor i at tape time t
++window.BWfwd = (i, t) => { overlay('', 'hidden'); G.gp.runLog = []; G.gp.reset(); G.pick && G.pick.reset(); G.playT = 0; beginForward(i, t); };
+ 
+ function tick(dt, draw = true) {
+   fpsAvg += (1 / Math.max(dt, 1e-3) - fpsAvg) * 0.05;
