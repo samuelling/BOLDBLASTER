@@ -9,6 +9,16 @@ Numerosity,sig,Numerosity tuning width,Raycaster,realistic,30,0.7504
 Self-motion,rotation_pref,Rotation direction preference,Raycaster,realistic,30,0.8416
 Self-motion,expansion_frac,Expansion (forward) weight,Raycaster,realistic,30,0.8492
 Striatal RPE,rpe_beta,Prediction-error beta,Raycaster,realistic,30,0.5276
+Numerosity,mu,Preferred numerosity,Betamax,realistic,60,0.9918
+Numerosity,sig,Numerosity tuning width,Betamax,realistic,60,0.8621
+Self-motion,rotation_pref,Rotation direction preference,Betamax,realistic,60,0.8743
+Self-motion,expansion_frac,Expansion (forward) weight,Betamax,realistic,60,0.9039
+Striatal RPE,rpe_beta,Prediction-error beta,Betamax,realistic,60,0.962
+Numerosity,mu,Preferred numerosity,Raycaster,realistic,60,0.991
+Numerosity,sig,Numerosity tuning width,Raycaster,realistic,60,0.8944
+Self-motion,rotation_pref,Rotation direction preference,Raycaster,realistic,60,0.8839
+Self-motion,expansion_frac,Expansion (forward) weight,Raycaster,realistic,60,0.9226
+Striatal RPE,rpe_beta,Prediction-error beta,Raycaster,realistic,60,0.6603
 Spatiotemporal (CST),taus,Sustained time constant,Betamax,oracle,30,0.4351
 Spatiotemporal (CST),taut,Transient time constant,Betamax,oracle,30,0.1903
 Spatiotemporal (CST),ws,Sustained-channel weight,Betamax,oracle,30,0.5481
@@ -21,9 +31,15 @@ Spatiotemporal (CST),ws,Sustained-channel weight,Betamax,realistic,30,0.4388
 Spatiotemporal (CST),taus,Sustained time constant,Raycaster (mean of 20 & 40 min),realistic,30,0.2793
 Spatiotemporal (CST),taut,Transient time constant,Raycaster (mean of 20 & 40 min),realistic,30,0.0723
 Spatiotemporal (CST),ws,Sustained-channel weight,Raycaster (mean of 20 & 40 min),realistic,30,0.2834
+Spatiotemporal (CST),taus,Sustained time constant,Betamax,oracle,60,0.5598
+Spatiotemporal (CST),taut,Transient time constant,Betamax,oracle,60,0.2915
+Spatiotemporal (CST),ws,Sustained-channel weight,Betamax,oracle,60,0.6135
 Spatiotemporal (CST),taus,Sustained time constant,Raycaster,oracle,60,0.3661
 Spatiotemporal (CST),taut,Transient time constant,Raycaster,oracle,60,0.1776
 Spatiotemporal (CST),ws,Sustained-channel weight,Raycaster,oracle,60,0.471
+Spatiotemporal (CST),taus,Sustained time constant,Betamax,realistic,60,0.3635
+Spatiotemporal (CST),taut,Transient time constant,Betamax,realistic,60,0.1871
+Spatiotemporal (CST),ws,Sustained-channel weight,Betamax,realistic,60,0.5312
 Spatiotemporal (CST),taus,Sustained time constant,Raycaster,realistic,60,0.3818
 Spatiotemporal (CST),taut,Transient time constant,Raycaster,realistic,60,0.0841
 Spatiotemporal (CST),ws,Sustained-channel weight,Raycaster,realistic,60,0.303

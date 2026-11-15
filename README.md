@@ -318,20 +318,22 @@ the RPE "prediction" is each burst's hit probability from a logistic fit of hit 
 and aim error (fitted once on runs 0-1, then fixed). Matched comparisons use the first six
 raycaster runs.
 
-*Result at a matched 30 min (eye-tracker gaze, raycaster -> Betamax):* effective c50 0.34 ->
-0.66, CRF exponent 0.06 -> 0.33, attention gain 0.06 -> 0.31, SF peak 0.27 -> 0.37, SF bandwidth
-0.00 -> 0.13, transient weight 0.46 -> 0.53; surround suppression is the exception (0.21 -> 0.15).
-With oracle gaze every V1 parameter improves (e.g. SF peak 0.33 -> 0.56, surround 0.29 -> 0.36).
-On contrast response and attention, 30 min of Betamax beats round 4's two hours of raycaster.
-Striatal RPE jumps 0.53 -> 0.93 (4x the shot outcomes per minute); numerosity (0.98 vs 0.99) and
-self-motion (rotation 0.84 vs 0.81) tie. CST (round 7's sustained/transient channels, plug-in
-tuning from each game's own joint fit): sustained weight 0.44 (realistic) / 0.55 (oracle), above
-the raycaster's 20-40 min average (0.28 / 0.35). The frames explain it: Betamax's contrast energy
-falls off with spatial frequency like a natural scene (the raycaster's textures are flat-to-rising),
-and its contrast drive at the pRFs spans a much wider range (10th-90th percentile 0.10-0.99 vs
-0.29-0.85; median V1 SNR 0.34 vs 0.20) -- dawn glare and haze against dark silhouettes and muzzle
-flash. It is also a far busier game: 9 kills, 40 bursts and 97 salient onsets per minute, vs 3, 11
-and 12.
+*Result at a matched 60 min (12 runs; eye-tracker gaze, raycaster -> Betamax):* effective c50
+0.43 -> 0.68, CRF exponent 0.15 -> 0.43, attention gain 0.10 -> 0.42, SF bandwidth -0.01 -> 0.22,
+SF peak 0.37 -> 0.43; surround suppression (0.22 vs 0.24) and transient weight (0.61 vs 0.62) tie.
+With oracle gaze every parameter improves (e.g. SF peak 0.52 -> 0.67, CRF exponent 0.25 -> 0.58,
+surround 0.41 -> 0.54). An hour of Betamax beats round 4's *two* hours of raycaster on contrast
+response, SF bandwidth and attention, and with true gaze matches or beats it on everything. The
+30-min comparison (6 runs) shows the same pattern (effective c50 0.34 -> 0.66, CRF exponent 0.06 ->
+0.33, attention 0.06 -> 0.31; surround the one loss, 0.21 -> 0.15). Striatal RPE 0.66 -> 0.96 (4x
+the shot outcomes per minute); numerosity (0.99 vs 0.99) and self-motion (rotation 0.88 vs 0.87)
+tie. CST (round 7's sustained/transient channels, plug-in tuning from each game's own joint fit):
+sustained-channel weight 0.30 -> 0.53 (realistic) and 0.47 -> 0.61 (oracle), sustained time
+constant 0.37 -> 0.56 (oracle). The frames explain it: Betamax's contrast energy falls off with
+spatial frequency like a natural scene (the raycaster's textures are flat-to-rising), and its
+contrast drive at the pRFs spans a much wider range (10th-90th percentile 0.10-0.99 vs 0.29-0.85;
+median V1 SNR 0.34 vs 0.20) -- dawn glare and haze against dark silhouettes and muzzle flash. It is
+also a far busier game: 8 kills, 38 bursts and 95 salient onsets per minute, vs 3, 9 and 12.
 
 *Caveats:* a scripted bot, not a person, and its gaze is model-generated; one level and one
 scripted battle (each restart replays the same recording from a different body and time); a
@@ -339,7 +341,7 @@ one-off scale bug (band energy computed before `V2.calibrate()`) briefly made Be
 10x weaker and was fixed before any result here.
 
 `bash tools/betamax/queue.sh 0 12 & bash tools/betamax/queue.sh 1 12` (renders; see the header of
-`tools/betamax/run.mjs` for setup), then `python run_betamax.py all 6 && python export_round8.py`.
+`tools/betamax/run.mjs` for setup), then `python run_betamax.py all 12 && python export_round8.py`.
 Results JSON: `results/round8_betamax.json`, `round8_betamax_stats.json`, `round8_betamax_phit.json`.
 
 Results JSON for every round is in `results/`; the built report is in `docs/`
