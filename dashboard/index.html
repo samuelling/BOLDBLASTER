@@ -65,6 +65,32 @@
 .bb-tablewrap { container-type: inline-size; }
 @container (max-width: 400px) { .bb-h2h th:nth-child(4), .bb-h2h td:nth-child(4) { display: none; } }
 @container (max-width: 520px) { .bb-h2h th:nth-child(5), .bb-h2h td:nth-child(5), .bb-h2h th:nth-child(6), .bb-h2h td:nth-child(6) { display: none; } }
+
+.bb-tabs { position: sticky; top: 0; z-index: 4; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding: var(--cds-gap-sm) 0; margin: 0 0 var(--cds-gap-lg); background: var(--color-bg); border-bottom: 1px solid var(--color-border-line); }
+.bb-tabs::-webkit-scrollbar { display: none; }
+.bb-tabbtn { flex: none; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); background: transparent; border: 1px solid transparent; border-radius: 999px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
+.bb-tabbtn:hover { color: var(--color-fg); border-color: var(--color-border-line); }
+.bb-tabbtn.on { color: var(--color-fg); background: var(--color-panel); border-color: var(--color-border-line); font-weight: var(--cds-font-weight-medium); }
+.bb-intro { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: var(--cds-gap-md); margin-bottom: var(--cds-gap-md); }
+.bb-h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0 0 var(--cds-gap-sm); }
+.bb-did p, .bb-did li { line-height: 1.55; margin: 0 0 6px; }
+.bb-did ul { margin: 0 0 6px; padding-left: 18px; }
+.bb-fig { margin: 0; display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+.bb-fig img { width: 100%; height: auto; border-radius: 6px; image-rendering: auto; background: var(--color-bg); min-height: 60px; }
+.bb-fig figcaption { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.5; }
+.bb-ctl-row { margin: 0 0 var(--cds-gap-md); }
+.bb-more, .bb-sub { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); background: color-mix(in srgb, var(--color-panel) 60%, transparent); }
+.bb-more > summary, .bb-sub > summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+.bb-more[open] > summary, .bb-sub[open] > summary { margin-bottom: var(--cds-gap-md); }
+.bb-glance { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: var(--cds-gap-md); }
+.bb-gcard { display: flex; flex-direction: column; gap: 6px; }
+.bb-gcard p { margin: 0; line-height: 1.55; }
+.bb-gcard .bb-h3 { margin: 0; }
+.bb-gwide { grid-column: 1 / -1; }
+.bb-open { align-self: flex-start; margin-top: auto; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); background: transparent; border: 1px solid var(--color-border-line); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.bb-open:hover { background: color-mix(in srgb, var(--color-fg) 6%, transparent); }
+.bb-gap { margin-top: var(--cds-gap-xl); }
+.bb-tab { scroll-margin-top: 60px; }
 </style>
 
 <div class="bb" data-read lang="en">
@@ -72,246 +98,70 @@
 <header class="bb-hero" id="top">
   <p class="bb-eyebrow">Simulation testbed · gameplay fMRI · model recovery</p>
   <h1 class="bb-title">BOLD<span class="bb-accent">BLASTER</span>: what can a video game recover from visual cortex?</h1>
-  <p class="bb-lede" id="takeaway">Against dedicated experiments of realistic length, gameplay is no shortcut for most V1 tuning. With the same 5 hours of scanning, the full dedicated battery recovers <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Dedicated">—</b> of 7 V1 measures better, gameplay <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Gameplay">—</b> (surround suppression), and <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Tie">—</b> are ties. Gameplay's case is breadth and the quantities games sample richly: one dataset serves every model at once, including surround, transient and reward signals. Spreading play across ten level types instead of one changed recovery by at most <b data-draw="variety" data-source="variety">—</b> (Spearman r) at equal time.</p>
-
-  <div class="bb-kpis" id="kpis">
-    <div class="bb-kpi" id="kpi-sf" style="--bb-kpi-c: #2a78d6">
-      <p class="bb-kpi-label">pSFT peak · 20 h play</p>
-      <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=long_20h&amp;parameter=mu">—</div>
-      <div class="bb-kpi-sub">Dedicated 1 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_60m&amp;parameter=mu">—</span><br>Full battery 5 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=battery_5h&amp;parameter=mu">—</span></div>
-    </div>
-    <div class="bb-kpi" id="kpi-tau" style="--bb-kpi-c: #eb6834">
-      <p class="bb-kpi-label">Transient weight · 20 h play</p>
-      <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=long_20h&amp;parameter=tau">—</div>
-      <div class="bb-kpi-sub">Dedicated 1 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_60m&amp;parameter=tau">—</span><br>Full battery 5 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=battery_5h&amp;parameter=tau">—</span></div>
-    </div>
-    <div class="bb-kpi" id="kpi-att" style="--bb-kpi-c: #1baf7a">
-      <p class="bb-kpi-label">Attention gain · 20 h play</p>
-      <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=long_20h&amp;parameter=a">—</div>
-      <div class="bb-kpi-sub">Dedicated 1 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_60m&amp;parameter=a">—</span><br>Full battery 5 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=battery_5h&amp;parameter=a">—</span></div>
-    </div>
-    <div class="bb-kpi" id="kpi-k" style="--bb-kpi-c: #eda100">
-      <p class="bb-kpi-label">Surround suppression · 20 h play</p>
-      <div class="bb-kpi-value" data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=long_20h&amp;parameter=k">—</div>
-      <div class="bb-kpi-sub">Dedicated 1 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=dedicated_60m&amp;parameter=k">—</span><br>Full battery 5 h: <span data-draw="kpi" data-source="recovery" data-field="spearman" data-where="design=battery_5h&amp;parameter=k">—</span></div>
-    </div>
-  </div>
-  <p class="bb-stat" style="margin-top: var(--cds-gap-md)">Every value is Spearman r between planted and fitted parameters across simulated voxels: 1 means the ordering of voxels is recovered perfectly.</p>
-  <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>BOLDBLASTER is a simulation. We play a first-person game, plant known tuning parameters in simulated voxels (the ground truth), generate BOLD with realistic noise, and fit the parameters back out exactly as one would with real data. Because the truth is known, we can score how well each experimental design recovers it.</p>
-<h4>How to read it</h4><p>The tiles compare 20 hours of gameplay with the classic dedicated experiment for the same parameter run for an hour, and with the full dedicated battery (all five V1 experiments, an hour each, fitted jointly). All three are scored on the same 120 voxels. Earlier versions compared against a 10-minute dedicated run, which flattered gameplay; section 02 has the fair comparison. Spearman r measures whether voxels are put in the right order: 0.9 means the fitted values rank voxels almost exactly as the truth does; 0.3 means only a weak trend.</p>
-<div class="bb-signal"><h4>Signal vs noise</h4><p>Treat differences under about 0.1 as noise for the 300-voxel rounds and under about 0.15 for the 120-voxel round 4. The sections below show 95% intervals so any comparison can be checked.</p></div>
-<h4>Caveats</h4><p>Everything here is simulated. The fitter knows each model's functional form (not its parameters), and some real-world noise sources are not simulated; see section 06.</p>
-</details>
+  <p class="bb-lede">An open fMRI dataset of people playing a game would let anyone fit their model to it. Each experiment here plants known tuning in simulated voxels, generates BOLD with realistic noise, and fits it back from gameplay as one would with real data, so we can score what a game recovers, how much play it takes, and how it compares with dedicated mapping experiments. In short: gameplay is a weaker per-parameter mapper than an hour of the right dedicated experiment, but one dataset serves every model at once, and the game matters. Real games beat the purpose-built raycaster, and an hour of a realistic shooter recovers contrast and attention tuning better than two hours of the raycaster.</p>
 </header>
 
-<section class="bb-sec" id="recovery">
-  <div class="bb-sec-head">
-    <div>
-      <p class="bb-num">01 · Recovery</p>
-      <h2 class="bb-h2">Which design recovers which parameter?</h2>
-      <p class="bb-desc">Each row is one design: a dedicated experiment built for that parameter, the game with and without design levers, and up to 20 hours across ten levels. Dots are Spearman r; whiskers are bootstrap 95% intervals over voxels (not computed for the non-visual populations).</p>
-    </div>
-    <div class="bb-controls">
-      <label>Parameter
-        <select class="dash-select" data-param="param" aria-label="Parameter">
-          <optgroup label="V1">
-            <option value="mu">pSFT peak</option>
-            <option value="sig">pSFT bandwidth</option>
-            <option value="c50_eff">pCRF effective c50</option>
-            <option value="q">pCRF exponent</option>
-            <option value="k">Surround suppression k</option>
-            <option value="tau">Transient weight</option>
-            <option value="a">Attention gain</option>
-          </optgroup>
-          <optgroup label="Other populations">
-            <option value="num_mu">Numerosity preference</option>
-            <option value="num_sig">Numerosity tuning width</option>
-            <option value="mst_rotation_pref">Self-motion: rotation preference</option>
-            <option value="mst_expansion_frac">Self-motion: expansion share</option>
-            <option value="rpe_rpe_beta">Striatal RPE weight</option>
-          </optgroup>
-        </select>
-      </label>
-    </div>
-  </div>
-  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
-    <p>Gameplay does best where a game naturally varies a quantity a lot or produces many events: surround suppression (objects of every size against every background), transient responses (saccades, camera turns) and reward outcomes. Against dedicated experiments of realistic length (rows at the bottom, and section 02) it loses on SF tuning, attention and self-motion, and roughly ties on contrast response and numerosity. Parameters that interact (surround, transient weight, CRF exponent) are poorly recovered one experiment at a time however long it runs, so fitting them jointly is what matters.</p>
-  </div></div>
-  <div class="bb-card">
-    <p class="bb-dyn bb-stat">For <b data-draw="sel-param" data-source="recovery" data-field="parameter_label">—</b>, the best realistic design (no oracle) is <b data-draw="best-design" data-source="recovery" data-field="design_label">—</b> at r = <b data-draw="best-r" data-source="recovery" data-field="spearman">—</b>; the dedicated experiment gives <b data-draw="ded-r" data-source="recovery" data-field="spearman">—</b> in 10 minutes and <b data-draw="ded60-r" data-source="recovery" data-field="spearman">—</b> in 60 (120 voxels).</p>
-    <div class="bb-chart" id="forest" data-draw="forest" data-source="recovery" style="min-height: 380px"></div>
-    <div class="bb-legend">
-      <span data-fam="dedicated">Dedicated experiment</span>
-      <span data-fam="battery">Dedicated battery, joint fit</span>
-      <span data-fam="game">Game</span>
-      <span data-fam="levers">Game + design levers</span>
-      <span data-fam="long">Ten levels (round 4)</span>
-    </div>
-    <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>For the parameter you pick, one row per experimental design and the Spearman r between planted and fitted values across voxels.</p><ul><li><b>Dedicated experiment</b>: the classic design built for that parameter (band-pass noise for pSFT, a contrast series for pCRF, discs and annuli for surround suppression, refresh rates for the transient channel, attend-left/right blocks for attention, dot arrays, optic-flow blocks, a reward task), only 10 minutes in rounds 2–4 (a short protocol; realistic lengths are in round 5), fitting only that parameter with the others fixed at population defaults.</li><li><b>Battery fit jointly</b>: all five V1 experiments (50 min) fitted together with every parameter free.</li><li><b>Game</b>: 1–2 h of the round-2 game. <b>Game + design levers</b>: the round-3 game with covert-attention cues and SF/contrast-decorrelated textures.</li><li><b>Oracle</b>: the same data fitted with true gaze and true pRFs, an upper bound on what better eye tracking and localizers would buy.</li><li><b>Ten levels</b>: round 4, 2–20 h across ten level types on a 120-voxel subset (its dedicated row is re-scored on those same voxels).</li><li><b>Round 5, realistic dedicated</b>: each dedicated experiment run for 30 and 60 min, and the full battery (an hour per experiment, 5 h, three sessions) fitted jointly, on the round-4 voxels. The shaded column is the 60-minute experiment's interval.</li></ul>
-<h4>How to read it</h4><p>Dots further right recover the parameter better. Horizontal lines separate rounds. Hover any row for minutes of data, voxel count and the interval.</p>
-<div class="bb-signal"><h4>Signal vs noise</h4><p>Whiskers are bootstrap 95% intervals over voxels. The shaded column is the 60-minute dedicated experiment's interval: a design whose whisker sits entirely outside it is convincingly better or worse; overlap means treat it as a tie. As a rule of thumb, r is uncertain by about ±0.1 with 300 voxels and ±0.15 with 120.</p></div>
-<h4>Caveats</h4><p>Compare within a round where possible (rounds 2–3 use 300 voxels, round 4 uses 120). Numerosity, self-motion and striatal rows have no intervals because their per-voxel fits were not saved, and their round-2 dedicated runs had only 10 min (round 5 adds 30 and 60 min).</p>
-</details>
+<nav class="bb-tabs" id="tabs" aria-label="Experiments">
+  <button type="button" class="bb-tabbtn" data-tab="overview">Overview</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-prf">1 · pRFs</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-models">2 · Many models</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-hours">3 · How much play</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-fair">4 · vs dedicated</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-attn">5 · Attention</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-cst">6 · Spatiotemporal</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-games">7 · Real games</button>
+  <button type="button" class="bb-tabbtn" data-tab="methods-tab">Methods</button>
+</nav>
+
+<section class="bb-sec bb-tab" id="overview">
+  <div class="bb-sec-head"><div><p class="bb-num">Overview</p><h2 class="bb-h2">Seven experiments at a glance</h2>
+    <p class="bb-desc">Every value is Spearman r between planted and fitted parameters across simulated voxels, so 1 means the voxels are put in exactly the right order. Treat differences under about 0.1 as noise. Open any experiment for what it looked like, its charts and its caveats.</p></div></div>
+  <div class="bb-glance">
+    <article class="bb-card bb-gcard" id="g-prf">
+      <p class="bb-num">1 · Round 1</p><h3 class="bb-h3">Can pRFs be mapped from free gameplay?</h3>
+      <p>Yes, with an eye tracker, but bars still win centrally: 30 minutes of play gives a median pRF position error of <b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=game_eyetracker">—</b>° against <b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=bars">—</b>° for 15 minutes of bars. Beyond 9°, where bars don't reach, play wins.</p>
+      <button type="button" class="bb-open" data-open="exp-prf">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard" id="g-models">
+      <p class="bb-num">2 · Rounds 2–3</p><h3 class="bb-h3">Can one gameplay dataset serve many models?</h3>
+      <p>Mostly, at moderate accuracy: two hours of play recovers SF peak at r = <b data-draw="cell" data-source="recovery" data-field="spearman" data-where="design=game_2h&amp;parameter=mu">—</b>, and the same data with true gaze at <b data-draw="cell" data-source="recovery" data-field="spearman" data-where="design=game_2h_oracle&amp;parameter=mu">—</b>, so measuring gaze is the main cost. Design levers help SF and attention.</p>
+      <button type="button" class="bb-open" data-open="exp-models">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard" id="g-hours">
+      <p class="bb-num">3 · Round 4</p><h3 class="bb-h3">How much play does it take?</h3>
+      <p>Recovery climbs steeply to about 10 hours, then flattens for SF peak, contrast and surround. Spreading the same 4 hours over ten level types instead of one changed recovery by at most <b data-draw="variety" data-source="variety">—</b>.</p>
+      <button type="button" class="bb-open" data-open="exp-hours">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard" id="g-fair">
+      <p class="bb-num">4 · Round 5</p><h3 class="bb-h3">How does play compare with dedicated experiments?</h3>
+      <p>Hour for hour, a dedicated experiment wins on <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Dedicated">—</b> of 7 V1 measures. At a matched 5 hours the full battery wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Dedicated">—</b>, gameplay <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Gameplay">—</b> and <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Tie">—</b> tie. Gameplay's case is breadth.</p>
+      <button type="button" class="bb-open" data-open="exp-fair">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard" id="g-attn">
+      <p class="bb-num">5 · Round 6</p><h3 class="bb-h3">Attention dynamics and gaze tolerance</h3>
+      <p>Attention gain is weakly recoverable (<b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=attn&amp;condition=oracle&amp;minutes=60&amp;parameter=a">—</b> at 60 min) but its time course is not. Large receptive fields lose only <b data-draw="cell" data-source="r6gap" data-field="gap" data-where="population=Ventral%20(preferred%20category)">—</b> to eye-tracker error, against <b data-draw="cell" data-source="r6gap" data-field="gap" data-where="population=V1%20(pSFT%20peak)">—</b> for V1.</p>
+      <button type="button" class="bb-open" data-open="exp-attn">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard" id="g-cst">
+      <p class="bb-num">6 · Round 7</p><h3 class="bb-h3">Spatiotemporal (CST) pRFs</h3>
+      <p>Only the sustained/transient mixing weight comes through from play (<b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=60&amp;parameter=ws">—</b> at 60 min); both time constants stay low. A dedicated SEQ-SIM design does no better (<b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=seqsim&amp;minutes=60&amp;parameter=ws">—</b>).</p>
+      <button type="button" class="bb-open" data-open="exp-cst">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard bb-gwide" id="g-games">
+      <p class="bb-num">7 · Round 8</p><h3 class="bb-h3">Does the game matter? Three real games against the raycaster</h3>
+      <p>Yes. At a matched hour with eye-tracker gaze, effective c50 goes from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on the raycaster to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Betamax (a realistic shooter), <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=brickninja&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Brick Ninja (a side-scroller) and <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=sanctuary&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Animal Sanctuary (top-down pixel art), and attention gain from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b> to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b>, <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=brickninja&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b> and <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=sanctuary&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b>. Betamax is best overall. The 2D games can't map self-motion (they have no forward flow), and slow pixel art costs Animal Sanctuary on SF and transient tuning.</p>
+      <button type="button" class="bb-open" data-open="exp-games">Open experiment →</button>
+    </article>
   </div>
 </section>
 
-<section class="bb-sec" id="fair">
-  <div class="bb-sec-head">
-    <div>
-      <p class="bb-num">02 · Fair baseline</p>
-      <h2 class="bb-h2">Against dedicated experiments of realistic length</h2>
-      <p class="bb-desc">Real pRF, pSFT and pCRF mapping takes 30–60+ minutes, not 10. Here every dedicated experiment is run for 10, 30 and 60 minutes, fitted on its own and as a joint battery (all five V1 experiments, up to 5 h), and set against gameplay on the same 120 voxels. Uses the parameter chosen above.</p>
-    </div>
+<section class="bb-sec bb-tab" id="exp-prf" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 1 · Round 1</p><h2 class="bb-h2">Can pRFs be mapped from free gameplay?</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>A numpy first-person game is played at 10 Hz on a 24 × 18° screen while a gaze model (fixations, saccades, NPC pursuit) moves the eyes; 500 simulated V1 voxels with Gaussian pRFs respond, and their pRFs are fitted back from 5 minutes to 2 hours of play, with true gaze, a realistic in-bore eye tracker or no gaze at all, against 5–15 minutes of standard drifting bars.</p></div>
+    <figure class="bb-card bb-fig" id="exp-prf-fig"><img data-draw="img" data-img="prf" data-source="img_prf" alt="Game frames with the gaze position (red cross) and a frame of the bar localizer, with the retinal contrast energy each produces."><figcaption>Game frames with the gaze position (red cross) and a frame of the bar localizer, with the retinal contrast energy each produces.</figcaption></figure>
   </div>
-  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
-    <p>A fair baseline changes the headline. Hour for hour, a dedicated experiment beats an hour of gameplay on <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Dedicated">—</b> of 7 V1 measures (SF peak, effective c50, attention gain); none is clearly better from an hour of play (gameplay wins: <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Gameplay">—</b>). At a matched 5 h budget the full dedicated battery wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Dedicated">—</b> (SF peak and bandwidth, attention), gameplay wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Gameplay">—</b> (surround suppression: r = <b data-draw="cell" data-source="budget" data-field="game_r" data-where="budget=5%20h&amp;parameter=k">—</b> vs <b data-draw="cell" data-source="budget" data-field="ded_r" data-where="budget=5%20h&amp;parameter=k">—</b>), and <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Tie">—</b> tie, with transient weight leaning toward gameplay. Longer dedicated scans mostly help the noise-limited parameters; the one-at-a-time fits of transient weight, surround and SF bandwidth stay poor at 60 minutes because the other parameters are held at defaults.</p>
-    <p>For the non-visual models, an hour of the reward task gives RPE weights at r = <b data-draw="cell" data-source="fair" data-field="spearman" data-where="design=ded_60m&amp;parameter=rpe_rpe_beta">—</b> against <b data-draw="cell" data-source="fair" data-field="spearman" data-where="design=game_1h&amp;parameter=rpe_rpe_beta">—</b> for an hour of play (play has many more outcomes), dedicated optic flow beats play on self-motion, and numerosity ties. The case for gameplay is breadth: one 5 h dataset serves all of these models at once, where the dedicated protocol needs a separate experiment for each.</p>
-  </div></div>
-  <div class="bb-card">
-    <p class="bb-note" data-when="nonv1" hidden>Non-visual populations: dedicated experiments at 10, 30 and 60 min against 1–2 h of the round-2 game, on all their voxels, without intervals.</p>
-    <div class="bb-chart" id="scantime" data-draw="scantime" data-source="fair" style="min-height: 340px"></div>
-    <div class="bb-legend">
-      <span data-fam="dedicated">Dedicated, one experiment</span>
-      <span data-fam="battery">Dedicated battery, joint fit</span>
-      <span data-fam="game">Game</span>
-      <span data-fam="levers">Game + design levers</span>
-      <span data-fam="long">Varied-level gameplay</span>
-    </div>
-    <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>Recovery (Spearman r, planted vs fitted) against minutes of scanning, on a log axis. The “dedicated, one experiment” line is the experiment built for this parameter, fitted on its own with the other parameters fixed at population defaults, at 10, 30 and 60 min. The battery line is all five V1 dedicated experiments fitted jointly with every parameter free, at 10, 30 and 60 min each (50 min, 2.5 h and 5 h in total). The gameplay lines are the round-3 game with design levers (1–2 h) and the round-4 varied levels (2–20 h).</p>
-<h4>How to read it</h4><p>Compare lines at the same x. The two dashed verticals are the matched comparisons in the tables below: 1 h of one dedicated experiment against 1 h of play, and the full 5 h dedicated battery against 5 h of play. A dedicated line that keeps climbing means its earlier deficit was just too little data; one that stays flat means the design cannot pin the parameter down however long it runs.</p>
-<div class="bb-signal"><h4>Signal vs noise</h4><p>Bands are bootstrap 95% intervals over the 120 voxels (about ±0.1–0.15 in r). Lines are compared formally in the tables below with a paired bootstrap, which is much tighter because both designs share the same voxels.</p></div>
-<h4>Caveats</h4><p>Multi-session batteries get the same per-session gain and noise jitter as the round-4 gameplay sessions. The one-experiment fits hold the other parameters at population defaults, as a lab running one mapping experiment would; that is what makes surround, transient and exponent biased rather than noisy. The non-visual rows have no intervals because their per-voxel estimates were not saved.</p>
-</details>
-  </div>
-  <div class="bb-grid2" style="margin-top: var(--cds-gap-md)">
-    <div class="bb-card bb-tablewrap">
-      <p class="bb-stat">Matched 1 h: each dedicated experiment vs the game with levers. Gameplay wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Gameplay">—</b>, dedicated wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Dedicated">—</b>, ties <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Tie">—</b>.</p>
-      <table class="bb-table bb-h2h" id="budget1-table" data-source="budget" data-row-key="budget,parameter">
-        <thead><tr><th data-field="parameter_label">Parameter</th><th data-field="ded_r">Dedicated</th><th data-field="game_r">Game</th>
-          <th data-field="diff">Δ r</th><th data-field="diff_lo">95% low</th><th data-field="diff_hi">95% high</th><th data-field="verdict">Verdict</th></tr></thead>
-        <tbody data-draw="budgettable" data-where="budget=1%20h"></tbody>
-      </table>
-    </div>
-    <div class="bb-card bb-tablewrap">
-      <p class="bb-stat">Matched 5 h: the full dedicated battery vs varied-level play. Gameplay wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Gameplay">—</b>, dedicated wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Dedicated">—</b>, ties <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Tie">—</b>.</p>
-      <table class="bb-table bb-h2h" id="budget5-table" data-source="budget" data-row-key="budget,parameter">
-        <thead><tr><th data-field="parameter_label">Parameter</th><th data-field="ded_r">Dedicated</th><th data-field="game_r">Game</th>
-          <th data-field="diff">Δ r</th><th data-field="diff_lo">95% low</th><th data-field="diff_hi">95% high</th><th data-field="verdict">Verdict</th></tr></thead>
-        <tbody data-draw="budgettable" data-where="budget=5%20h"></tbody>
-      </table>
-    </div>
-  </div>
-  <div class="bb-card" style="margin-top: var(--cds-gap-md)">
-    <details class="bb-explain" open><summary>What am I looking at? (both tables)</summary>
-<h4>What it shows</h4><p>Two head-to-heads on the same 120 V1 voxels. <b>Matched 1 h</b>: for each parameter, one hour of the dedicated experiment built for it against one hour of the game with design levers, which recovers all seven at once. <b>Matched 5 h</b>: the whole dedicated protocol (one hour each of band-pass noise, a contrast series, discs and annuli, refresh rates and attention blocks, fitted jointly across three sessions) against five hours of varied-level gameplay.</p>
-<h4>How to read it</h4><p>Δ r is gameplay minus dedicated: positive favours gameplay. The verdict names a winner only when the 95% interval on Δ r excludes zero; otherwise it is a tie. Click a row to switch the whole dashboard to that parameter.</p>
-<div class="bb-signal"><h4>Signal vs noise</h4><p>The interval is a paired bootstrap: the same resampled voxels are scored under both designs, so voxel-to-voxel variation that affects both cancels. Differences of about 0.05 can be detected this way, but a tie is not proof the designs are equal.</p></div>
-<h4>Caveats</h4><p>The 1 h comparison is generous to gameplay in one way (one hour of play buys all seven parameters, the dedicated hour buys one or two) and to dedicated in another (each dedicated experiment is fitted only for its own parameters). The 5 h comparison is the cleaner test of a whole protocol. Gameplay here uses eye-tracker gaze and bar-fitted pRFs; dedicated experiments assume perfect fixation.</p>
-</details>
-  </div>
-</section>
-
-<section class="bb-sec" id="hours">
-  <div class="bb-sec-head">
-    <div>
-      <p class="bb-num">03 · Time</p>
-      <h2 class="bb-h2">How many hours of play does it take?</h2>
-      <p class="bb-desc">One simulated subject, ten 2-hour sessions, each a different level (Warehouse, Night ops, Open arena, Cathedral, Sprint, Treasure hunt, Fog bank, Mixed day, Boss rush, Dusk maze). The band is the dedicated experiment run for an hour on the same 120 voxels; the dotted line is the same experiment at 10 minutes. Uses the parameter chosen above.</p>
-    </div>
-  </div>
-  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
-    <p>Recovery climbs steeply up to about 10 hours, then flattens for SF peak, effective c50 and surround suppression: past that point the limit is gaze and pRF accuracy, not more play. Spreading the same 4 hours over ten level types instead of one changed recovery by at most <b data-draw="variety" data-source="variety">—</b> (r), well inside the noise.</p>
-  </div></div>
-  <div class="bb-grid2">
-    <div class="bb-card">
-      <p class="bb-note" data-when="nonv1" hidden>Rounds 3 and 4 simulated V1 parameters only. Pick a V1 parameter above.</p>
-      <div class="bb-chart" id="hours-chart" data-draw="hours" data-source="recovery" style="min-height: 300px"></div>
-      <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>Spearman r for the chosen parameter as sessions accumulate: 2 h is session 1 (Warehouse), 5 h adds Night ops and half of Open arena, 10 h is five levels, 20 h all ten. The solid line is gameplay with its 95% band; the dashed line and band are the dedicated experiment at 60 minutes, and the dotted line the same experiment at 10 minutes, all on the same 120 voxels.</p>
-<h4>How to read it</h4><p>Where the gameplay line rises above the dedicated band, gameplay has overtaken an hour of the dedicated experiment. A line that keeps rising means more hours still help; a flat line means something other than data quantity is limiting.</p>
-<div class="bb-signal"><h4>Signal vs noise</h4><p>Trust the overall trend from 2 to 10 to 20 h. Single steps can wobble: the 5 h point adds a dim, low-contrast level (Night ops), and with 120 voxels each point is uncertain by roughly ±0.15, so a dip of 0.1 between neighbours is not a real reversal.</p></div>
-<h4>Caveats</h4><p>One simulated subject. Each session also has its own response gain and noise level, and the fitter estimates one gain per session.</p>
-</details>
-    </div>
-    <div class="bb-card">
-      <p class="bb-stat">Same time, more variety? 4 h on one level type vs 4 h spread over ten.</p>
-      <div class="bb-chart" id="variety-chart" data-draw="varietychart" data-source="recovery" style="min-height: 300px"></div>
-      <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>A controlled test of level variety at equal time. Grey dots: 4 h of the Warehouse level (two sessions with different random seeds). Coloured dots: 4 h made of about 24 minutes from each of the ten levels. Same voxels, same fitter.</p>
-<h4>How to read it</h4><p>Each row is one V1 parameter; the grey bar joins the two estimates. A long bar would mean variety matters for that parameter.</p>
-<div class="bb-signal"><h4>Signal vs noise</h4><p>Every pair overlaps almost completely (hover for intervals): no parameter shows a detectable variety effect. The design levers already make each level sample SF, contrast and attention broadly, and the level themes mostly change global statistics such as lighting, fog and pace.</p></div>
-<h4>Caveats</h4><p>This does not test generalization (fitting on some levels and predicting an unseen one) or models whose variables one level under-samples, such as the range of coin counts. Variety may pay off there.</p>
-</details>
-    </div>
-  </div>
-</section>
-
-<section class="bb-sec" id="voxels">
-  <div class="bb-sec-head">
-    <div>
-      <p class="bb-num">04 · Voxels</p>
-      <h2 class="bb-h2">Planted vs fitted, voxel by voxel</h2>
-      <p class="bb-desc">Each dot is a simulated V1 voxel: the value planted in the ground truth against the value fitted from data. Points on the dashed line are perfect. Colour is eccentricity. Uses the parameter chosen above.</p>
-    </div>
-    <div class="bb-controls">
-      <label>Design
-        <select class="dash-select" data-param="design" aria-label="Design">
-          <option value="dedicated">Short dedicated protocol (10 min)</option>
-          <option value="dedicated_60m">Dedicated experiment (60 min)</option>
-          <option value="battery_joint">V1 battery, joint fit (50 min)</option>
-          <option value="battery_5h">Full dedicated battery, joint (5 h)</option>
-          <option value="game_1h">Game 1 h</option>
-          <option value="game_2h">Game 2 h</option>
-          <option value="game_2h_oracle">Game 2 h, oracle gaze + pRF</option>
-          <option value="levers_1h">Game + levers 1 h</option>
-          <option value="levers_2h">Game + levers 2 h</option>
-          <option value="levers_2h_oracle">Game + levers 2 h, oracle</option>
-          <option value="long_2h">Ten levels: 2 h</option>
-          <option value="long_5h">Ten levels: 5 h</option>
-          <option value="long_10h">Ten levels: 10 h</option>
-          <option value="long_20h">Ten levels: 20 h</option>
-          <option value="single_4h">One level type: 4 h</option>
-          <option value="varied_4h">Ten level types: 4 h</option>
-        </select>
-      </label>
-      <label>Eccentricity
-        <select class="dash-select" data-param="ecc" aria-label="Eccentricity">
-          <option value="all">All</option>
-          <option value="0-3">0–3°</option>
-          <option value="3-7">3–7°</option>
-          <option value="7-13">7–12°</option>
-        </select>
-      </label>
-    </div>
-  </div>
-  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
-    <p>This is where you see <i>how</i> a design succeeds or fails. A tight cloud along the diagonal is good recovery. A flat, horizontal cloud means the parameter is not identifiable from that data. Dots piled against the top or bottom edge are fits stuck at a parameter bound, common for dedicated surround and transient fits whose other parameters are held fixed.</p>
-  </div></div>
-  <div class="bb-card">
-    <p class="bb-stat">Spearman r for this design and parameter (all voxels): <b data-draw="scatter-r" data-source="recovery" data-field="spearman">—</b></p>
-    <p class="bb-note" data-when="nonv1" hidden>Voxel-level values are exported for V1 parameters only. Pick a V1 parameter above.</p>
-    <div class="bb-chart" id="scatter" data-draw="scatter" data-source="v1_voxels" style="min-height: 380px"></div>
-    <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>One dot per simulated V1 voxel: its planted (true) value on the x-axis and the value fitted from the chosen design's data on the y-axis. Colour is eccentricity. Units: pSFT peak in log2 cycles/degree, bandwidth in octaves, effective c50 in contrast-energy units (log axes), CRF exponent unitless, surround suppression and transient weight as weights, attention as a fractional gain.</p>
-<h4>How to read it</h4><ul><li><b>Along the dashed diagonal</b>: recovered.</li><li><b>Diagonal but tilted flatter</b>: shrinkage, fitted values pulled toward the middle (typical when the data are weak).</li><li><b>Horizontal smear</b>: the data barely constrain the parameter.</li><li><b>Rows of dots at the top or bottom edge</b>: fits hit a parameter bound.</li></ul><p>Use the eccentricity filter to see whether failures concentrate in the fovea or periphery.</p>
-<div class="bb-signal"><h4>Signal vs noise</h4><p>The r above the plot is for all voxels of this design and parameter, from the results file; the filter changes what you see, not that number. A visible trend among a few dozen voxels in one eccentricity band can easily be chance.</p></div>
-<h4>Caveats</h4><p>Effective c50 is c50 / (1+k)<sup>1/q</sup>, the half-saturation point a contrast experiment can actually measure; raw c50 trades off with surround suppression and the exponent.</p>
-</details>
-  </div>
-</section>
-
-<section class="bb-sec" id="prf">
-  <div class="bb-sec-head">
-    <div>
-      <p class="bb-num">05 · Round 1</p>
-      <h2 class="bb-h2">pRFs from gameplay</h2>
-      <p class="bb-desc">Position error of fitted pRFs against eccentricity. Click a row to plot that design. The steps are the median error in each eccentricity band. Bars only reach 9°; eye movements carry the game screen further out.</p>
-    </div>
-  </div>
-  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
     <p>For plain pRF mapping, 30 minutes of gameplay gives <b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=game_eyetracker">—</b>° median position error, against <b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=bars">—</b>° for 15 minutes of bars, so bars win overall. Beyond 9°, where bars never reach, gameplay wins (<b data-draw="cell" data-source="prf_round1" data-field="pos_err_ecc_9_12" data-where="design=game_eyetracker">—</b>° vs <b data-draw="cell" data-source="prf_round1" data-field="pos_err_ecc_9_12" data-where="design=bars">—</b>°). Ignoring eye position is catastrophic (<b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=game_nogaze">—</b>°), and bars plus gameplay together is best (<b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=bars%2Bgame">—</b>°).</p>
   </div></div>
   <div class="bb-grid2">
@@ -342,16 +192,416 @@
 </details>
     </div>
   </div>
+
 </section>
 
-<section class="bb-sec" id="noise">
-  <div class="bb-sec-head">
-    <div>
-      <p class="bb-num">06 · Assumptions</p>
-      <h2 class="bb-h2">Signal, noise and what the fitter removes</h2>
-      <p class="bb-desc">All noise is in percent signal change at TR = 1.5 s, independent per voxel. Gameplay keeps V1 driven but modulates any one pRF far less than bars do, which is why hours matter.</p>
+<section class="bb-sec bb-tab" id="exp-models" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 2 · Rounds 2–3</p><h2 class="bb-h2">Can one gameplay dataset serve many models at once?</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>Each row is one design: a dedicated experiment built for that parameter, the game with and without design levers, and up to 20 hours across ten levels. Dots are Spearman r; whiskers are bootstrap 95% intervals over voxels (not computed for the non-visual populations). Round 2 plants seven V1 tuning parameters (SF peak and bandwidth, contrast response, surround suppression, a transient channel, attention gain) plus numerosity, self-motion and striatal reward populations; round 3 adds design levers: covert-attention cues and textures that decorrelate SF from contrast.</p></div>
+    <figure class="bb-card bb-fig" id="exp-models-fig"><img data-draw="img" data-img="models" data-source="img_models" alt="Top: the round-2 game. Bottom: the same game with round 3’s design levers (decorrelated textures, varied contrast)."><figcaption>Top: the round-2 game. Bottom: the same game with round 3’s design levers (decorrelated textures, varied contrast).</figcaption></figure>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
+    <p>Gameplay does best where a game naturally varies a quantity a lot or produces many events: surround suppression (objects of every size against every background), transient responses (saccades, camera turns) and reward outcomes. Against dedicated experiments of realistic length (rows at the bottom, and section 02) it loses on SF tuning, attention and self-motion, and roughly ties on contrast response and numerosity. Parameters that interact (surround, transient weight, CRF exponent) are poorly recovered one experiment at a time however long it runs, so fitting them jointly is what matters.</p>
+  </div></div>
+  <div class="bb-controls bb-ctl-row"><div class="bb-controls">
+      <label>Parameter
+        <select class="dash-select" data-param="param" aria-label="Parameter">
+          <optgroup label="V1">
+            <option value="mu">pSFT peak</option>
+            <option value="sig">pSFT bandwidth</option>
+            <option value="c50_eff">pCRF effective c50</option>
+            <option value="q">pCRF exponent</option>
+            <option value="k">Surround suppression k</option>
+            <option value="tau">Transient weight</option>
+            <option value="a">Attention gain</option>
+          </optgroup>
+          <optgroup label="Other populations">
+            <option value="num_mu">Numerosity preference</option>
+            <option value="num_sig">Numerosity tuning width</option>
+            <option value="mst_rotation_pref">Self-motion: rotation preference</option>
+            <option value="mst_expansion_frac">Self-motion: expansion share</option>
+            <option value="rpe_rpe_beta">Striatal RPE weight</option>
+          </optgroup>
+        </select>
+      </label>
+    </div></div>
+  <div class="bb-card">
+    <p class="bb-dyn bb-stat">For <b data-draw="sel-param" data-source="recovery" data-field="parameter_label">—</b>, the best realistic design (no oracle) is <b data-draw="best-design" data-source="recovery" data-field="design_label">—</b> at r = <b data-draw="best-r" data-source="recovery" data-field="spearman">—</b>; the dedicated experiment gives <b data-draw="ded-r" data-source="recovery" data-field="spearman">—</b> in 10 minutes and <b data-draw="ded60-r" data-source="recovery" data-field="spearman">—</b> in 60 (120 voxels).</p>
+    <div class="bb-chart" id="forest" data-draw="forest" data-source="recovery" style="min-height: 380px"></div>
+    <div class="bb-legend">
+      <span data-fam="dedicated">Dedicated experiment</span>
+      <span data-fam="battery">Dedicated battery, joint fit</span>
+      <span data-fam="game">Game</span>
+      <span data-fam="levers">Game + design levers</span>
+      <span data-fam="long">Ten levels (round 4)</span>
+    </div>
+    <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>For the parameter you pick, one row per experimental design and the Spearman r between planted and fitted values across voxels.</p><ul><li><b>Dedicated experiment</b>: the classic design built for that parameter (band-pass noise for pSFT, a contrast series for pCRF, discs and annuli for surround suppression, refresh rates for the transient channel, attend-left/right blocks for attention, dot arrays, optic-flow blocks, a reward task), only 10 minutes in rounds 2–4 (a short protocol; realistic lengths are in round 5), fitting only that parameter with the others fixed at population defaults.</li><li><b>Battery fit jointly</b>: all five V1 experiments (50 min) fitted together with every parameter free.</li><li><b>Game</b>: 1–2 h of the round-2 game. <b>Game + design levers</b>: the round-3 game with covert-attention cues and SF/contrast-decorrelated textures.</li><li><b>Oracle</b>: the same data fitted with true gaze and true pRFs, an upper bound on what better eye tracking and localizers would buy.</li><li><b>Ten levels</b>: round 4, 2–20 h across ten level types on a 120-voxel subset (its dedicated row is re-scored on those same voxels).</li><li><b>Round 5, realistic dedicated</b>: each dedicated experiment run for 30 and 60 min, and the full battery (an hour per experiment, 5 h, three sessions) fitted jointly, on the round-4 voxels. The shaded column is the 60-minute experiment's interval.</li></ul>
+<h4>How to read it</h4><p>Dots further right recover the parameter better. Horizontal lines separate rounds. Hover any row for minutes of data, voxel count and the interval.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Whiskers are bootstrap 95% intervals over voxels. The shaded column is the 60-minute dedicated experiment's interval: a design whose whisker sits entirely outside it is convincingly better or worse; overlap means treat it as a tie. As a rule of thumb, r is uncertain by about ±0.1 with 300 voxels and ±0.15 with 120.</p></div>
+<h4>Caveats</h4><p>Compare within a round where possible (rounds 2–3 use 300 voxels, round 4 uses 120). Numerosity, self-motion and striatal rows have no intervals because their per-voxel fits were not saved, and their round-2 dedicated runs had only 10 min (round 5 adds 30 and 60 min).</p>
+</details>
+  </div>
+
+</section>
+
+<section class="bb-sec bb-tab" id="exp-hours" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 3 · Round 4</p><h2 class="bb-h2">How much play does it take, and does level variety help?</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>One simulated subject, ten 2-hour sessions, each a different level (Warehouse, Night ops, Open arena, Cathedral, Sprint, Treasure hunt, Fog bank, Mixed day, Boss rush, Dusk maze). The band is the dedicated experiment run for an hour on the same 120 voxels; the dotted line is the same experiment at 10 minutes. Uses the parameter picked here.</p></div>
+    <figure class="bb-card bb-fig" id="exp-hours-fig"><img data-draw="img" data-img="hours" data-source="img_hours" alt="Five of the ten level themes: Warehouse, Night ops, Open arena, Cathedral and Sprint."><figcaption>Five of the ten level themes: Warehouse, Night ops, Open arena, Cathedral and Sprint.</figcaption></figure>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
+    <p>Recovery climbs steeply up to about 10 hours, then flattens for SF peak, effective c50 and surround suppression: past that point the limit is gaze and pRF accuracy, not more play. Spreading the same 4 hours over ten level types instead of one changed recovery by at most <b data-draw="variety" data-source="variety">—</b> (r), well inside the noise.</p>
+  </div></div>
+  <div class="bb-controls bb-ctl-row"><div class="bb-controls"><label>Parameter
+        <select class="dash-select" data-param="param" aria-label="Parameter">
+          <optgroup label="V1">
+            <option value="mu">pSFT peak</option>
+            <option value="sig">pSFT bandwidth</option>
+            <option value="c50_eff">pCRF effective c50</option>
+            <option value="q">pCRF exponent</option>
+            <option value="k">Surround suppression k</option>
+            <option value="tau">Transient weight</option>
+            <option value="a">Attention gain</option>
+          </optgroup>
+          <optgroup label="Other populations">
+            <option value="num_mu">Numerosity preference</option>
+            <option value="num_sig">Numerosity tuning width</option>
+            <option value="mst_rotation_pref">Self-motion: rotation preference</option>
+            <option value="mst_expansion_frac">Self-motion: expansion share</option>
+            <option value="rpe_rpe_beta">Striatal RPE weight</option>
+          </optgroup>
+        </select>
+      </label></div></div>
+  <div class="bb-grid2">
+    <div class="bb-card">
+      <p class="bb-note" data-when="nonv1" hidden>Rounds 3 and 4 simulated V1 parameters only. Pick a V1 parameter above.</p>
+      <div class="bb-chart" id="hours-chart" data-draw="hours" data-source="recovery" style="min-height: 300px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Spearman r for the chosen parameter as sessions accumulate: 2 h is session 1 (Warehouse), 5 h adds Night ops and half of Open arena, 10 h is five levels, 20 h all ten. The solid line is gameplay with its 95% band; the dashed line and band are the dedicated experiment at 60 minutes, and the dotted line the same experiment at 10 minutes, all on the same 120 voxels.</p>
+<h4>How to read it</h4><p>Where the gameplay line rises above the dedicated band, gameplay has overtaken an hour of the dedicated experiment. A line that keeps rising means more hours still help; a flat line means something other than data quantity is limiting.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Trust the overall trend from 2 to 10 to 20 h. Single steps can wobble: the 5 h point adds a dim, low-contrast level (Night ops), and with 120 voxels each point is uncertain by roughly ±0.15, so a dip of 0.1 between neighbours is not a real reversal.</p></div>
+<h4>Caveats</h4><p>One simulated subject. Each session also has its own response gain and noise level, and the fitter estimates one gain per session.</p>
+</details>
+    </div>
+    <div class="bb-card">
+      <p class="bb-stat">Same time, more variety? 4 h on one level type vs 4 h spread over ten.</p>
+      <div class="bb-chart" id="variety-chart" data-draw="varietychart" data-source="recovery" style="min-height: 300px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>A controlled test of level variety at equal time. Grey dots: 4 h of the Warehouse level (two sessions with different random seeds). Coloured dots: 4 h made of about 24 minutes from each of the ten levels. Same voxels, same fitter.</p>
+<h4>How to read it</h4><p>Each row is one V1 parameter; the grey bar joins the two estimates. A long bar would mean variety matters for that parameter.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Every pair overlaps almost completely (hover for intervals): no parameter shows a detectable variety effect. The design levers already make each level sample SF, contrast and attention broadly, and the level themes mostly change global statistics such as lighting, fog and pace.</p></div>
+<h4>Caveats</h4><p>This does not test generalization (fitting on some levels and predicting an unseen one) or models whose variables one level under-samples, such as the range of coin counts. Variety may pay off there.</p>
+</details>
     </div>
   </div>
+
+</section>
+
+<section class="bb-sec bb-tab" id="exp-fair" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 4 · Round 5</p><h2 class="bb-h2">How does gameplay compare with dedicated experiments of realistic length?</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>Real pRF, pSFT and pCRF mapping takes 30–60+ minutes, not 10. Here every dedicated experiment is run for 10, 30 and 60 minutes, fitted on its own and as a joint battery (all five V1 experiments, up to 5 h), and set against gameplay on the same 120 voxels. Uses the parameter picked here.</p></div>
+    <figure class="bb-card bb-fig" id="exp-fair-fig"><img data-draw="img" data-img="dedicated" data-source="img_dedicated" alt="The dedicated V1 battery: band-pass noise (SF tuning), a contrast series, discs and annuli (surround), flicker rates (transient) and attention blocks."><figcaption>The dedicated V1 battery: band-pass noise (SF tuning), a contrast series, discs and annuli (surround), flicker rates (transient) and attention blocks.</figcaption></figure>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
+    <p>A fair baseline changes the headline. Hour for hour, a dedicated experiment beats an hour of gameplay on <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Dedicated">—</b> of 7 V1 measures (SF peak, effective c50, attention gain); none is clearly better from an hour of play (gameplay wins: <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Gameplay">—</b>). At a matched 5 h budget the full dedicated battery wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Dedicated">—</b> (SF peak and bandwidth, attention), gameplay wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Gameplay">—</b> (surround suppression: r = <b data-draw="cell" data-source="budget" data-field="game_r" data-where="budget=5%20h&amp;parameter=k">—</b> vs <b data-draw="cell" data-source="budget" data-field="ded_r" data-where="budget=5%20h&amp;parameter=k">—</b>), and <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Tie">—</b> tie, with transient weight leaning toward gameplay. Longer dedicated scans mostly help the noise-limited parameters; the one-at-a-time fits of transient weight, surround and SF bandwidth stay poor at 60 minutes because the other parameters are held at defaults.</p>
+    <p>For the non-visual models, an hour of the reward task gives RPE weights at r = <b data-draw="cell" data-source="fair" data-field="spearman" data-where="design=ded_60m&amp;parameter=rpe_rpe_beta">—</b> against <b data-draw="cell" data-source="fair" data-field="spearman" data-where="design=game_1h&amp;parameter=rpe_rpe_beta">—</b> for an hour of play (play has many more outcomes), dedicated optic flow beats play on self-motion, and numerosity ties. The case for gameplay is breadth: one 5 h dataset serves all of these models at once, where the dedicated protocol needs a separate experiment for each.</p>
+  </div></div>
+  <div class="bb-controls bb-ctl-row"><div class="bb-controls"><label>Parameter
+        <select class="dash-select" data-param="param" aria-label="Parameter">
+          <optgroup label="V1">
+            <option value="mu">pSFT peak</option>
+            <option value="sig">pSFT bandwidth</option>
+            <option value="c50_eff">pCRF effective c50</option>
+            <option value="q">pCRF exponent</option>
+            <option value="k">Surround suppression k</option>
+            <option value="tau">Transient weight</option>
+            <option value="a">Attention gain</option>
+          </optgroup>
+          <optgroup label="Other populations">
+            <option value="num_mu">Numerosity preference</option>
+            <option value="num_sig">Numerosity tuning width</option>
+            <option value="mst_rotation_pref">Self-motion: rotation preference</option>
+            <option value="mst_expansion_frac">Self-motion: expansion share</option>
+            <option value="rpe_rpe_beta">Striatal RPE weight</option>
+          </optgroup>
+        </select>
+      </label></div></div>
+  <div class="bb-card">
+    <p class="bb-note" data-when="nonv1" hidden>Non-visual populations: dedicated experiments at 10, 30 and 60 min against 1–2 h of the round-2 game, on all their voxels, without intervals.</p>
+    <div class="bb-chart" id="scantime" data-draw="scantime" data-source="fair" style="min-height: 340px"></div>
+    <div class="bb-legend">
+      <span data-fam="dedicated">Dedicated, one experiment</span>
+      <span data-fam="battery">Dedicated battery, joint fit</span>
+      <span data-fam="game">Game</span>
+      <span data-fam="levers">Game + design levers</span>
+      <span data-fam="long">Varied-level gameplay</span>
+    </div>
+    <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Recovery (Spearman r, planted vs fitted) against minutes of scanning, on a log axis. The “dedicated, one experiment” line is the experiment built for this parameter, fitted on its own with the other parameters fixed at population defaults, at 10, 30 and 60 min. The battery line is all five V1 dedicated experiments fitted jointly with every parameter free, at 10, 30 and 60 min each (50 min, 2.5 h and 5 h in total). The gameplay lines are the round-3 game with design levers (1–2 h) and the round-4 varied levels (2–20 h).</p>
+<h4>How to read it</h4><p>Compare lines at the same x. The two dashed verticals are the matched comparisons in the tables below: 1 h of one dedicated experiment against 1 h of play, and the full 5 h dedicated battery against 5 h of play. A dedicated line that keeps climbing means its earlier deficit was just too little data; one that stays flat means the design cannot pin the parameter down however long it runs.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Bands are bootstrap 95% intervals over the 120 voxels (about ±0.1–0.15 in r). Lines are compared formally in the tables below with a paired bootstrap, which is much tighter because both designs share the same voxels.</p></div>
+<h4>Caveats</h4><p>Multi-session batteries get the same per-session gain and noise jitter as the round-4 gameplay sessions. The one-experiment fits hold the other parameters at population defaults, as a lab running one mapping experiment would; that is what makes surround, transient and exponent biased rather than noisy. The non-visual rows have no intervals because their per-voxel estimates were not saved.</p>
+</details>
+  </div>
+  <details class="bb-more" id="exp-fair-more"><summary>More detail: head-to-head tables with paired intervals</summary>
+  <div class="bb-grid2" style="margin-top: var(--cds-gap-md)">
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">Matched 1 h: each dedicated experiment vs the game with levers. Gameplay wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Gameplay">—</b>, dedicated wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Dedicated">—</b>, ties <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Tie">—</b>.</p>
+      <table class="bb-table bb-h2h" id="budget1-table" data-source="budget" data-row-key="budget,parameter">
+        <thead><tr><th data-field="parameter_label">Parameter</th><th data-field="ded_r">Dedicated</th><th data-field="game_r">Game</th>
+          <th data-field="diff">Δ r</th><th data-field="diff_lo">95% low</th><th data-field="diff_hi">95% high</th><th data-field="verdict">Verdict</th></tr></thead>
+        <tbody data-draw="budgettable" data-where="budget=1%20h"></tbody>
+      </table>
+    </div>
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">Matched 5 h: the full dedicated battery vs varied-level play. Gameplay wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Gameplay">—</b>, dedicated wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Dedicated">—</b>, ties <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Tie">—</b>.</p>
+      <table class="bb-table bb-h2h" id="budget5-table" data-source="budget" data-row-key="budget,parameter">
+        <thead><tr><th data-field="parameter_label">Parameter</th><th data-field="ded_r">Dedicated</th><th data-field="game_r">Game</th>
+          <th data-field="diff">Δ r</th><th data-field="diff_lo">95% low</th><th data-field="diff_hi">95% high</th><th data-field="verdict">Verdict</th></tr></thead>
+        <tbody data-draw="budgettable" data-where="budget=5%20h"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="bb-card" style="margin-top: var(--cds-gap-md)">
+    <details class="bb-explain" open><summary>What am I looking at? (both tables)</summary>
+<h4>What it shows</h4><p>Two head-to-heads on the same 120 V1 voxels. <b>Matched 1 h</b>: for each parameter, one hour of the dedicated experiment built for it against one hour of the game with design levers, which recovers all seven at once. <b>Matched 5 h</b>: the whole dedicated protocol (one hour each of band-pass noise, a contrast series, discs and annuli, refresh rates and attention blocks, fitted jointly across three sessions) against five hours of varied-level gameplay.</p>
+<h4>How to read it</h4><p>Δ r is gameplay minus dedicated: positive favours gameplay. The verdict names a winner only when the 95% interval on Δ r excludes zero; otherwise it is a tie. Click a row to switch the whole dashboard to that parameter.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>The interval is a paired bootstrap: the same resampled voxels are scored under both designs, so voxel-to-voxel variation that affects both cancels. Differences of about 0.05 can be detected this way, but a tie is not proof the designs are equal.</p></div>
+<h4>Caveats</h4><p>The 1 h comparison is generous to gameplay in one way (one hour of play buys all seven parameters, the dedicated hour buys one or two) and to dedicated in another (each dedicated experiment is fitted only for its own parameters). The 5 h comparison is the cleaner test of a whole protocol. Gameplay here uses eye-tracker gaze and bar-fitted pRFs; dedicated experiments assume perfect fixation.</p>
+</details>
+  </div>
+
+  </details>
+</section>
+
+<section class="bb-sec bb-tab" id="exp-attn" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 5 · Round 6</p><h2 class="bb-h2">Attention dynamics, gaze tolerance of large receptive fields, and one game lever</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>Three follow-ups on the round-5 baseline: can gameplay recover the time course (not just the gain) of attention; do large, foveally-biased receptive fields buy gaze tolerance; and does tightening one game cue actually help.</p></div>
+    <figure class="bb-card bb-fig" id="exp-attn-fig"><img data-draw="img" data-img="ventral" data-source="img_ventral" alt="A game frame and three of the content maps the ventral population pools: NPCs, one wall texture, the floor."><figcaption>A game frame and three of the content maps the ventral population pools: NPCs, one wall texture, the floor.</figcaption></figure>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
+    <p>Attention <i>gain</i> is weakly recoverable from gameplay and improves with duration (oracle gaze: <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=attn&amp;condition=oracle&amp;minutes=20&amp;parameter=a">—</b> → <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=attn&amp;condition=oracle&amp;minutes=40&amp;parameter=a">—</b> → <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=attn&amp;condition=oracle&amp;minutes=60&amp;parameter=a">—</b> at 20/40/60 min), but its rise and decay time constants are not: the attention term is only a few percent of the core visual drive's size, too small a ripple for its shape to come through. The dedicated block design is worse off on principle, not just power: a block has no temporal shape inside it for a decay time to show up in. A large, foveally-biased ventral population loses only <b data-draw="cell" data-source="r6gap" data-field="gap" data-where="population=Ventral%20(preferred%20category)">—</b> Spearman r to realistic eye-tracker gaze at 40 minutes, against <b data-draw="cell" data-source="r6gap" data-field="gap" data-where="population=V1%20(pSFT%20peak)">—</b> for V1 at the same duration — gaze tolerance does scale with receptive-field size, as hypothesized. Tightening the covert cue's spacing (6–10 s → 3–5 s) did not help attention-gain recovery (<b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=lever&amp;design=lever_cue_1h&amp;parameter=a">—</b> versus <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=lever&amp;design=levers_1h&amp;parameter=a">—</b> for the original schedule), plausibly an fMRI design-efficiency cost of packing events too close together.</p>
+  </div></div>
+  <details class="bb-sub" id="r6-a" open><summary>A · Can the time course of attention be recovered?</summary>
+  <div class="bb-grid2">
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">A · Attention-dynamics kernel fit from gameplay: gain (a), rise time and decay time, oracle gaze versus eye tracker.</p>
+      <table class="bb-table" id="r6attn-table" data-source="round6" data-row-key="minutes">
+        <thead><tr><th>Min</th><th>Gain, oracle</th><th>Gain, eye tracker</th><th>Rise τ, oracle</th><th>Rise τ, eye tracker</th><th>Decay τ, oracle</th><th>Decay τ, eye tracker</th></tr></thead>
+        <tbody data-draw="r6attntable"></tbody>
+      </table>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Spearman r between planted and fitted values for a per-voxel rise/decay attention kernel (replacing round 2's fixed-duration box) fitted to event-locked attention at NPC appearances, kills and covert cues, at 20/40/60 min of gameplay. Other V1 parameters are held at a prior joint-fit estimate, not ground truth, isolating this one mechanism.</p>
+<h4>How to read it</h4><p>Gain climbs gently with duration; rise and decay stay near zero at every duration and condition.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>The attention term is only a few percent of the core drive's SD (median voxel) — a small multiplicative ripple riding on a much larger signal plus comparable measurement noise. That is a genuine low-SNR finding, confirmed by comparing the achieved fit against plugging in the true (a, rise, decay) into the same mismatched core: both give nearly the same prediction correlation, meaning the ridge is flat (non-identifiable), not under-optimized.</p></div>
+<h4>Caveats</h4><p>Gameplay's irregular event timing is the one of the two designs that could in principle see transient dynamics — it just doesn't see them well in this model, because the effect size is small, not because events are too regular.</p>
+</details>
+    </div>
+    <div class="bb-card">
+      <p class="bb-stat">The dedicated block design cannot identify decay time at all: correlation between a fitted and the true decay time, analytically, as a function of the true decay time.</p>
+      <div class="bb-chart" id="r6identify-chart" data-draw="r6identify" data-source="round6_identify" style="min-height: 300px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>The dedicated attention task's ground truth is a flat 15-second block with no temporal shape inside it. Convolving a decay kernel against that block's onsets and correlating against the true box, across a grid of decay times, shows what a fit to this design alone could ever recover — no noisy per-voxel optimization needed.</p>
+<h4>How to read it</h4><p>Correlation climbs across the entire biologically plausible range used in the gameplay fits (shaded) and only peaks once the decay time approaches the 15 s block length itself, then falls as the kernel outlasts the block. A fit to this design would be pulled toward a 10–15 s decay regardless of the true, much shorter value, and the broad plateau near the peak means even block-scale decays are not sharply resolved.</p>
+<h4>Caveats</h4><p>This is the design's ceiling, not a fitted result: it says what information is there to find, independent of noise or optimizer behavior.</p>
+</details>
+    </div>
+  </div>
+
+  </details>
+  <details class="bb-sub" id="r6-b"><summary>B · Do large receptive fields buy gaze tolerance?</summary>
+  <div class="bb-grid2" style="margin-top: var(--cds-gap-md)">
+    <div class="bb-card">
+      <p class="bb-stat">B · Large receptive fields buy gaze tolerance: a category-selective ventral population (200 voxels, large foveally-biased pRFs) versus V1 at a matched 40 minutes.</p>
+      <div class="bb-chart" id="r6gaze-chart" data-draw="r6gaze" data-source="round6" style="min-height: 300px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>A new population pools game-engine content maps (NPC presence, four wall textures, floor, ceiling — a toy stand-in for object/scene category) through large (σ ≈ 1.5–4°+), foveally-biased pRFs, one preferred category per voxel. Spearman r for the preferred-category weight, oracle gaze+pRFs versus realistic eye-tracker gaze, at 10/20/40 minutes; V1's pSFT peak at the same 40 minutes (round 5's game-fit machinery, freshly matched to 40 min) is plotted alongside for scale.</p>
+<h4>How to read it</h4><p>The gap between the two ventral lines barely moves with more data; the gap between V1's two isolated points is far larger. Gaze-measurement error costs the large-RF population much less than it costs V1.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>Absolute recovery is still modest at 40 min (r ≈ 0.3–0.5): category selectivity from gameplay is data-hungry. The claim here is about the <i>gap</i> between oracle and realistic gaze, not the absolute level.</p></div>
+<h4>Caveats</h4><p>Pairwise regressor correlations among the seven content channels stay low (|r| ≤ 0.2) except a mechanically forced floor/ceiling anti-correlation; NPC selectivity shows no inflation from the gaze–content confound (people fixate NPCs) at this pooling scale.</p>
+</details>
+    </div>
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">Gap in Spearman r between oracle and realistic gaze, matched at 40 minutes.</p>
+      <table class="bb-table" id="r6gap-table" data-source="r6gap" data-row-key="population">
+        <thead><tr><th>Population</th><th>Oracle r</th><th>Realistic r</th><th>Gap</th></tr></thead>
+        <tbody data-draw="r6gaptable"></tbody>
+      </table>
+      <p class="bb-stat" style="margin-top: var(--cds-gap-md)">Full ventral numbers by duration and condition.</p>
+      <div class="bb-tablewrap">
+      <table class="bb-table" id="r6vent-table" data-row-key="minutes,condition">
+        <thead><tr><th>Min</th><th>Condition</th><th>Pref-weight r</th><th>Full-vector r</th><th>Frac. correct category</th></tr></thead>
+        <tbody data-draw="r6venttable" data-source="round6"></tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  </details>
+  <details class="bb-sub" id="r6-c"><summary>C · Does a tighter attention cue help?</summary>
+  <div class="bb-card bb-tablewrap" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">C · One game-measure lever, tested: tightening the covert-attention cue's spacing (6–10 s → 3–5 s), one hour of gameplay.</p>
+    <table class="bb-table" id="r6lever-table" data-source="round6" data-row-key="parameter">
+      <thead><tr><th>Parameter</th><th>Tightened cue</th><th>Original cue</th><th>Δ r</th></tr></thead>
+      <tbody data-draw="r6levertable"></tbody>
+    </table>
+    <details class="bb-explain" open><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Of six ideas for narrowing the round-5 gap (embedding probes in mechanics, adaptive design, crosshair-anchored stimuli, stronger attention cues, more response variance, hierarchical fitting), this tests the cheapest against existing infrastructure: a tighter covert-cue schedule.</p>
+<h4>How to read it</h4><p>Δr is tightened minus original; a negative value anywhere means the lever did not help that parameter.</p>
+<h4>Caveats</h4><p>The likely cause is a design-efficiency cost: cues this close together are hard to space well against an ~8 s hemodynamic response, the same event-spacing/collinearity trade-off that limits any closely packed fMRI design. The other five levers, especially embedding probes directly in mechanics and adaptive per-session design, remain untested and are likely to matter more than cue frequency alone.</p>
+</details>
+  </div>
+
+  </details>
+</section>
+
+<section class="bb-sec bb-tab" id="exp-cst" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 6 · Round 7</p><h2 class="bb-h2">Spatiotemporal pRFs: can gameplay separate sustained from transient channels?</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>After Kim/Kupers/Grill-Spector's compressive spatiotemporal pRF: the old instantaneous transient term is replaced by two channels with their own memory — a sustained low-pass of the centre drive (τ<sub>s</sub>) and a transient low-pass of the frame-difference drive (τ<sub>t</sub>), mixed by a per-voxel weight w<sub>s</sub>. A dedicated SEQ-SIM design (two full-field probes, shown together or apart at several gaps) stands in for Kupers' own sequential-vs-simultaneous bar paradigm as the controlled comparison.</p></div>
+    <figure class="bb-card bb-fig" id="exp-cst-fig"><img data-draw="img" data-img="seqsim" data-source="img_seqsim" alt="One sequential SEQ-SIM trial, every other frame: two full-field flashes with a gap between them."><figcaption>One sequential SEQ-SIM trial, every other frame: two full-field flashes with a gap between them.</figcaption></figure>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
+    <p>The channel-mixing weight (w<sub>s</sub>) is the one piece of this model gameplay gets any traction on at all (oracle gaze: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=20&amp;parameter=ws">—</b> → <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=40&amp;parameter=ws">—</b> → <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=60&amp;parameter=ws">—</b> at 20/40/60 min); both time constants stay low throughout (τ<sub>s</sub> oracle, 60 min: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=60&amp;parameter=taus">—</b>; τ<sub>t</sub>: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=60&amp;parameter=taut">—</b>). The dedicated SEQ-SIM design, run at the same durations, does not rescue this — if anything it does <i>no better</i> than gameplay (w<sub>s</sub>, 60 min: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=seqsim&amp;minutes=60&amp;parameter=ws">—</b>). The likely reason is not a failure of timing control but of duty cycle: the sustained and transient channels are at least as correlated with each other under SEQ-SIM's brief, mostly-blank probes as they are under gameplay's continuous content (<b data-draw="cell" data-source="round7_diagnostic" data-field="corr" data-where="design=Gameplay">—</b> vs <b data-draw="cell" data-source="round7_diagnostic" data-field="corr" data-where="design=Dedicated%20SEQ-SIM">—</b>), so the controlled design buys no extra separation between w<sub>s</sub> and the overall response gain, while paying a real cost in total driven signal.</p>
+  </div></div>
+  <div class="bb-grid2">
+    <div class="bb-card">
+      <p class="bb-stat">Channel-mixing weight (w<sub>s</sub>) recovery, gameplay (oracle gaze, eye tracker) versus the dedicated SEQ-SIM design, by duration.</p>
+      <div class="bb-chart" id="r7ws-chart" data-draw="r7ws" data-source="round7" style="min-height: 300px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Spearman r between planted and fitted w<sub>s</sub> (the sustained-channel weight in the two-channel CST drive) at 20/40/60 minutes, for three designs: gameplay under oracle gaze, gameplay under realistic eye-tracker gaze, and a dedicated SEQ-SIM run (two full-field probes, shown together or with a gap, at several gaps). All three isolate the mechanism the same way round 6 isolated attention: mu/sig/c50/q/k come from the existing joint fit, not ground truth, and attention is switched off.</p>
+<h4>How to read it</h4><p>All three lines sit in the same modest band and climb slowly with duration; SEQ-SIM is not systematically above gameplay the way a cleanly-controlled design is supposed to be.</p>
+<h4>Caveats</h4><p>This SEQ-SIM is a simplified, full-field stand-in for Kupers' own retinotopic bar paradigm (chosen so every pRF, at any eccentricity, is driven the same way) — a higher-duty-cycle or longer-probe version might do better; see the diagnostic below.</p>
+</details>
+    </div>
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">Full breakdown: all three CST parameters, all three designs, by duration.</p>
+      <table class="bb-table" id="r7cst-table" data-source="round7" data-row-key="minutes,condition">
+        <thead><tr><th>Min</th><th>Design</th><th>τ<sub>s</sub> r</th><th>τ<sub>t</sub> r</th><th>w<sub>s</sub> r</th></tr></thead>
+        <tbody data-draw="r7csttable"></tbody>
+      </table>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>The same fits as the chart, every parameter and every design, by duration.</p>
+<h4>How to read it</h4><p>τ<sub>s</sub> and τ<sub>t</sub> stay close to zero everywhere; w<sub>s</sub> is the only parameter that climbs meaningfully above zero, and only under gameplay (oracle gaze most of all).</p>
+</details>
+    </div>
+  </div>
+
+  <details class="bb-more" id="exp-cst-more"><summary>More detail: why the controlled design doesn’t win</summary>
+  <div class="bb-card" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">Why the controlled design doesn't win: how collinear are the sustained and transient channels, over time, under each design?</p>
+    <table class="bb-table" id="r7diag-table" data-source="round7_diagnostic" data-row-key="design">
+      <thead><tr><th>Design</th><th>Sustained–transient correlation</th></tr></thead>
+      <tbody data-draw="r7diagtable"></tbody>
+    </table>
+    <details class="bb-explain" open><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>A ground-truth check, not a fit: filter the centre drive (sustained channel) and the frame-difference drive (transient channel) at the population-median time constants, under each design's actual visual input, and correlate them over time, per voxel (median across voxels shown). A high correlation means the two channels move together — w<sub>s</sub> (their relative weight) trades off against the overall response gain and becomes hard to pin down, independent of noise or amount of data.</p>
+<h4>How to read it</h4><p>SEQ-SIM's channels are no less collinear than gameplay's — the sequential-vs-simultaneous manipulation, in this full-field, mostly-blank form, doesn't buy the separation Kupers' retinotopic bar version does. Gameplay's continuous, always-on content drives both channels throughout the run, which turns out to cost about as much independence as SEQ-SIM's sparse on/off probes, while delivering far more total driven signal — which is plausibly why gameplay edges SEQ-SIM out on w<sub>s</sub> rather than losing to it.</p>
+<h4>Caveats</h4><p>This diagnostic explains the channel-mixing (w<sub>s</sub>) result; it says nothing about why the time constants themselves (τ<sub>s</sub>, τ<sub>t</sub>) stay low under every design — that looks like the same low-SNR story as round 6's attention time constants, a small-ripple-on-a-big-signal problem rather than a design-identifiability one.</p>
+</details>
+  </div>
+
+  </details>
+</section>
+
+<section class="bb-sec bb-tab" id="exp-games" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 7 · Round 8</p><h2 class="bb-h2">Does the game matter? Three real games against the raycaster</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>Every earlier round used BOLDBLASTER's own raycaster. Here the stimulus is three of our real games, each played by a bot for twelve 5-minute runs and shown on the same 24 × 18° screen at 192 × 144 px:</p>
+      <ul>
+        <li><b>Betamax</b>: the Mayflower Beach battle, played forward with no rewind and no taking bodies, rendered headless in WebGL.</li>
+        <li><b>Brick Ninja</b>: the ten side-scrolling worlds, with jumping, stars and sword.</li>
+        <li><b>Animal Sanctuary</b>: the five wild zones, walking up to creatures and playing the befriending timing game.</li>
+      </ul>
+      <p>The game's own logs stand in for the raycaster's NPCs, coins and shots, so every model fits exactly as before. Gaze targets are enemies or creatures on screen, items are soldiers, studs or creatures, and outcomes are bursts, stars or catch presses. Each game is compared with the raycaster at a matched 30 and 60 minutes.</p></div>
+    <figure class="bb-card bb-fig" id="exp-games-fig"><img data-draw="img" data-img="games" data-source="img_games" alt="Example frames from each game as the models see them: the raycaster, Betamax, Brick Ninja and Animal Sanctuary"><figcaption>What the models see, one row per game (top to bottom): the raycaster, Betamax, Brick Ninja, Animal Sanctuary.</figcaption></figure>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
+    <p>The game matters, and every real game beats the raycaster on contrast response. At a matched hour with eye-tracker gaze, effective c50 goes from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on the raycaster to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Betamax, <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=brickninja&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Brick Ninja and <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=sanctuary&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Animal Sanctuary. The CRF exponent goes from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=q">—</b> to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=q">—</b>, <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=brickninja&amp;condition=realistic&amp;minutes=60&amp;parameter=q">—</b> and <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=sanctuary&amp;condition=realistic&amp;minutes=60&amp;parameter=q">—</b>. Betamax is best overall. Its glare, haze, silhouettes and muzzle flash swing V1's contrast drive over the widest range, and its firefight gives the most salient events (attention gain <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b> against <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b>).</p>
+    <p>Animal Sanctuary's slow, flat pixel art costs it SF peak (<b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=sanctuary&amp;condition=realistic&amp;minutes=60&amp;parameter=mu">—</b>) and transient weight (<b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=sanctuary&amp;condition=realistic&amp;minutes=60&amp;parameter=tau">—</b>). Its constant creature encounters help attention, though (<b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=sanctuary&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b>). Outside V1, reward prediction error follows the number of outcomes. The two action games, at about 40 shots a minute, reach <b data-draw="cell" data-source="round8_other" data-field="spearman" data-where="model=Striatal%20RPE&amp;measure=rpe_beta&amp;game=betamax&amp;minutes=60">—</b> (Betamax) and <b data-draw="cell" data-source="round8_other" data-field="spearman" data-where="model=Striatal%20RPE&amp;measure=rpe_beta&amp;game=brickninja&amp;minutes=60">—</b> (Brick Ninja). Animal Sanctuary's dozen catch presses a minute leave it level with the raycaster (<b data-draw="cell" data-source="round8_other" data-field="spearman" data-where="model=Striatal%20RPE&amp;measure=rpe_beta&amp;game=sanctuary&amp;minutes=60">—</b> against <b data-draw="cell" data-source="round8_other" data-field="spearman" data-where="model=Striatal%20RPE&amp;measure=rpe_beta&amp;game=raycaster&amp;minutes=60">—</b>). The 2D games can't map self-motion. They have no forward flow at all, and their scrolling barely varies in direction: rotation preference reaches <b data-draw="cell" data-source="round8_other" data-field="spearman" data-where="model=Self-motion&amp;measure=rotation_pref&amp;game=brickninja&amp;minutes=60">—</b> on Brick Ninja against <b data-draw="cell" data-source="round8_other" data-field="spearman" data-where="model=Self-motion&amp;measure=rotation_pref&amp;game=raycaster&amp;minutes=60">—</b> on the raycaster.</p>
+  </div></div>
+  <div class="bb-controls bb-ctl-row">
+    <label>Gaze and pRFs
+      <select class="dash-select" data-param="r8cond" aria-label="Gaze and pRFs">
+        <option value="realistic">Eye tracker, bar-mapped pRFs</option>
+        <option value="oracle">True gaze and pRFs (oracle)</option>
+      </select>
+    </label>
+    <label>Play time
+      <select class="dash-select" data-param="r8min" aria-label="Play time">
+        <option value="60">60 minutes</option>
+        <option value="30">30 minutes</option>
+      </select>
+    </label>
+  </div>
+  <div class="bb-grid2">
+    <div class="bb-card">
+      <p class="bb-stat">V1 parameter recovery, by game.</p>
+      <div class="bb-chart" id="r8v1-chart" data-draw="r8v1" data-source="round8_v1" style="min-height: 320px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Spearman r between planted and fitted values for the 300-voxel V1 population, from a joint fit of all seven parameters to the chosen amount of each game, with the chosen gaze (the controls above).</p>
+<h4>How to read it</h4><p>Further right is better; each row has one dot per game.</p>
+<h4>Caveats</h4><p>The players are scripted bots, not people, and gaze comes from the same gaze model in every game, fed that game's on-screen targets. Each game's restarts replay the same levels or battle, so an hour of one is less varied than an hour of fresh raycaster levels.</p>
+</details>
+    </div>
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">The same numbers as a table.</p>
+      <table class="bb-table" id="r8v1-table" data-source="round8_v1">
+        <thead><tr><th>Parameter</th><th>Raycaster</th><th>Betamax</th><th>Brick Ninja</th><th>Animal Sanctuary</th></tr></thead>
+        <tbody data-draw="r8v1table"></tbody>
+      </table>
+    </div>
+  </div>
+  <details class="bb-more" id="exp-games-more"><summary>More detail: the other models, the games' image statistics, and how each game plays</summary>
+  <div class="bb-grid2">
+    <div class="bb-card bb-tablewrap">
+      <p class="bb-stat">Numerosity, self-motion, reward prediction error and round 7's spatiotemporal channels, at the chosen play time.</p>
+      <table class="bb-table" id="r8other-table" data-source="round8_other">
+        <thead><tr><th>Model</th><th>Measure</th><th>Raycaster</th><th>Betamax</th><th>Brick Ninja</th><th>Animal Sanctuary</th></tr></thead>
+        <tbody data-draw="r8othertable"></tbody>
+      </table>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>How each game feeds these models</h4><p>Numerosity counts the game's natural items: coins (raycaster), enemies within 60 m (Betamax), studs (Brick Ninja) and creatures on screen (Animal Sanctuary). Self-motion uses forward speed and turn rate in the 3D games. In the 2D games horizontal camera scroll stands in for turning and forward motion is zero, so the expansion weight has nothing to fit. Reward prediction error is each shot's outcome (a burst, a star, a catch press) minus its expected hit probability, from a logistic fit per game. Spatiotemporal (CST) fits take each game's own joint V1 fit as plug-in tuning.</p>
+<h4>Caveats</h4><p>* Round 7 ran the raycaster's CST at 20, 40 and 60 minutes, so its 30-minute value is the mean of the 20- and 40-minute fits.</p>
+</details>
+    </div>
+    <div class="bb-card">
+      <p class="bb-stat">Each game's contrast energy by spatial frequency, normalised to its own peak.</p>
+      <div class="bb-chart" id="r8bands-chart" data-draw="r8bands" data-source="round8_bands" style="min-height: 260px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>How to read it</h4><p>The raycaster's procedural textures put more energy at high spatial frequency. Betamax falls off like a natural photograph. The pixel-art games are dominated by low frequencies and hard pixel edges, which is part of why SF tuning is harder to pin down from Animal Sanctuary.</p>
+</details>
+    </div>
+  </div>
+  <div class="bb-card bb-tablewrap" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">How the games differ as play, over the hour.</p>
+    <table class="bb-table" id="r8stats-table" data-source="round8_stats" data-row-key="measure">
+      <thead><tr><th data-field="label">Measure</th><th data-field="raycaster">Raycaster</th><th data-field="betamax">Betamax</th><th data-field="brickninja">Brick Ninja</th><th data-field="sanctuary">Animal Sanctuary</th></tr></thead>
+      <tbody data-draw="r8statstable"></tbody>
+    </table>
+    <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>How each bot plays</h4><p>Betamax's bot defends the beach as a Cape Cod soldier, snapping onto Texans with a reaction delay and firing bursts, and carries on as the next man up when it falls. Brick Ninja's bot runs right, jumps gaps and walls, throws aimed stars and swings its sword up close. Animal Sanctuary's bot walks to the nearest creature and presses during the catch bar with human-like timing error, or picks berries when nothing is near. All three play at 10 frames per second of game time, rendered by the game itself.</p>
+</details>
+  </div>
+  </details>
+</section>
+
+<section class="bb-sec bb-tab" id="methods-tab" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Reference</p><h2 class="bb-h2">How the simulation works</h2></div></div>
+  <div class="bb-card bb-did">
+  <details open>
+    <summary>How the simulation works</summary>
+    <p>A numpy raycaster first-person game (rooms, textured walls, NPCs, explosions, coins, probabilistic shots, covert-attention cues) is rendered at 10 Hz on a 24×18° screen. Each frame becomes multi-band contrast energy, shifted into retinal coordinates by a fixation/saccade gaze model. Planted populations: V1 voxels with pRFs, SF tuning, a contrast response with surround normalization, a transient channel and attention gain; numerosity, self-motion and striatal RPE voxels driven by the game's logs. Fits use eye-tracker gaze (offset, drift, gain error, noise, blinks), pRFs from a 15-min bar localizer, the canonical HRF shape with a fitted per-voxel time scale, and nuisance regressors for drift and logged arousal events. Dedicated experiments (band-pass noise, contrast series, discs/annuli, refresh rates, attention blocks, dots, optic flow, a reward task) are simulated in the same voxels, at 10, 30 and 60 minutes each.</p>
+    <p>Best case for model form: the fitter knows each model's functional form, not its parameters. Not simulated: head motion, spatially correlated noise, separate cardiac and respiratory components. Code, noise model (NOISE.md) and CSVs: github.com/samuelling/boldblaster.</p>
+  </details>
+</div>
+  <h3 class="bb-h3 bb-gap">Signal, noise and what the fitter removes</h3>
+  <p class="bb-desc">All noise is in percent signal change at TR = 1.5 s, independent per voxel. Gameplay keeps V1 driven but modulates any one pRF far less than bars do, which is why hours matter.</p>
   <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
     <p>Gameplay keeps V1 driven but modulates any one voxel only <b data-draw="cell" data-source="signal_medians" data-field="median_sd" data-where="component=visual_game">—</b>% (SD over time), against <b data-draw="cell" data-source="signal_medians" data-field="median_sd" data-where="component=visual_bars">—</b>% for bars, below both the arousal signal (<b data-draw="cell" data-source="signal_medians" data-field="median_sd" data-where="component=systemic">—</b>%) and the noise (<b data-draw="cell" data-source="signal_medians" data-field="median_sd" data-where="component=noise">—</b>%). With noise removed, gameplay recovers pRFs to <b data-draw="cell" data-source="diagnostics" data-field="value" data-where="condition=visual only">—</b>°: the information is there, and the bottleneck is signal-to-noise. The noise model is moderate (about tSNR 110) and leaves out head motion and spatially correlated noise, so real data will need more time.</p>
   </div></div>
@@ -394,213 +644,75 @@
 <h4>Caveats</h4><p>Independent noise per voxel, no head motion and no separate cardiac or respiratory signals make this an optimistic noise model. Full details: NOISE.md in the repository.</p>
 </details>
   </div>
-</section>
 
-<section class="bb-sec" id="round6">
-  <div class="bb-sec-head">
-    <div>
-      <p class="bb-num">07 · Round 6</p>
-      <h2 class="bb-h2">Attention dynamics, ventral gaze tolerance, and one game lever</h2>
-      <p class="bb-desc">Three follow-ups on the round-5 baseline: can gameplay recover the time course (not just the gain) of attention; do large, foveally-biased receptive fields buy gaze tolerance; and does tightening one game cue actually help.</p>
+  <h3 class="bb-h3 bb-gap">Planted vs fitted, voxel by voxel</h3>
+  <p class="bb-desc">Each dot is a simulated V1 voxel: the value planted in the ground truth against the value fitted from data. Points on the dashed line are perfect. Colour is eccentricity. Uses the parameter picked here.</p>
+  <div class="bb-controls">
+      <label>Parameter
+        <select class="dash-select" data-param="param" aria-label="Parameter">
+          <optgroup label="V1">
+            <option value="mu">pSFT peak</option>
+            <option value="sig">pSFT bandwidth</option>
+            <option value="c50_eff">pCRF effective c50</option>
+            <option value="q">pCRF exponent</option>
+            <option value="k">Surround suppression k</option>
+            <option value="tau">Transient weight</option>
+            <option value="a">Attention gain</option>
+          </optgroup>
+          <optgroup label="Other populations">
+            <option value="num_mu">Numerosity preference</option>
+            <option value="num_sig">Numerosity tuning width</option>
+            <option value="mst_rotation_pref">Self-motion: rotation preference</option>
+            <option value="mst_expansion_frac">Self-motion: expansion share</option>
+            <option value="rpe_rpe_beta">Striatal RPE weight</option>
+          </optgroup>
+        </select>
+      </label>
+      <label>Design
+        <select class="dash-select" data-param="design" aria-label="Design">
+          <option value="dedicated">Short dedicated protocol (10 min)</option>
+          <option value="dedicated_60m">Dedicated experiment (60 min)</option>
+          <option value="battery_joint">V1 battery, joint fit (50 min)</option>
+          <option value="battery_5h">Full dedicated battery, joint (5 h)</option>
+          <option value="game_1h">Game 1 h</option>
+          <option value="game_2h">Game 2 h</option>
+          <option value="game_2h_oracle">Game 2 h, oracle gaze + pRF</option>
+          <option value="levers_1h">Game + levers 1 h</option>
+          <option value="levers_2h">Game + levers 2 h</option>
+          <option value="levers_2h_oracle">Game + levers 2 h, oracle</option>
+          <option value="long_2h">Ten levels: 2 h</option>
+          <option value="long_5h">Ten levels: 5 h</option>
+          <option value="long_10h">Ten levels: 10 h</option>
+          <option value="long_20h">Ten levels: 20 h</option>
+          <option value="single_4h">One level type: 4 h</option>
+          <option value="varied_4h">Ten level types: 4 h</option>
+        </select>
+      </label>
+      <label>Eccentricity
+        <select class="dash-select" data-param="ecc" aria-label="Eccentricity">
+          <option value="all">All</option>
+          <option value="0-3">0–3°</option>
+          <option value="3-7">3–7°</option>
+          <option value="7-13">7–12°</option>
+        </select>
+      </label>
     </div>
-  </div>
   <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
-    <p>Attention <i>gain</i> is weakly recoverable from gameplay and improves with duration (oracle gaze: <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=attn&amp;condition=oracle&amp;minutes=20&amp;parameter=a">—</b> → <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=attn&amp;condition=oracle&amp;minutes=40&amp;parameter=a">—</b> → <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=attn&amp;condition=oracle&amp;minutes=60&amp;parameter=a">—</b> at 20/40/60 min), but its rise and decay time constants are not: the attention term is only a few percent of the core visual drive's size, too small a ripple for its shape to come through. The dedicated block design is worse off on principle, not just power: a block has no temporal shape inside it for a decay time to show up in. A large, foveally-biased ventral population loses only <b data-draw="cell" data-source="r6gap" data-field="gap" data-where="population=Ventral%20(preferred%20category)">—</b> Spearman r to realistic eye-tracker gaze at 40 minutes, against <b data-draw="cell" data-source="r6gap" data-field="gap" data-where="population=V1%20(pSFT%20peak)">—</b> for V1 at the same duration — gaze tolerance does scale with receptive-field size, as hypothesized. Tightening the covert cue's spacing (6–10 s → 3–5 s) did not help attention-gain recovery (<b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=lever&amp;design=lever_cue_1h&amp;parameter=a">—</b> versus <b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=lever&amp;design=levers_1h&amp;parameter=a">—</b> for the original schedule), plausibly an fMRI design-efficiency cost of packing events too close together.</p>
+    <p>This is where you see <i>how</i> a design succeeds or fails. A tight cloud along the diagonal is good recovery. A flat, horizontal cloud means the parameter is not identifiable from that data. Dots piled against the top or bottom edge are fits stuck at a parameter bound, common for dedicated surround and transient fits whose other parameters are held fixed.</p>
   </div></div>
-
-  <div class="bb-grid2">
-    <div class="bb-card bb-tablewrap">
-      <p class="bb-stat">A · Attention-dynamics kernel fit from gameplay: gain (a), rise time and decay time, oracle gaze versus eye tracker.</p>
-      <table class="bb-table" id="r6attn-table" data-source="round6" data-row-key="minutes">
-        <thead><tr><th>Min</th><th>Gain, oracle</th><th>Gain, eye tracker</th><th>Rise τ, oracle</th><th>Rise τ, eye tracker</th><th>Decay τ, oracle</th><th>Decay τ, eye tracker</th></tr></thead>
-        <tbody data-draw="r6attntable"></tbody>
-      </table>
-      <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>Spearman r between planted and fitted values for a per-voxel rise/decay attention kernel (replacing round 2's fixed-duration box) fitted to event-locked attention at NPC appearances, kills and covert cues, at 20/40/60 min of gameplay. Other V1 parameters are held at a prior joint-fit estimate, not ground truth, isolating this one mechanism.</p>
-<h4>How to read it</h4><p>Gain climbs gently with duration; rise and decay stay near zero at every duration and condition.</p>
-<div class="bb-signal"><h4>Signal vs noise</h4><p>The attention term is only a few percent of the core drive's SD (median voxel) — a small multiplicative ripple riding on a much larger signal plus comparable measurement noise. That is a genuine low-SNR finding, confirmed by comparing the achieved fit against plugging in the true (a, rise, decay) into the same mismatched core: both give nearly the same prediction correlation, meaning the ridge is flat (non-identifiable), not under-optimized.</p></div>
-<h4>Caveats</h4><p>Gameplay's irregular event timing is the one of the two designs that could in principle see transient dynamics — it just doesn't see them well in this model, because the effect size is small, not because events are too regular.</p>
-</details>
-    </div>
-    <div class="bb-card">
-      <p class="bb-stat">The dedicated block design cannot identify decay time at all: correlation between a fitted and the true decay time, analytically, as a function of the true decay time.</p>
-      <div class="bb-chart" id="r6identify-chart" data-draw="r6identify" data-source="round6_identify" style="min-height: 300px"></div>
-      <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>The dedicated attention task's ground truth is a flat 15-second block with no temporal shape inside it. Convolving a decay kernel against that block's onsets and correlating against the true box, across a grid of decay times, shows what a fit to this design alone could ever recover — no noisy per-voxel optimization needed.</p>
-<h4>How to read it</h4><p>Correlation climbs across the entire biologically plausible range used in the gameplay fits (shaded) and only peaks once the decay time approaches the 15 s block length itself, then falls as the kernel outlasts the block. A fit to this design would be pulled toward a 10–15 s decay regardless of the true, much shorter value, and the broad plateau near the peak means even block-scale decays are not sharply resolved.</p>
-<h4>Caveats</h4><p>This is the design's ceiling, not a fitted result: it says what information is there to find, independent of noise or optimizer behavior.</p>
-</details>
-    </div>
-  </div>
-
-  <div class="bb-grid2" style="margin-top: var(--cds-gap-md)">
-    <div class="bb-card">
-      <p class="bb-stat">B · Large receptive fields buy gaze tolerance: a category-selective ventral population (200 voxels, large foveally-biased pRFs) versus V1 at a matched 40 minutes.</p>
-      <div class="bb-chart" id="r6gaze-chart" data-draw="r6gaze" data-source="round6" style="min-height: 300px"></div>
-      <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>A new population pools game-engine content maps (NPC presence, four wall textures, floor, ceiling — a toy stand-in for object/scene category) through large (σ ≈ 1.5–4°+), foveally-biased pRFs, one preferred category per voxel. Spearman r for the preferred-category weight, oracle gaze+pRFs versus realistic eye-tracker gaze, at 10/20/40 minutes; V1's pSFT peak at the same 40 minutes (round 5's game-fit machinery, freshly matched to 40 min) is plotted alongside for scale.</p>
-<h4>How to read it</h4><p>The gap between the two ventral lines barely moves with more data; the gap between V1's two isolated points is far larger. Gaze-measurement error costs the large-RF population much less than it costs V1.</p>
-<div class="bb-signal"><h4>Signal vs noise</h4><p>Absolute recovery is still modest at 40 min (r ≈ 0.3–0.5): category selectivity from gameplay is data-hungry. The claim here is about the <i>gap</i> between oracle and realistic gaze, not the absolute level.</p></div>
-<h4>Caveats</h4><p>Pairwise regressor correlations among the seven content channels stay low (|r| ≤ 0.2) except a mechanically forced floor/ceiling anti-correlation; NPC selectivity shows no inflation from the gaze–content confound (people fixate NPCs) at this pooling scale.</p>
-</details>
-    </div>
-    <div class="bb-card bb-tablewrap">
-      <p class="bb-stat">Gap in Spearman r between oracle and realistic gaze, matched at 40 minutes.</p>
-      <table class="bb-table" id="r6gap-table" data-source="r6gap" data-row-key="population">
-        <thead><tr><th>Population</th><th>Oracle r</th><th>Realistic r</th><th>Gap</th></tr></thead>
-        <tbody data-draw="r6gaptable"></tbody>
-      </table>
-      <p class="bb-stat" style="margin-top: var(--cds-gap-md)">Full ventral numbers by duration and condition.</p>
-      <div class="bb-tablewrap">
-      <table class="bb-table" id="r6vent-table" data-row-key="minutes,condition">
-        <thead><tr><th>Min</th><th>Condition</th><th>Pref-weight r</th><th>Full-vector r</th><th>Frac. correct category</th></tr></thead>
-        <tbody data-draw="r6venttable" data-source="round6"></tbody>
-      </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="bb-card bb-tablewrap" style="margin-top: var(--cds-gap-md)">
-    <p class="bb-stat">C · One game-measure lever, tested: tightening the covert-attention cue's spacing (6–10 s → 3–5 s), one hour of gameplay.</p>
-    <table class="bb-table" id="r6lever-table" data-source="round6" data-row-key="parameter">
-      <thead><tr><th>Parameter</th><th>Tightened cue</th><th>Original cue</th><th>Δ r</th></tr></thead>
-      <tbody data-draw="r6levertable"></tbody>
-    </table>
-    <details class="bb-explain" open><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>Of six ideas for narrowing the round-5 gap (embedding probes in mechanics, adaptive design, crosshair-anchored stimuli, stronger attention cues, more response variance, hierarchical fitting), this tests the cheapest against existing infrastructure: a tighter covert-cue schedule.</p>
-<h4>How to read it</h4><p>Δr is tightened minus original; a negative value anywhere means the lever did not help that parameter.</p>
-<h4>Caveats</h4><p>The likely cause is a design-efficiency cost: cues this close together are hard to space well against an ~8 s hemodynamic response, the same event-spacing/collinearity trade-off that limits any closely packed fMRI design. The other five levers, especially embedding probes directly in mechanics and adaptive per-session design, remain untested and are likely to matter more than cue frequency alone.</p>
-</details>
-  </div>
-</section>
-
-<section class="bb-sec" id="round7">
-  <div class="bb-sec-head">
-    <div>
-      <p class="bb-num">08 · Round 7</p>
-      <h2 class="bb-h2">Spatiotemporal (CST) pRF: can gameplay separate sustained from transient?</h2>
-      <p class="bb-desc">After Kim/Kupers/Grill-Spector's compressive spatiotemporal pRF: the old instantaneous transient term is replaced by two channels with their own memory — a sustained low-pass of the centre drive (τ<sub>s</sub>) and a transient low-pass of the frame-difference drive (τ<sub>t</sub>), mixed by a per-voxel weight w<sub>s</sub>. A dedicated SEQ-SIM design (two full-field probes, shown together or apart at several gaps) stands in for Kupers' own sequential-vs-simultaneous bar paradigm as the controlled comparison.</p>
-    </div>
-  </div>
-  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
-    <p>The channel-mixing weight (w<sub>s</sub>) is the one piece of this model gameplay gets any traction on at all (oracle gaze: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=20&amp;parameter=ws">—</b> → <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=40&amp;parameter=ws">—</b> → <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=60&amp;parameter=ws">—</b> at 20/40/60 min); both time constants stay low throughout (τ<sub>s</sub> oracle, 60 min: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=60&amp;parameter=taus">—</b>; τ<sub>t</sub>: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=60&amp;parameter=taut">—</b>). The dedicated SEQ-SIM design, run at the same durations, does not rescue this — if anything it does <i>no better</i> than gameplay (w<sub>s</sub>, 60 min: <b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=seqsim&amp;minutes=60&amp;parameter=ws">—</b>). The likely reason is not a failure of timing control but of duty cycle: the sustained and transient channels are at least as correlated with each other under SEQ-SIM's brief, mostly-blank probes as they are under gameplay's continuous content (<b data-draw="cell" data-source="round7_diagnostic" data-field="corr" data-where="design=Gameplay">—</b> vs <b data-draw="cell" data-source="round7_diagnostic" data-field="corr" data-where="design=Dedicated%20SEQ-SIM">—</b>), so the controlled design buys no extra separation between w<sub>s</sub> and the overall response gain, while paying a real cost in total driven signal.</p>
-  </div></div>
-
-  <div class="bb-grid2">
-    <div class="bb-card">
-      <p class="bb-stat">Channel-mixing weight (w<sub>s</sub>) recovery, gameplay (oracle gaze, eye tracker) versus the dedicated SEQ-SIM design, by duration.</p>
-      <div class="bb-chart" id="r7ws-chart" data-draw="r7ws" data-source="round7" style="min-height: 300px"></div>
-      <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>Spearman r between planted and fitted w<sub>s</sub> (the sustained-channel weight in the two-channel CST drive) at 20/40/60 minutes, for three designs: gameplay under oracle gaze, gameplay under realistic eye-tracker gaze, and a dedicated SEQ-SIM run (two full-field probes, shown together or with a gap, at several gaps). All three isolate the mechanism the same way round 6 isolated attention: mu/sig/c50/q/k come from the existing joint fit, not ground truth, and attention is switched off.</p>
-<h4>How to read it</h4><p>All three lines sit in the same modest band and climb slowly with duration; SEQ-SIM is not systematically above gameplay the way a cleanly-controlled design is supposed to be.</p>
-<h4>Caveats</h4><p>This SEQ-SIM is a simplified, full-field stand-in for Kupers' own retinotopic bar paradigm (chosen so every pRF, at any eccentricity, is driven the same way) — a higher-duty-cycle or longer-probe version might do better; see the diagnostic below.</p>
-</details>
-    </div>
-    <div class="bb-card bb-tablewrap">
-      <p class="bb-stat">Full breakdown: all three CST parameters, all three designs, by duration.</p>
-      <table class="bb-table" id="r7cst-table" data-source="round7" data-row-key="minutes,condition">
-        <thead><tr><th>Min</th><th>Design</th><th>τ<sub>s</sub> r</th><th>τ<sub>t</sub> r</th><th>w<sub>s</sub> r</th></tr></thead>
-        <tbody data-draw="r7csttable"></tbody>
-      </table>
-      <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>The same fits as the chart, every parameter and every design, by duration.</p>
-<h4>How to read it</h4><p>τ<sub>s</sub> and τ<sub>t</sub> stay close to zero everywhere; w<sub>s</sub> is the only parameter that climbs meaningfully above zero, and only under gameplay (oracle gaze most of all).</p>
-</details>
-    </div>
-  </div>
-
-  <div class="bb-card" style="margin-top: var(--cds-gap-md)">
-    <p class="bb-stat">Why the controlled design doesn't win: how collinear are the sustained and transient channels, over time, under each design?</p>
-    <table class="bb-table" id="r7diag-table" data-source="round7_diagnostic" data-row-key="design">
-      <thead><tr><th>Design</th><th>Sustained–transient correlation</th></tr></thead>
-      <tbody data-draw="r7diagtable"></tbody>
-    </table>
-    <details class="bb-explain" open><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>A ground-truth check, not a fit: filter the centre drive (sustained channel) and the frame-difference drive (transient channel) at the population-median time constants, under each design's actual visual input, and correlate them over time, per voxel (median across voxels shown). A high correlation means the two channels move together — w<sub>s</sub> (their relative weight) trades off against the overall response gain and becomes hard to pin down, independent of noise or amount of data.</p>
-<h4>How to read it</h4><p>SEQ-SIM's channels are no less collinear than gameplay's — the sequential-vs-simultaneous manipulation, in this full-field, mostly-blank form, doesn't buy the separation Kupers' retinotopic bar version does. Gameplay's continuous, always-on content drives both channels throughout the run, which turns out to cost about as much independence as SEQ-SIM's sparse on/off probes, while delivering far more total driven signal — which is plausibly why gameplay edges SEQ-SIM out on w<sub>s</sub> rather than losing to it.</p>
-<h4>Caveats</h4><p>This diagnostic explains the channel-mixing (w<sub>s</sub>) result; it says nothing about why the time constants themselves (τ<sub>s</sub>, τ<sub>t</sub>) stay low under every design — that looks like the same low-SNR story as round 6's attention time constants, a small-ripple-on-a-big-signal problem rather than a design-identifiability one.</p>
-</details>
-  </div>
-</section>
-
-<section class="bb-sec" id="round8">
-  <div class="bb-sec-head">
-    <div>
-      <p class="bb-num">09 · Round 8</p>
-      <h2 class="bb-h2">A real game: the same models on Betamax's beach battle</h2>
-      <p class="bb-desc">Every round so far used BOLDBLASTER's own numpy raycaster. Here the stimulus is <a href="https://github.com/samuelling/betamax">Betamax</a>'s Mayflower Beach battle, played forward: time runs in order, the men you kill stay down, no rewind and no taking bodies (if you fall you carry on as the nearest man of your side). A bot plays a Cape Cod defender, headless in Chrome on Mesa's software renderer, VCR filter off, and each 10 Hz frame of the game's own render goes to the scanner screen at the same 24 × 18° and 192 × 144 px as the raycaster. Its per-frame log of every soldier on screen and every burst it fires stands in for the raycaster's NPC, coin and shot logs, so every model fits exactly as before. Twelve 5-minute runs (an hour of play) are compared with the raycaster's first six and first twelve runs, at a matched 30 and 60 minutes.</p>
-    </div>
-  </div>
-  <div class="bb-tldr"><span class="bb-tldr-tag">TL;DR</span><div>
-    <p>At a matched hour the real game is the better stimulus for every V1 parameter, with eye-tracker gaze and with true gaze. With eye-tracker gaze, effective c50 rises from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b>, the CRF exponent from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=q">—</b> to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=q">—</b>, attention gain from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b> to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b>, SF bandwidth from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=sig">—</b> to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=sig">—</b> and SF peak from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=mu">—</b> to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=mu">—</b>; surround suppression (<b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=k">—</b> vs <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=k">—</b>) and transient weight (<b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=tau">—</b> vs <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=tau">—</b>) tie. An hour of Betamax beats round 4's two hours of raycaster on contrast response, SF bandwidth and attention, and with true gaze it matches or beats it everywhere. The pattern was already there at 30 minutes. Outside V1, the striatal prediction-error beta rises from <b data-draw="cell" data-source="round8_other" data-field="spearman" data-where="model=Striatal%20RPE&amp;measure=rpe_beta&amp;game_label=Raycaster&amp;condition=realistic&amp;minutes=60">—</b> to <b data-draw="cell" data-source="round8_other" data-field="spearman" data-where="model=Striatal%20RPE&amp;measure=rpe_beta&amp;game_label=Betamax&amp;condition=realistic&amp;minutes=60">—</b> (four times the shot outcomes per minute), and round 7's sustained-channel weight from <b data-draw="cell" data-source="round8_other" data-field="spearman" data-where="model=Spatiotemporal%20(CST)&amp;measure=ws&amp;game_label=Raycaster&amp;condition=realistic&amp;minutes=60">—</b> to <b data-draw="cell" data-source="round8_other" data-field="spearman" data-where="model=Spatiotemporal%20(CST)&amp;measure=ws&amp;game_label=Betamax&amp;condition=realistic&amp;minutes=60">—</b>; numerosity and self-motion tie. The likely reasons are in the frames: Betamax swings V1's contrast drive across a wider range (dawn glare, haze, dark silhouettes, muzzle flash), and its energy falls off with spatial frequency like a natural scene rather than sitting flat across bands.</p>
-  </div></div>
-
   <div class="bb-card">
-    <p class="bb-stat">What the models see: Betamax (top) and the raycaster (bottom), as 192 × 144 luma frames on the 24 × 18° scanner screen, crosshair drawn in.</p>
-    <img src="data/round8_frames.png" alt="Five Betamax frames: dawn glare over the dunes, a red-dot sight on a Texan, smoke over the bay; five raycaster frames: textured corridor walls, an NPC, a coin cluster" style="width:100%;height:auto;image-rendering:pixelated;border-radius:6px">
-  </div>
-
-  <div class="bb-grid2" style="margin-top: var(--cds-gap-md)">
-    <div class="bb-card">
-      <p class="bb-stat">V1 parameter recovery at a matched 60 minutes: Betamax vs the raycaster, eye-tracker gaze (filled) and oracle gaze (open).</p>
-      <div class="bb-chart" id="r8v1-chart" data-draw="r8v1" data-source="round8_v1" style="min-height: 300px"></div>
-      <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>Spearman r between planted and fitted values for the 300-voxel V1 population, from a joint fit of all seven parameters to an hour of each game (30-minute values are in the table). Filled dots use realistic eye-tracker gaze and bar-mapped pRFs; open dots use the true gaze and pRFs. The thin line between them is the cost of measuring gaze.</p>
-<h4>How to read it</h4><p>Further right is better. Betamax's dots sit at or right of the raycaster's on every parameter.</p>
-<h4>Caveats</h4><p>The bot is not a person: it snaps to targets and holds the crosshair on them, and its gaze is sampled from the same gaze model as the raycaster, fed Betamax's soldier positions. Every restart replays the same recorded battle from a different body and tape time, so an hour of Betamax is less varied than an hour of fresh raycaster levels.</p>
-</details>
-    </div>
-    <div class="bb-card bb-tablewrap">
-      <p class="bb-stat">Full V1 breakdown.</p>
-      <table class="bb-table" id="r8v1-table" data-source="round8_v1" data-row-key="minutes,parameter">
-        <thead><tr><th>Min</th><th>Parameter</th><th>Raycaster</th><th>Betamax</th><th>Δ</th><th>Raycaster, oracle</th><th>Betamax, oracle</th></tr></thead>
-        <tbody data-draw="r8v1table"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="bb-grid2" style="margin-top: var(--cds-gap-md)">
-    <div class="bb-card bb-tablewrap">
-      <p class="bb-stat">The other models at 30 and 60 minutes, including round 7's spatiotemporal (CST) pRF.</p>
-      <table class="bb-table" id="r8other-table" data-source="round8_other" data-row-key="minutes,model">
-        <thead><tr><th>Min</th><th>Model</th><th>Measure</th><th>Raycaster</th><th>Betamax</th></tr></thead>
-        <tbody data-draw="r8othertable"></tbody>
-      </table>
-      <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>Spearman r for numerosity (the count of enemies visible within 60 m stands in for the raycaster's coins), self-motion (forward speed and turn rate, zeroed across camera cuts when the player dies or the tape restarts), striatal reward prediction error (each burst's outcome minus its expected hit probability, from a logistic fit of hit on distance and aim error) and round 7's CST channels. CST uses each game's own joint fit for the plug-in tuning.</p>
-<h4>Caveats</h4><p>* Round 7 ran the raycaster's CST at 20, 40 and 60 minutes, so its 30-minute value is the mean of the 20- and 40-minute fits.</p>
-</details>
-    </div>
-    <div class="bb-card">
-      <p class="bb-stat">Why: each game's contrast energy by spatial frequency, normalised to its own peak.</p>
-      <div class="bb-chart" id="r8bands-chart" data-draw="r8bands" data-source="round8_bands" style="min-height: 260px"></div>
-      <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>What it shows</h4><p>Mean local band energy across all frames in each of the front end's eight half-octave bands.</p>
-<h4>How to read it</h4><p>The raycaster's procedural wall textures put slightly more energy at high spatial frequency. Betamax falls off with frequency like a natural photograph. The two sit on the same contrast scale, and Betamax's contrast drive at the voxels' pRFs spans a wider range (10th–90th percentile 0.10–0.99, against 0.29–0.85).</p>
-</details>
-    </div>
-  </div>
-
-  <div class="bb-card bb-tablewrap" style="margin-top: var(--cds-gap-md)">
-    <p class="bb-stat">How the two games differ as play, over the hour.</p>
-    <table class="bb-table" id="r8stats-table" data-source="round8_stats" data-row-key="measure">
-      <thead><tr><th>Measure</th><th>Raycaster</th><th>Betamax</th></tr></thead>
-      <tbody data-draw="r8statstable"></tbody>
-    </table>
+    <p class="bb-stat">Spearman r for this design and parameter (all voxels): <b data-draw="scatter-r" data-source="recovery" data-field="spearman">—</b></p>
+    <p class="bb-note" data-when="nonv1" hidden>Voxel-level values are exported for V1 parameters only. Pick a V1 parameter above.</p>
+    <div class="bb-chart" id="scatter" data-draw="scatter" data-source="v1_voxels" style="min-height: 380px"></div>
     <details class="bb-explain"><summary>What am I looking at?</summary>
-<h4>How to read it</h4><p>Betamax is a much busier game: about three times the kills, four times the shots and eight times the salient onsets (enemies popping into view within 60 m, plus kills) per minute. More events means more for the RPE and attention models to grab onto. The bot also turns faster and walks less than the raycaster's scripted path.</p>
+<h4>What it shows</h4><p>One dot per simulated V1 voxel: its planted (true) value on the x-axis and the value fitted from the chosen design's data on the y-axis. Colour is eccentricity. Units: pSFT peak in log2 cycles/degree, bandwidth in octaves, effective c50 in contrast-energy units (log axes), CRF exponent unitless, surround suppression and transient weight as weights, attention as a fractional gain.</p>
+<h4>How to read it</h4><ul><li><b>Along the dashed diagonal</b>: recovered.</li><li><b>Diagonal but tilted flatter</b>: shrinkage, fitted values pulled toward the middle (typical when the data are weak).</li><li><b>Horizontal smear</b>: the data barely constrain the parameter.</li><li><b>Rows of dots at the top or bottom edge</b>: fits hit a parameter bound.</li></ul><p>Use the eccentricity filter to see whether failures concentrate in the fovea or periphery.</p>
+<div class="bb-signal"><h4>Signal vs noise</h4><p>The r above the plot is for all voxels of this design and parameter, from the results file; the filter changes what you see, not that number. A visible trend among a few dozen voxels in one eccentricity band can easily be chance.</p></div>
+<h4>Caveats</h4><p>Effective c50 is c50 / (1+k)<sup>1/q</sup>, the half-saturation point a contrast experiment can actually measure; raw c50 trades off with surround suppression and the exponent.</p>
 </details>
   </div>
+
 </section>
-
-<footer class="bb-foot" id="methods">
-  <details>
-    <summary>How the simulation works</summary>
-    <p>A numpy raycaster first-person game (rooms, textured walls, NPCs, explosions, coins, probabilistic shots, covert-attention cues) is rendered at 10 Hz on a 24×18° screen. Each frame becomes multi-band contrast energy, shifted into retinal coordinates by a fixation/saccade gaze model. Planted populations: V1 voxels with pRFs, SF tuning, a contrast response with surround normalization, a transient channel and attention gain; numerosity, self-motion and striatal RPE voxels driven by the game's logs. Fits use eye-tracker gaze (offset, drift, gain error, noise, blinks), pRFs from a 15-min bar localizer, the canonical HRF shape with a fitted per-voxel time scale, and nuisance regressors for drift and logged arousal events. Dedicated experiments (band-pass noise, contrast series, discs/annuli, refresh rates, attention blocks, dots, optic flow, a reward task) are simulated in the same voxels, at 10, 30 and 60 minutes each.</p>
-    <p>Best case for model form: the fitter knows each model's functional form, not its parameters. Not simulated: head motion, spatially correlated noise, separate cardiac and respiratory components. Code, noise model (NOISE.md) and CSVs: github.com/samuelling/boldblaster.</p>
-  </details>
-</footer>
-
 </div>
 
 <script src="core.js"></script>

@@ -3,7 +3,7 @@ window.BB = (function () {
   const num = (v) => (v === null || v === undefined || v === '' ? NaN : +v);
   const f2 = d3.format('.2f');
   const V1 = ['mu', 'sig', 'c50_eff', 'q', 'k', 'tau', 'a'];
-  const DEFAULTS = { param: 'mu', design: 'long_20h', ecc: 'all', r1: 'game_eyetracker' };
+  const DEFAULTS = { param: 'mu', design: 'long_20h', ecc: 'all', r1: 'game_eyetracker', r8cond: 'realistic', r8min: '60' };
   const params = () => Object.assign({}, DEFAULTS, dash.params());
   // family index into dash.colors: dedicated, game, levers, battery, ten levels
   const FAM_IDX = { dedicated: 0, game: 1, levers: 2, battery: 4, long: 6 };
@@ -418,24 +418,26 @@ dash.draw('r7diagtable', (tb) => {
   }
 });
 
-// ---------------------------------------------------------------- round 8: Betamax vs the raycaster
+// ---------------------------------------------------------------- round 8: three real games vs the raycaster
+window.BB8 = {
+  GAMES: [['raycaster', 'Raycaster'], ['betamax', 'Betamax'], ['brickninja', 'Brick Ninja'], ['sanctuary', 'Animal Sanctuary']],
+  color: (g) => dash.colors[{ raycaster: 1, betamax: 0, brickninja: 2, sanctuary: 6 }[g] % dash.colors.length],
+  sel: () => { const P = BB.params(); return { cond: P.r8cond || 'realistic', mins: +(P.r8min || 60) }; },
+};
 dash.draw('r8v1table', (tb) => {
   const d = dash.data('round8_v1');
   tb.replaceChildren();
   if (d.status !== 'ok') return;
-  const rows = d.data;
-  const get = (g, c, m, p) => { const r = rows.find((x) => x.game === g && x.condition === c && +x.minutes === m && x.parameter === p); return r ? +r.spearman : NaN; };
-  const fmt = (v) => (isFinite(v) ? BB.f2(v) : '—');
-  const dfmt = (v) => (isFinite(v) ? (v > 0 ? '+' : '') + BB.f2(v) : '—');
-  const mins = [...new Set(rows.filter((r) => r.game === 'betamax').map((r) => +r.minutes))].sort((a, b) => a - b);
-  for (const m of mins) for (const p of ['mu', 'sig', 'c50_eff', 'q', 'k', 'tau', 'a']) {
+  const { cond, mins } = BB8.sel(), rows = d.data;
+  for (const p of ['mu', 'sig', 'c50_eff', 'q', 'k', 'tau', 'a']) {
     const lab = (rows.find((r) => r.parameter === p) || {}).parameter_label || p;
-    const rr = get('raycaster', 'realistic', m, p), br = get('betamax', 'realistic', m, p);
-    const ro = get('raycaster', 'oracle', m, p), bo = get('betamax', 'oracle', m, p);
     const tr = document.createElement('tr');
-    tr.setAttribute('data-key', `${m},${p}`);
-    tr.append(td(String(m), true), td(lab), td(fmt(rr), true), td(fmt(br), true), td(dfmt(br - rr), true),
-      td(fmt(ro), true), td(fmt(bo), true));
+    tr.setAttribute('data-key', p);
+    tr.append(td(lab));
+    for (const [g] of BB8.GAMES) {
+      const r = rows.find((x) => x.game === g && x.condition === cond && +x.minutes === mins && x.parameter === p);
+      tr.append(td(r && r.spearman !== '' ? BB.f2(+r.spearman) : '—', true));
+    }
     tb.appendChild(tr);
   }
 });
@@ -444,18 +446,20 @@ dash.draw('r8othertable', (tb) => {
   const d = dash.data('round8_other');
   tb.replaceChildren();
   if (d.status !== 'ok') return;
-  const bmMins = new Set(d.data.filter((r) => r.game_label === 'Betamax').map((r) => String(r.minutes)));
-  const rows = d.data.filter((r) => bmMins.has(String(r.minutes)));   // only durations Betamax has reached
+  const { mins } = BB8.sel();
+  const rows = d.data.filter((r) => +r.minutes === mins);
   const keys = [];
-  for (const r of rows) { const k = `${r.minutes}|${r.model}|${r.measure}|${r.condition}`; if (!keys.includes(k)) keys.push(k); }
+  for (const r of rows) { const k = `${r.model}|${r.measure}|${r.condition}`; if (!keys.includes(k)) keys.push(k); }
   for (const k of keys) {
-    const [m, model, meas, cond] = k.split('|');
-    const sel = rows.filter((r) => String(r.minutes) === m && r.model === model && r.measure === meas && r.condition === cond);
-    const bm = sel.find((r) => r.game_label === 'Betamax'), rc = sel.find((r) => r.game_label.startsWith('Raycaster'));
+    const [model, meas, cond] = k.split('|');
+    const sel = rows.filter((r) => r.model === model && r.measure === meas && r.condition === cond);
     const tr = document.createElement('tr');
     tr.setAttribute('data-key', encodeURIComponent(k));
-    tr.append(td(m, true), td(model), td((bm || rc).measure_label + (cond === 'oracle' ? ' (oracle)' : '')),
-      td(rc ? BB.f2(+rc.spearman) + (rc.game_label !== 'Raycaster' ? '*' : '') : '—', true), td(bm ? BB.f2(+bm.spearman) : '—', true));
+    tr.append(td(model), td(sel[0].measure_label + (cond === 'oracle' ? ' (oracle)' : '')));
+    for (const [g] of BB8.GAMES) {
+      const r = sel.find((x) => x.game === g);
+      tr.append(td(r && r.spearman !== '' ? BB.f2(+r.spearman) + (r.game_label.includes('mean') ? '*' : '') : '—', true));
+    }
     tb.appendChild(tr);
   }
 });
@@ -467,7 +471,38 @@ dash.draw('r8statstable', (tb) => {
   for (const r of d.data) {
     const tr = document.createElement('tr');
     tr.setAttribute('data-key', r.measure);
-    tr.append(td(r.label), td(String(r.raycaster), true), td(String(r.betamax), true));
+    tr.append(td(r.label));
+    for (const [g] of BB8.GAMES) tr.append(td(r[g] === '' || r[g] == null ? '—' : String(r[g]), true));
     tb.appendChild(tr);
   }
 });
+
+// ---------------------------------------------------------------- pictures (data: URLs set by img_*.js)
+dash.draw('img', (el) => {
+  const k = el.getAttribute('data-img');
+  let u = (window.BBIMG || {})[k];
+  if (!u) { const d = dash.data(`img_${k}`); if (d.status === 'ok') u = typeof d.data === 'string' ? d.data : (d.data && (d.data.text || d.data[0])) || ''; }
+  if (u && typeof u === 'string' && u.startsWith('data:image/') && el.getAttribute('src') !== u) el.setAttribute('src', u);
+});
+
+// ---------------------------------------------------------------- tabs: one experiment open at a time
+(function () {
+  const secs = () => [...document.querySelectorAll('.bb-tab')];
+  function open(id, link) {
+    const all = secs();
+    if (!all.some((s) => s.id === id)) id = 'overview';
+    all.forEach((s) => { s.hidden = s.id !== id; });
+    document.querySelectorAll('.bb-tabbtn').forEach((b) => {
+      const on = b.getAttribute('data-tab') === id;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-current', on ? 'page' : 'false');
+    });
+    if (link) { try { dash.setLink(id); } catch (e) {} }
+  }
+  document.querySelectorAll('.bb-tabbtn').forEach((b) => b.addEventListener('click', () => open(b.getAttribute('data-tab'), true)));
+  document.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => {
+    open(b.getAttribute('data-open'), true);
+    const t = document.getElementById('tabs'); if (t) t.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }));
+  open((location.hash || '').replace('#', '') || 'overview', false);
+})();

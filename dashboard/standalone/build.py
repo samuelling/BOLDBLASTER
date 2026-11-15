@@ -68,7 +68,7 @@ html = f"""<!DOCTYPE html>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 </head>
 <body>
-<div class="bb-ghbar"><span>BOLDBLASTER · interactive results</span><span><a href="https://github.com/samuelling/boldblaster">Code &amp; data on GitHub</a> · <a href="../">Full report</a></span></div>
+<div class="bb-ghbar"><span>BOLDBLASTER · interactive results</span><span><a href="https://github.com/samuelling/boldblaster">Code &amp; data on GitHub</a></span></div>
 <div id="dash-root">
 {page}
 </div>
@@ -79,8 +79,10 @@ html = f"""<!DOCTYPE html>
 </body>
 </html>
 """
+IMG_TAGS = ''.join(f'<script src="{x}"></script>\n' for x in sorted(os.listdir(SRC)) if x.startswith('img_') and x.endswith('.js'))
+html = html.replace('<script src="core.js"></script>', IMG_TAGS + '<script src="core.js"></script>', 1)
 open(os.path.join(OUT, 'index.html'), 'w').write(html)
-for f in ('core.js', 'charts.js'):
+for f in ['core.js', 'charts.js'] + sorted(x for x in os.listdir(SRC) if x.startswith('img_') and x.endswith('.js')):
     shutil.copy(os.path.join(SRC, f), os.path.join(OUT, f))
 shutil.copy(os.path.join(HERE, 'dash-shim.js'), os.path.join(OUT, 'dash-shim.js'))
 for f in os.listdir(DATA):

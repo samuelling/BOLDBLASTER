@@ -1,0 +1,10 @@
+--- a/index.html	2026-11-14 22:06:57.485944719 -0500
++++ b/index.html	2026-11-14 22:10:15.904181948 -0500
+@@ -7655,6 +7655,7 @@
+ $('musicBtn2').addEventListener('click', toggleMusic);
+ 
+ loadLevel(0);
++window.__eval = (__s) => eval(__s);   // BOLDBLASTER harness hook
+ requestAnimationFrame(frame);
+ })();
+ </script>

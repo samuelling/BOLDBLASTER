@@ -60,6 +60,8 @@
     requestAnimationFrame(() => { pending = false; runAll(); });
   }
   window.addEventListener('resize', () => { clearTimeout(window.__bbResize); window.__bbResize = setTimeout(schedule, 120); });
+  // like the live dashboard, draw a section's charts when it is un-hidden (tabs)
+  new MutationObserver(() => schedule()).observe(document.documentElement, { attributes: true, attributeFilter: ['hidden', 'open'], subtree: true });
   document.addEventListener('toggle', schedule, true);
 
   window.__bbStart = function () {

@@ -1,0 +1,59 @@
+<header class="bb-hero" id="top">
+  <p class="bb-eyebrow">Simulation testbed · gameplay fMRI · model recovery</p>
+  <h1 class="bb-title">BOLD<span class="bb-accent">BLASTER</span>: what can a video game recover from visual cortex?</h1>
+  <p class="bb-lede">An open fMRI dataset of people playing a game would let anyone fit their model to it. Each experiment here plants known tuning in simulated voxels, generates BOLD with realistic noise, and fits it back from gameplay as one would with real data, so we can score what a game recovers, how much play it takes, and how it compares with dedicated mapping experiments. In short: gameplay is a weaker per-parameter mapper than an hour of the right dedicated experiment, but one dataset serves every model at once, and the game matters. Real games beat the purpose-built raycaster, and an hour of a realistic shooter recovers contrast and attention tuning better than two hours of the raycaster.</p>
+</header>
+
+<nav class="bb-tabs" id="tabs" aria-label="Experiments">
+  <button type="button" class="bb-tabbtn" data-tab="overview">Overview</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-prf">1 · pRFs</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-models">2 · Many models</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-hours">3 · How much play</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-fair">4 · vs dedicated</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-attn">5 · Attention</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-cst">6 · Spatiotemporal</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-games">7 · Real games</button>
+  <button type="button" class="bb-tabbtn" data-tab="methods-tab">Methods</button>
+</nav>
+
+<section class="bb-sec bb-tab" id="overview">
+  <div class="bb-sec-head"><div><p class="bb-num">Overview</p><h2 class="bb-h2">Seven experiments at a glance</h2>
+    <p class="bb-desc">Every value is Spearman r between planted and fitted parameters across simulated voxels, so 1 means the voxels are put in exactly the right order. Treat differences under about 0.1 as noise. Open any experiment for what it looked like, its charts and its caveats.</p></div></div>
+  <div class="bb-glance">
+    <article class="bb-card bb-gcard" id="g-prf">
+      <p class="bb-num">1 · Round 1</p><h3 class="bb-h3">Can pRFs be mapped from free gameplay?</h3>
+      <p>Yes, with an eye tracker, but bars still win centrally: 30 minutes of play gives a median pRF position error of <b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=game_eyetracker">—</b>° against <b data-draw="cell" data-source="prf_round1" data-field="pos_err_median" data-where="design=bars">—</b>° for 15 minutes of bars. Beyond 9°, where bars don't reach, play wins.</p>
+      <button type="button" class="bb-open" data-open="exp-prf">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard" id="g-models">
+      <p class="bb-num">2 · Rounds 2–3</p><h3 class="bb-h3">Can one gameplay dataset serve many models?</h3>
+      <p>Mostly, at moderate accuracy: two hours of play recovers SF peak at r = <b data-draw="cell" data-source="recovery" data-field="spearman" data-where="design=game_2h&amp;parameter=mu">—</b>, and the same data with true gaze at <b data-draw="cell" data-source="recovery" data-field="spearman" data-where="design=game_2h_oracle&amp;parameter=mu">—</b>, so measuring gaze is the main cost. Design levers help SF and attention.</p>
+      <button type="button" class="bb-open" data-open="exp-models">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard" id="g-hours">
+      <p class="bb-num">3 · Round 4</p><h3 class="bb-h3">How much play does it take?</h3>
+      <p>Recovery climbs steeply to about 10 hours, then flattens for SF peak, contrast and surround. Spreading the same 4 hours over ten level types instead of one changed recovery by at most <b data-draw="variety" data-source="variety">—</b>.</p>
+      <button type="button" class="bb-open" data-open="exp-hours">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard" id="g-fair">
+      <p class="bb-num">4 · Round 5</p><h3 class="bb-h3">How does play compare with dedicated experiments?</h3>
+      <p>Hour for hour, a dedicated experiment wins on <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=1%20h&amp;verdict=Dedicated">—</b> of 7 V1 measures. At a matched 5 hours the full battery wins <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Dedicated">—</b>, gameplay <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Gameplay">—</b> and <b data-draw="count" data-source="h2h" data-field="n" data-where="budget=5%20h&amp;verdict=Tie">—</b> tie. Gameplay's case is breadth.</p>
+      <button type="button" class="bb-open" data-open="exp-fair">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard" id="g-attn">
+      <p class="bb-num">5 · Round 6</p><h3 class="bb-h3">Attention dynamics and gaze tolerance</h3>
+      <p>Attention gain is weakly recoverable (<b data-draw="cell" data-source="round6" data-field="spearman" data-where="part=attn&amp;condition=oracle&amp;minutes=60&amp;parameter=a">—</b> at 60 min) but its time course is not. Large receptive fields lose only <b data-draw="cell" data-source="r6gap" data-field="gap" data-where="population=Ventral%20(preferred%20category)">—</b> to eye-tracker error, against <b data-draw="cell" data-source="r6gap" data-field="gap" data-where="population=V1%20(pSFT%20peak)">—</b> for V1.</p>
+      <button type="button" class="bb-open" data-open="exp-attn">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard" id="g-cst">
+      <p class="bb-num">6 · Round 7</p><h3 class="bb-h3">Spatiotemporal (CST) pRFs</h3>
+      <p>Only the sustained/transient mixing weight comes through from play (<b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=oracle&amp;minutes=60&amp;parameter=ws">—</b> at 60 min); both time constants stay low. A dedicated SEQ-SIM design does no better (<b data-draw="cell" data-source="round7" data-field="spearman" data-where="part=cst&amp;condition=seqsim&amp;minutes=60&amp;parameter=ws">—</b>).</p>
+      <button type="button" class="bb-open" data-open="exp-cst">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard bb-gwide" id="g-games">
+      <p class="bb-num">7 · Round 8</p><h3 class="bb-h3">Does the game matter? Three real games against the raycaster</h3>
+      <p>Yes. At a matched hour with eye-tracker gaze, effective c50 goes from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on the raycaster to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Betamax (a realistic shooter), <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=brickninja&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Brick Ninja (a side-scroller) and <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=sanctuary&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Animal Sanctuary (top-down pixel art), and attention gain from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b> to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b>, <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=brickninja&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b> and <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=sanctuary&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b>. Betamax is best overall. The 2D games can't map self-motion (they have no forward flow), and slow pixel art costs Animal Sanctuary on SF and transient tuning.</p>
+      <button type="button" class="bb-open" data-open="exp-games">Open experiment →</button>
+    </article>
+  </div>
+</section>

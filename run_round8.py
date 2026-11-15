@@ -26,11 +26,21 @@ import run_experiment as R1
 import run_round7 as R7
 
 D, p, log = V2.D, V2.p, V2.log
-SRC = os.environ.get('BETAMAX_RUNS', '/home/claude/bbx/runs')
 FPS, NF, H, W = game.FPS, V2.NF, game.H, game.W
 N_RUNS = 12
-NEAR = 60.0          # m: enemies this close count as items (numerosity) and pop out (salience)
-PRE = 'betamax'
+# Three real games. 'tag' prefixes result names; 'near' (m) limits Betamax's items and salient onsets
+# to nearby soldiers; 2D games count every on-screen entity. 'deg_px' converts a 2D game's camera
+# scroll (logical px) into image motion on the 24-deg screen.
+GAMES = {
+    'betamax':    dict(tag='bm', label='Betamax', src='/home/claude/bbx/runs', near=60.0, fps3d=True),
+    'brickninja': dict(tag='bn', label='Brick Ninja', src='/home/claude/bbx/runs2d', near=None, fps3d=False, deg_px=24 / 480),
+    'sanctuary':  dict(tag='as', label='Animal Sanctuary', src='/home/claude/bbx/runs2d', near=None, fps3d=False, deg_px=24 / 208),
+}
+PRE = os.environ.get('GAME', 'betamax')
+GC = GAMES[PRE]
+SRC = os.environ.get('GAME_RUNS', GC['src'])
+TAG = GC['tag']
+NEAR = GC['near']
 
 
 # ------------------------------------------------------------------ raw harness output -> logs
@@ -74,9 +84,10 @@ def frames(i):
     """(NF, H, W) float32 luma in [0,1] with the raycaster's crosshair drawn in (the game's own
     crosshair is a DOM overlay the canvas capture doesn't include)."""
     L = np.fromfile(f'{SRC}/{PRE}{i}_lum.u16', np.uint16).reshape(NF, H, W).astype(np.float32) / 65535
-    c = W // 2
-    L[:, H // 2, c - 4:c + 5] = 0.95
-    L[:, H // 2 - 4:H // 2 + 5, c] = 0.95
+    if GC['fps3d']:                     # first-person games get the raycaster's crosshair; 2D games have none
+        c = W // 2
+        L[:, H // 2, c - 4:c + 5] = 0.95
+        L[:, H // 2 - 4:H // 2 + 5, c] = 0.95
     return L
 
 
@@ -93,8 +104,8 @@ def build_logs(i, w):
         t = f / FPS
         en = [v for v in r['vis'] if v[5]]
         vis = [(v[0], v[1], v[2], v[3], v[4]) for v in en]
-        near = [v for v in en if v[3] and v[2] < NEAR]
-        n_items[f] = len(near)
+        near = [v for v in en if v[3] and (NEAR is None or v[2] < NEAR)]
+        n_items[f] = len(near) if GC['fps3d'] else r['items']
         for v in near:
             if t - last_seen.get(v[4], -1e9) > 1.0:
                 salient.append((t, v[0], v[1], 0))
@@ -106,19 +117,27 @@ def build_logs(i, w):
     events = np.array([(fr(t) / FPS, x, y) for t, x, y in ev['kills']], np.float32).reshape(-1, 3)
     shots = np.array([(fr(b[0]) / FPS, p_hit(w, b[1], b[2]), b[6], b[3], b[4]) for b in ev['bursts']],
                      np.float32).reshape(-1, 5)
-    speed = np.array([r['speed'] for r in recs], np.float32)
-    yaw = np.gradient(np.unwrap(np.array([r['yaw'] for r in recs]))) * FPS
-    # a death (next man up) or a restart is a camera cut, not self-motion: zero both around it
-    body = np.array([r['body'] for r in recs])
-    tau = np.array([r['tau'] for r in recs])
-    cut = np.where((np.diff(body) != 0) | (np.abs(np.diff(tau) - 0.1) > 0.5))[0]
+    if GC['fps3d']:
+        speed = np.array([r['speed'] for r in recs], np.float32)
+        yaw = np.gradient(np.unwrap(np.array([r['yaw'] for r in recs]))) * FPS
+        # a death (next man up) or a restart is a camera cut, not self-motion: zero both around it
+        body = np.array([r['body'] for r in recs])
+        tau = np.array([r['tau'] for r in recs])
+        cut = np.where((np.diff(body) != 0) | (np.abs(np.diff(tau) - 0.1) > 0.5))[0]
+    else:
+        # 2D: no forward (expanding) flow at all; horizontal camera scroll is laminar image motion,
+        # entered as the turn-rate regressor (rad/s of image motion). Level/zone changes are cuts.
+        cx = np.array([r['camX'] for r in recs])
+        dcx = np.gradient(cx)
+        speed = np.zeros(NF, np.float32)
+        yaw = (dcx * FPS * GC['deg_px'] * np.pi / 180).astype(np.float32)
+        cut = np.where(np.abs(np.diff(cx)) > 60)[0]
     for c in cut:
         yaw[max(0, c - 1):c + 3] = 0
         speed[max(0, c - 1):c + 3] = 0
     return dict(gaze=gaze, events=events, salient=np.array(salient, np.float32).reshape(-1, 4), shots=shots,
                 n_coins=n_items, fwd=(speed * 1.8 / 4.2).astype(np.float32), yaw=yaw.astype(np.float32),
-                deaths=np.array(ev['deaths'], np.float32).reshape(-1), cuts=np.array(ev['cuts'], np.float32).reshape(-1, 2),
-                tau=np.array([r['tau'] for r in recs], np.float32))
+                deaths=np.array(ev['deaths'], np.float32).reshape(-1), cuts=np.array(ev['cuts'], np.float32).reshape(-1, 2))
 
 
 def make_run(i, pop, G, w):
@@ -165,12 +184,12 @@ def make_run(i, pop, G, w):
 
 def data(n):
     pop = V2.populations()
-    if os.path.exists(p('betamax_phit.json')):          # calibrated once, then held fixed for every run
-        w = np.array(json.load(open(p('betamax_phit.json')))['w'])
+    if os.path.exists(p(f'{PRE}_phit.json')):          # calibrated once, then held fixed for every run
+        w = np.array(json.load(open(p(f'{PRE}_phit.json')))['w'])
     else:
         bt = burst_table()
         w = logistic(bt[:, :2], bt[:, 2])
-        json.dump(dict(w=w.tolist(), n=len(bt), hit_rate=float(bt[:, 2].mean())), open(p('betamax_phit.json'), 'w'))
+        json.dump(dict(w=w.tolist(), n=len(bt), hit_rate=float(bt[:, 2].mean())), open(p(f'{PRE}_phit.json'), 'w'))
         log('p(hit) model', np.round(w, 3), 'from', len(bt), 'bursts, hit rate', round(float(bt[:, 2].mean()), 2))
     G = V2.gauss_sets(pop)
     for i in range(n):
@@ -181,7 +200,7 @@ def data(n):
 # ------------------------------------------------------------------ V1 joint fits
 def fits(n_avail):
     pop = V2.populations()
-    out_path = p('results_betamax.json')
+    out_path = p('results_round8.json')
     res = json.load(open(out_path)) if os.path.exists(out_path) else {}
     allp = list(M.PNAMES)
     plan = []
@@ -190,7 +209,7 @@ def fits(n_avail):
             continue
         for oracle in (False, True):
             tag = '_oracle' if oracle else ''
-            plan.append((f'bm_{mins}m{tag}', V2.game_specs(range(n), PRE), oracle, mins))
+            plan.append((f'{TAG}_{mins}m{tag}', V2.game_specs(range(n), PRE), oracle, mins))
             plan.append((f'rc_{mins}m{tag}', V2.game_specs(range(n), 'game'), oracle, mins))   # raycaster, matched
     for name, specs, oracle, mins in plan:
         if name in res:
@@ -198,7 +217,7 @@ def fits(n_avail):
         t0 = time.time()
         est = V2.fit_v1(name, specs(), allp, oracle)
         np.savez(p(f'fit_{name}'), **est)
-        res[name] = dict(game='betamax' if name.startswith('bm') else 'raycaster', minutes=mins,
+        res[name] = dict(game=PRE if name.startswith(TAG + '_') else 'raycaster', minutes=mins,
                          cond='oracle' if oracle else 'realistic', scores=V2.score_v1(pop, est, allp),
                          seconds=time.time() - t0)
         json.dump(res, open(out_path, 'w'), indent=1)
@@ -208,12 +227,12 @@ def fits(n_avail):
 # ------------------------------------------------------------------ numerosity, self-motion, RPE
 def nonv1(n_avail):
     pop = V2.populations()
-    out_path = p('results_betamax.json')
+    out_path = p('results_round8.json')
     res = json.load(open(out_path)) if os.path.exists(out_path) else {}
     for mins, n in ((30, 6), (60, 12)):
         if n > n_avail:
             continue
-        for g, pre in (('bm', PRE), ('rc', 'game')):
+        for g, pre in ((TAG, PRE), ('rc', 'game')):
             rs = []
             for i in range(n):
                 lg, Y = np.load(p(f'{pre}{i}_logs.npz')), np.load(p(f'{pre}{i}_Y.npz'))
@@ -229,7 +248,7 @@ def nonv1(n_avail):
             res[f'rpe_{g}_{mins}m'] = V2.score_rpe(pop, B, mins, sum(len(lg['shots']) for lg, _, _ in rs))
             for k in ('num', 'mst', 'rpe'):
                 r = res[f'{k}_{g}_{mins}m']
-                r['game'] = 'betamax' if g == 'bm' else 'raycaster'
+                r['game'] = PRE if g == TAG else 'raycaster'
                 log(f'{k}_{g}_{mins}m', {kk: round(v['spearman'], 2) for kk, v in r['scores'].items()})
     json.dump(res, open(out_path, 'w'), indent=1)
 
@@ -249,18 +268,18 @@ def cst(n_avail):
         lg = np.load(p(f'{PRE}{i}_logs.npz'))
         Y = M.add_nuisance(np.random.default_rng(7700 + i), vis, V2.vox(pop, 'v1'), lg['events'])
         np.savez(out_path, v1_vis=vis, v1_Y=Y)
-    out_path = p('results_betamax.json')
+    out_path = p('results_round8.json')
     res = json.load(open(out_path)) if os.path.exists(out_path) else {}
     for mins, n in ((30, 6), (60, 12)):
         if n > n_avail:
             continue
         for cond, oracle in (('oracle', True), ('real', False)):
-            name = f'cst_bm_{cond}_{mins}m'
+            name = f'cst_{TAG}_{cond}_{mins}m'
             if name in res:
                 continue
             t0 = time.time()
             # plug-in tuning from Betamax's own joint fit (the round-7 convention, applied to this game)
-            fz = np.load(p(f'fit_bm_{mins}m{"_oracle" if oracle else ""}.npz'))
+            fz = np.load(p(f'fit_{TAG}_{mins}m{"_oracle" if oracle else ""}.npz'))
             runs = []
             for i in range(n):
                 fe = np.load(p(f'{PRE}{i}_feat_oracle.npz' if oracle else f'{PRE}{i}_feat.npz'))
@@ -270,7 +289,7 @@ def cst(n_avail):
                 runs.append(R7._one_run(fe['Ec'][:, :R7.NV], fe['Es'][:, :R7.NV], fe['Tc'][:, :R7.NV], Y, Q,
                                         fz['mu'][:R7.NV], fz['sig'][:R7.NV]))
             est = R7.fit_cst(runs, fz['c50'][:R7.NV], fz['q'][:R7.NV], fz['k'][:R7.NV])
-            res[name] = dict(game='betamax', minutes=mins, cond=cond, scores=R7.score_cst(pop, est),
+            res[name] = dict(game=PRE, minutes=mins, cond=cond, scores=R7.score_cst(pop, est),
                              seconds=time.time() - t0)
             json.dump(res, open(out_path, 'w'), indent=1)
             log(name, {k: round(v['spearman'], 2) for k, v in res[name]['scores'].items()}, f'{time.time() - t0:.0f}s')
@@ -279,7 +298,7 @@ def cst(n_avail):
 # ------------------------------------------------------------------ stimulus statistics, game vs game
 def stats(n_avail):
     out = {}
-    for g, pre in (('betamax', PRE), ('raycaster', 'game')):
+    for g, pre in ((PRE, PRE), ('raycaster', 'game')):
         fe = [np.load(p(f'{pre}{i}_feat_oracle.npz')) for i in range(n_avail)]
         lg = [np.load(p(f'{pre}{i}_logs.npz')) for i in range(n_avail)]
         Ec = np.concatenate([f['Ec'].astype(np.float32) for f in fe])
@@ -302,25 +321,28 @@ def stats(n_avail):
             yaw_sd=float(np.std(np.concatenate([l['yaw'] for l in lg]))),
             gaze_sd=[float(gz[:, 0].std()), float(gz[:, 1].std())])
     out['bands_cpd'] = bands.BAND_F.tolist()
-    json.dump(out, open(p('results_betamax_stats.json'), 'w'), indent=1)
-    for g in ('betamax', 'raycaster'):
+    sp = p('results_round8_stats.json')
+    allst = json.load(open(sp)) if os.path.exists(sp) else {}
+    allst.update(out)
+    json.dump(allst, open(sp, 'w'), indent=1)
+    for g in (PRE, 'raycaster'):
         log(g, {k: (round(v, 3) if isinstance(v, float) else v) for k, v in out[g].items() if not k.startswith('band')})
 
 
 def frame_strip(path, n=5):
-    """Example frames as the models see them: Betamax (top row) vs the raycaster (bottom row)."""
+    """One row of example frames, as the models see them, for this game (and the raycaster's row)."""
     from PIL import Image
+    save = lambda rows, f: Image.fromarray((np.clip(np.concatenate([np.pad(x, ((0, 0), (0, 4)), constant_values=1) for x in rows], 1)[:, :-4], 0, 1) * 255)
+                                           .astype(np.uint8)).resize(((192 * n + 4 * (n - 1)) * 2, 288), Image.NEAREST).save(f)
     L = frames(0)
     lg = np.load(p(f'{PRE}0_logs.npz'))
-    busy = np.argsort(-lg['n_coins'][::30])[:n * 3] * 30          # frames with soldiers near, spread out
+    busy = np.argsort(-(lg['n_coins'][::30] + 0.01 * np.arange(len(lg['n_coins'][::30]))))[:n * 3] * 30   # frames with things on screen, spread out
     pick = np.sort(busy[np.linspace(0, len(busy) - 1, n).astype(int)])
-    top = np.concatenate([np.pad(L[f], ((0, 0), (0, 4)), constant_values=1) for f in pick], 1)
-    r = game.simulate_run_v2(300, duration=60.0, keep_frames=600)
-    F = r['frames']
-    bot = np.concatenate([np.pad(F[f], ((0, 0), (0, 4)), constant_values=1) for f in np.linspace(40, 590, n).astype(int)], 1)
-    img = np.concatenate([top, np.ones((4, top.shape[1])), bot], 0)
-    Image.fromarray((np.clip(img, 0, 1) * 255).astype(np.uint8)).resize((img.shape[1] * 2, img.shape[0] * 2), Image.NEAREST).save(path)
-
+    save([L[f] for f in pick], path)
+    rp = os.path.join(os.path.dirname(path), 'round8_frames_raycaster.png')
+    if not os.path.exists(rp):
+        F = game.simulate_run_v2(300, duration=60.0, keep_frames=600)['frames']
+        save([F[f] for f in np.linspace(40, 590, n).astype(int)], rp)
 
 if __name__ == '__main__':
     V2.calibrate()     # band energy in contrast units, the scale every raycaster run used
@@ -337,4 +359,4 @@ if __name__ == '__main__':
     if stage in ('stats', 'all'):
         stats(n)
     if stage in ('strip', 'all'):
-        frame_strip(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboard_data', 'round8_frames.png'))
+        frame_strip(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboard_data', f'round8_frames_{PRE}.png'))

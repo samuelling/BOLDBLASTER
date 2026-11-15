@@ -63,3 +63,67 @@ betamax,Betamax,oracle,60,q,CRF exponent,0.58,0.1643
 betamax,Betamax,oracle,60,k,Surround suppression,0.5357,0.3439
 betamax,Betamax,oracle,60,tau,Transient weight,0.7049,0.1231
 betamax,Betamax,oracle,60,a,Attention gain,0.4753,0.094
+brickninja,Brick Ninja,realistic,30,c50_eff,Effective c50,0.3137,0.758
+brickninja,Brick Ninja,realistic,30,mu,SF peak (pSFT),0.2558,0.8513
+brickninja,Brick Ninja,realistic,30,sig,SF bandwidth,0.0813,0.699
+brickninja,Brick Ninja,realistic,30,c50,c50 (raw),0.2469,0.9046
+brickninja,Brick Ninja,realistic,30,q,CRF exponent,0.2455,0.5244
+brickninja,Brick Ninja,realistic,30,k,Surround suppression,0.3064,0.7554
+brickninja,Brick Ninja,realistic,30,tau,Transient weight,0.5628,0.3364
+brickninja,Brick Ninja,realistic,30,a,Attention gain,0.1477,0.4906
+brickninja,Brick Ninja,oracle,30,c50_eff,Effective c50,0.5248,0.4626
+brickninja,Brick Ninja,oracle,30,mu,SF peak (pSFT),0.5235,0.5163
+brickninja,Brick Ninja,oracle,30,sig,SF bandwidth,0.1296,0.6006
+brickninja,Brick Ninja,oracle,30,c50,c50 (raw),0.4671,0.5245
+brickninja,Brick Ninja,oracle,30,q,CRF exponent,0.3304,0.3245
+brickninja,Brick Ninja,oracle,30,k,Surround suppression,0.4207,0.4962
+brickninja,Brick Ninja,oracle,30,tau,Transient weight,0.5247,0.2332
+brickninja,Brick Ninja,oracle,30,a,Attention gain,0.1396,0.465
+brickninja,Brick Ninja,realistic,60,c50_eff,Effective c50,0.508,0.6046
+brickninja,Brick Ninja,realistic,60,mu,SF peak (pSFT),0.3609,0.8994
+brickninja,Brick Ninja,realistic,60,sig,SF bandwidth,0.1601,0.6426
+brickninja,Brick Ninja,realistic,60,c50,c50 (raw),0.4223,0.657
+brickninja,Brick Ninja,realistic,60,q,CRF exponent,0.3607,0.442
+brickninja,Brick Ninja,realistic,60,k,Surround suppression,0.2294,0.6885
+brickninja,Brick Ninja,realistic,60,tau,Transient weight,0.6216,0.2745
+brickninja,Brick Ninja,realistic,60,a,Attention gain,0.1608,0.3085
+brickninja,Brick Ninja,oracle,60,c50_eff,Effective c50,0.6394,0.3509
+brickninja,Brick Ninja,oracle,60,mu,SF peak (pSFT),0.5608,0.3978
+brickninja,Brick Ninja,oracle,60,sig,SF bandwidth,0.2082,0.4877
+brickninja,Brick Ninja,oracle,60,c50,c50 (raw),0.5969,0.3458
+brickninja,Brick Ninja,oracle,60,q,CRF exponent,0.464,0.2532
+brickninja,Brick Ninja,oracle,60,k,Surround suppression,0.4899,0.3482
+brickninja,Brick Ninja,oracle,60,tau,Transient weight,0.6818,0.1413
+brickninja,Brick Ninja,oracle,60,a,Attention gain,0.2295,0.3197
+sanctuary,Animal Sanctuary,realistic,30,c50_eff,Effective c50,0.4489,0.7133
+sanctuary,Animal Sanctuary,realistic,30,mu,SF peak (pSFT),0.2092,0.8304
+sanctuary,Animal Sanctuary,realistic,30,sig,SF bandwidth,0.0983,0.701
+sanctuary,Animal Sanctuary,realistic,30,c50,c50 (raw),0.3665,0.8172
+sanctuary,Animal Sanctuary,realistic,30,q,CRF exponent,0.1035,0.5926
+sanctuary,Animal Sanctuary,realistic,30,k,Surround suppression,0.1985,0.7157
+sanctuary,Animal Sanctuary,realistic,30,tau,Transient weight,0.3392,0.3557
+sanctuary,Animal Sanctuary,realistic,30,a,Attention gain,0.234,0.4201
+sanctuary,Animal Sanctuary,oracle,30,c50_eff,Effective c50,0.5411,0.481
+sanctuary,Animal Sanctuary,oracle,30,mu,SF peak (pSFT),0.3692,0.652
+sanctuary,Animal Sanctuary,oracle,30,sig,SF bandwidth,0.1217,0.6409
+sanctuary,Animal Sanctuary,oracle,30,c50,c50 (raw),0.4733,0.5617
+sanctuary,Animal Sanctuary,oracle,30,q,CRF exponent,0.3483,0.392
+sanctuary,Animal Sanctuary,oracle,30,k,Surround suppression,0.3508,0.6034
+sanctuary,Animal Sanctuary,oracle,30,tau,Transient weight,0.4791,0.2658
+sanctuary,Animal Sanctuary,oracle,30,a,Attention gain,0.2721,0.3834
+sanctuary,Animal Sanctuary,realistic,60,c50_eff,Effective c50,0.5432,0.5389
+sanctuary,Animal Sanctuary,realistic,60,mu,SF peak (pSFT),0.2659,0.735
+sanctuary,Animal Sanctuary,realistic,60,sig,SF bandwidth,0.1666,0.6137
+sanctuary,Animal Sanctuary,realistic,60,c50,c50 (raw),0.4444,0.7185
+sanctuary,Animal Sanctuary,realistic,60,q,CRF exponent,0.2658,0.5186
+sanctuary,Animal Sanctuary,realistic,60,k,Surround suppression,0.2452,0.7661
+sanctuary,Animal Sanctuary,realistic,60,tau,Transient weight,0.4924,0.3095
+sanctuary,Animal Sanctuary,realistic,60,a,Attention gain,0.3739,0.2911
+sanctuary,Animal Sanctuary,oracle,60,c50_eff,Effective c50,0.6769,0.3327
+sanctuary,Animal Sanctuary,oracle,60,mu,SF peak (pSFT),0.4456,0.5077
+sanctuary,Animal Sanctuary,oracle,60,sig,SF bandwidth,0.1572,0.551
+sanctuary,Animal Sanctuary,oracle,60,c50,c50 (raw),0.592,0.3831
+sanctuary,Animal Sanctuary,oracle,60,q,CRF exponent,0.4152,0.2905
+sanctuary,Animal Sanctuary,oracle,60,k,Surround suppression,0.5339,0.4507
+sanctuary,Animal Sanctuary,oracle,60,tau,Transient weight,0.5951,0.2107
+sanctuary,Animal Sanctuary,oracle,60,a,Attention gain,0.4017,0.2769

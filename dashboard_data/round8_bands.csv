@@ -1,17 +1,33 @@
-game_label,band_cpd,energy_rel,temporal_sd_rel
-Betamax,0.25,1.0,0.521
-Betamax,0.354,0.9747,0.5967
-Betamax,0.5,0.8858,0.5698
-Betamax,0.707,0.7603,0.52
-Betamax,1.0,0.7022,0.4993
-Betamax,1.414,0.6121,0.4522
-Betamax,2.0,0.555,0.4113
-Betamax,2.828,0.5171,0.3903
-Raycaster,0.25,0.7288,0.3854
-Raycaster,0.354,0.7416,0.4522
-Raycaster,0.5,0.8002,0.4979
-Raycaster,0.707,0.8604,0.5252
-Raycaster,1.0,0.8928,0.5252
-Raycaster,1.414,0.9246,0.5106
-Raycaster,2.0,0.9726,0.5196
-Raycaster,2.828,1.0,0.5553
+game,game_label,band_cpd,energy_rel
+raycaster,Raycaster,0.25,0.7288
+raycaster,Raycaster,0.354,0.7416
+raycaster,Raycaster,0.5,0.8002
+raycaster,Raycaster,0.707,0.8604
+raycaster,Raycaster,1.0,0.8928
+raycaster,Raycaster,1.414,0.9246
+raycaster,Raycaster,2.0,0.9726
+raycaster,Raycaster,2.828,1.0
+betamax,Betamax,0.25,1.0
+betamax,Betamax,0.354,0.9747
+betamax,Betamax,0.5,0.8858
+betamax,Betamax,0.707,0.7603
+betamax,Betamax,1.0,0.7022
+betamax,Betamax,1.414,0.6121
+betamax,Betamax,2.0,0.555
+betamax,Betamax,2.828,0.5171
+brickninja,Brick Ninja,0.25,1.0
+brickninja,Brick Ninja,0.354,0.8623
+brickninja,Brick Ninja,0.5,0.8438
+brickninja,Brick Ninja,0.707,0.7396
+brickninja,Brick Ninja,1.0,0.6184
+brickninja,Brick Ninja,1.414,0.5095
+brickninja,Brick Ninja,2.0,0.4315
+brickninja,Brick Ninja,2.828,0.3516
+sanctuary,Animal Sanctuary,0.25,0.978
+sanctuary,Animal Sanctuary,0.354,0.9538
+sanctuary,Animal Sanctuary,0.5,1.0
+sanctuary,Animal Sanctuary,0.707,0.904
+sanctuary,Animal Sanctuary,1.0,0.8316
+sanctuary,Animal Sanctuary,1.414,0.7836
+sanctuary,Animal Sanctuary,2.0,0.6871
+sanctuary,Animal Sanctuary,2.828,0.614

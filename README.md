@@ -1,6 +1,8 @@
 # BOLDBLASTER
 
-> Interactive dashboard: `docs/dashboard/` (served at https://samuelling.github.io/boldblaster/dashboard/ once GitHub Pages is on; rebuild with `python dashboard/standalone/build.py`). Source: [`dashboard/`](dashboard/) (page + scripts over the CSVs; `test_harness.js` runs it headless with jsdom). Noise assumptions: [NOISE.md](NOISE.md). Tidy CSVs of every result: [`dashboard_data/`](dashboard_data/) (regenerate with `python export_dashboard_data.py`).
+> **Summary and dashboard, in one place:** `docs/dashboard/` (served at https://samuelling.github.io/boldblaster/dashboard/ once GitHub Pages is on; `docs/index.html` now just points there). It opens on an Overview of all seven experiments, each a card with its headline result, and one tab per experiment with what we did, a picture of the stimulus, the result, its key chart and a folded "More detail"; a Methods tab holds the simulation, noise and voxel-level views. Rebuild with `python dashboard/standalone/build.py`. Source: [`dashboard/`](dashboard/) (page + scripts over the CSVs; stimulus pictures from `make_stimulus_figs.py`; `test_harness.js` runs it headless with jsdom). Noise assumptions: [NOISE.md](NOISE.md). Tidy CSVs of every result: [`dashboard_data/`](dashboard_data/) (regenerate with `python export_dashboard_data.py`).
+
+> **Headline (round 8):** the game matters. At a matched hour with eye-tracker gaze, all three real games beat the raycaster on contrast response (effective c50 0.43 on the raycaster, 0.68 Betamax, 0.51 Brick Ninja, 0.54 Animal Sanctuary) and on attention gain (0.10; 0.42, 0.16, 0.37). Betamax, a realistic shooter, is best overall.
 
 > **Headline (round 5):** against dedicated experiments of realistic length (30–60 min each), gameplay is not a per-parameter shortcut. At a matched 5 h budget the full dedicated battery recovers 3 of 7 V1 measures better, gameplay 1 (surround suppression), and 3 tie. Gameplay's case is breadth: one dataset serves every model at once. Earlier rounds used a 10-min dedicated baseline, which flattered gameplay.
 
@@ -289,60 +291,77 @@ behave differently.
 run_round7.py diagnostic`. Results JSON: `results_cst.json`, `results_cst_seqsim.json`,
 `results_cst_diagnostic.json`.
 
-## Round 8: a real game -- Betamax's beach battle as the stimulus
+## Round 8: does the game matter? Three real games against the raycaster
 
-Every earlier round used BOLDBLASTER's own numpy raycaster. Round 8 swaps in
-[Betamax](https://github.com/samuelling/betamax)'s Mayflower Beach battle, played **forward**
-(time runs in order, the men you kill stay down, no rewind and no taking bodies; if you fall you
-carry on as the nearest man of your side), and refits every model unchanged.
+Every earlier round used BOLDBLASTER's own numpy raycaster. Round 8 swaps in three real games, each
+played by a bot for twelve 5-minute runs on the same 24 x 18 deg screen at 192 x 144 px, and refits
+every model unchanged (`run_round8.py`, one game at a time via `GAME=betamax|brickninja|sanctuary`):
 
-*How it's rendered* (`tools/betamax/`): Betamax is rebuilt with one added hook
-(`betamax-harness-hook.patch`, exposing `window.BWfwd(actor, tapeTime)`) and run headed under
-Xvfb in Chrome on Mesa's llvmpipe (3.5x faster than SwiftShader for this geometry-bound scene),
-stepped deterministically with the game's own `BWstep` at 2 x 50 ms ticks per 10 Hz frame, VCR
-filter off, shadows on, soldier instances outside the view culled (render-only). A bot
-(`bot.js`) plays a Cape Cod defender: it acquires the nearest visible Texan with a 150-400 ms
-reaction delay, turns with first-order pursuit plus tremor, fires bursts once on target, strafes
-and crouches, and scans/walks within 28 m of where each life began. When the tape runs out it
-restarts as a random defender at a random tape time. Each frame is captured with `readPixels`, reduced to
-192 x 144 Rec.709 luma (the raycaster's 24 x 18 deg screen) with the raycaster's crosshair drawn
-in, and logged with every soldier on screen (screen position, distance, terrain line of sight)
-and every burst (distance, aim error, whether a round landed, from the game's own hit
-registration). ~1 s/frame/worker on 2 CPUs, so a 5-min run takes ~50 min to render.
+- [Betamax](https://github.com/samuelling/betamax)'s Mayflower Beach battle, played **forward**
+  (time runs in order, kills stay down, no rewind and no taking bodies; if you fall you carry on as
+  the nearest man of your side).
+- [Brick Ninja](https://github.com/samuelling/Brick-Ninja), the ten side-scrolling worlds.
+- [Animal Sanctuary](https://github.com/samuelling/Animal-Sanctuary), the five wild zones, walking
+  up to creatures and playing the befriending timing game.
 
-*How it's fitted* (`run_betamax.py`): the logs become exactly the files `run_v2.py` writes for the
-raycaster. Gaze comes from the same `GazeModel`, fed Betamax's enemies; salient onsets are enemies
-appearing within 60 m plus kills; arousal events are kills; numerosity counts enemies visible
-within 60 m; self-motion is speed and turn rate, zeroed across camera cuts (deaths, restarts);
-the RPE "prediction" is each burst's hit probability from a logistic fit of hit on log distance
-and aim error (fitted once on runs 0-1, then fixed). Matched comparisons use the first six
-raycaster runs.
+*Betamax rendering* (`tools/betamax/`): rebuilt with one hook (`betamax-harness-hook.patch`,
+exposing `window.BWfwd(actor, tapeTime)`) and run headed under Xvfb in Chrome on Mesa's llvmpipe
+(3.5x faster than SwiftShader here), stepped with the game's own `BWstep` at 2 x 50 ms ticks per
+10 Hz frame, VCR filter off, off-screen soldier instances culled. The bot (`bot.js`) plays a Cape
+Cod defender: it acquires the nearest visible Texan with a 150-400 ms reaction delay, turns with
+first-order pursuit plus tremor, fires bursts on target, strafes, crouches and scans. Frames come
+off `readPixels`, about 1 s/frame/worker, so a 5-min run takes about 50 min.
 
-*Result at a matched 60 min (12 runs; eye-tracker gaze, raycaster -> Betamax):* effective c50
-0.43 -> 0.68, CRF exponent 0.15 -> 0.43, attention gain 0.10 -> 0.42, SF bandwidth -0.01 -> 0.22,
-SF peak 0.37 -> 0.43; surround suppression (0.22 vs 0.24) and transient weight (0.61 vs 0.62) tie.
-With oracle gaze every parameter improves (e.g. SF peak 0.52 -> 0.67, CRF exponent 0.25 -> 0.58,
-surround 0.41 -> 0.54). An hour of Betamax beats round 4's *two* hours of raycaster on contrast
-response, SF bandwidth and attention, and with true gaze matches or beats it on everything. The
-30-min comparison (6 runs) shows the same pattern (effective c50 0.34 -> 0.66, CRF exponent 0.06 ->
-0.33, attention 0.06 -> 0.31; surround the one loss, 0.21 -> 0.15). Striatal RPE 0.66 -> 0.96 (4x
-the shot outcomes per minute); numerosity (0.99 vs 0.99) and self-motion (rotation 0.88 vs 0.87)
-tie. CST (round 7's sustained/transient channels, plug-in tuning from each game's own joint fit):
-sustained-channel weight 0.30 -> 0.53 (realistic) and 0.47 -> 0.61 (oracle), sustained time
-constant 0.37 -> 0.56 (oracle). The frames explain it: Betamax's contrast energy falls off with
-spatial frequency like a natural scene (the raycaster's textures are flat-to-rising), and its
-contrast drive at the pRFs spans a much wider range (10th-90th percentile 0.10-0.99 vs 0.29-0.85;
-median V1 SNR 0.34 vs 0.20) -- dawn glare and haze against dark silhouettes and muzzle flash. It is
-also a far busier game: 8 kills, 38 bursts and 95 salient onsets per minute, vs 3, 9 and 12.
+*2D rendering* (`tools/games2d/`): both games are single-file canvas games wrapped in an IIFE, so a
+one-line patch exposes `window.__eval` inside it. A virtual clock replaces `performance.now` and
+`requestAnimationFrame`, the bot (`bots/brickninja.js`, `bots/sanctuary.js`) runs in the game's
+scope, and each frame is letterboxed onto a mid-grey 4:3 screen. A run takes seconds. Brick
+Ninja's bot runs, jumps, throws aimed stars and swings its sword; Animal Sanctuary's walks to the
+nearest creature and presses during the catch bar with human-like timing error (SD 0.13).
 
-*Caveats:* a scripted bot, not a person, and its gaze is model-generated; one level and one
-scripted battle (each restart replays the same recording from a different body and time); a
-one-off scale bug (band energy computed before `V2.calibrate()`) briefly made Betamax look
-10x weaker and was fixed before any result here.
+*Fitting*: each game's logs become exactly the files `run_v2.py` writes for the raycaster. Gaze is
+the same `GazeModel`, fed the game's on-screen targets (enemies or creatures); items for
+numerosity are enemies within 60 m, studs or creatures; self-motion is speed and turn rate in
+Betamax, and horizontal camera scroll as turning with zero forward motion in the 2D games, zeroed
+across camera cuts; the RPE prediction is each shot's hit probability from a per-game logistic fit
+(bursts, stars, catch presses). CST uses each game's own joint V1 fit as plug-in tuning. Matched
+comparisons use the first six (30 min) or twelve (60 min) raycaster runs.
 
-`bash tools/betamax/queue.sh 0 12 & bash tools/betamax/queue.sh 1 12` (renders; see the header of
-`tools/betamax/run.mjs` for setup), then `python run_betamax.py all 12 && python export_round8.py`.
-Results JSON: `results/round8_betamax.json`, `round8_betamax_stats.json`, `round8_betamax_phit.json`.
+*Result, matched 60 min, eye-tracker gaze* (Spearman r; raycaster / Betamax / Brick Ninja / Animal
+Sanctuary):
 
-Results JSON for every round is in `results/`; the built report is in `docs/`
+| Parameter | Raycaster | Betamax | Brick Ninja | Animal Sanctuary |
+|---|---|---|---|---|
+| Effective c50 | 0.43 | 0.68 | 0.51 | 0.54 |
+| SF peak | 0.37 | 0.43 | 0.36 | 0.27 |
+| SF bandwidth | -0.01 | 0.22 | 0.16 | 0.17 |
+| CRF exponent | 0.15 | 0.43 | 0.36 | 0.27 |
+| Surround k | 0.22 | 0.24 | 0.23 | 0.25 |
+| Transient weight | 0.61 | 0.62 | 0.62 | 0.49 |
+| Attention gain | 0.10 | 0.42 | 0.16 | 0.37 |
+| Striatal RPE beta | 0.66 | 0.96 | 0.96 | 0.63 |
+| Self-motion rotation | 0.88 | 0.87 | 0.45 | 0.19 |
+| CST sustained weight | 0.30 | 0.53 | 0.37 | 0.36 |
+
+Betamax is best overall: dawn glare, haze, dark silhouettes and muzzle flash spread V1's contrast
+drive over the widest range, its spectrum falls off like a natural scene, and its firefight gives
+the most salient events. Animal Sanctuary's slow, flat pixel art costs it SF peak and transient
+weight, though its constant creature encounters help attention. RPE follows the number of
+outcomes: about 40 shots a minute in the action games, a dozen catch presses in Animal Sanctuary,
+which ties the raycaster. The 2D games cannot map self-motion (no forward flow, and scrolling
+barely varies in direction). With oracle gaze every game improves; the 30-min comparison shows the
+same ordering. Full numbers: `dashboard_data/round8_v1.csv`, `round8_other.csv`, `round8_stats.csv`.
+
+*Caveats:* scripted bots, not people, with model-generated gaze; each game's restarts replay the
+same levels or battle, so an hour of one is less varied than an hour of fresh raycaster levels; a
+one-off scale bug (band energy computed before `V2.calibrate()`) briefly made Betamax look 10x
+weaker and was fixed before any result here.
+
+Renders: `bash tools/betamax/queue.sh 0 12 & bash tools/betamax/queue.sh 1 12` (see the header of
+`tools/betamax/run.mjs`), and `tools/games2d/README.md` for the 2D games. Then
+`GAME=<game> python run_round8.py all 12` for each game, `python export_round8.py` and
+`python make_stimulus_figs.py`. Results JSON: `results/round8.json`, `round8_stats.json` and
+`round8_<game>_phit.json`.
+
+Results JSON for every round is in `results/`; the summary and dashboard are in `docs/dashboard/`
 (enable GitHub Pages from `main` / `/docs` to serve it).

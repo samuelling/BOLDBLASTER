@@ -1,0 +1,10 @@
+--- a/index.html	2026-11-14 22:06:58.188662457 -0500
++++ b/index.html	2026-11-14 22:10:15.909180909 -0500
+@@ -3525,6 +3525,7 @@
+   resize();splashResize();requestAnimationFrame(t=>{last=t;frame(t);});
+   try{window.claude&&window.claude.hot&&window.claude.hot.snapshot&&window.claude.hot.snapshot(()=>({state}));}catch(e){}
+ }
++window.__eval=(__s)=>eval(__s);// BOLDBLASTER harness hook
+ const hot=window.claude&&window.claude.hot;
+ if(hot&&hot.ready)hot.ready(boot);else boot((hot&&hot.data)||{});
+ })();
