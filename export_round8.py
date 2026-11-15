@@ -10,7 +10,7 @@ import run_v2 as V2
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboard_data')
 GAMES = [('rc', 'raycaster', 'Raycaster'), ('bm', 'betamax', 'Betamax'), ('bn', 'brickninja', 'Brick Ninja'),
-         ('as', 'sanctuary', 'Animal Sanctuary')]
+         ('as', 'sanctuary', 'Animal Sanctuary'), ('bt', 'betamaxt', 'Betamax + tunnels')]
 TAG = {t: (g, l) for t, g, l in GAMES}
 PLAB = dict(c50_eff='Effective c50', mu='SF peak (pSFT)', sig='SF bandwidth', c50='c50 (raw)', q='CRF exponent',
             k='Surround suppression', tau='Transient weight', a='Attention gain')

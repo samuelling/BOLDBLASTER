@@ -165,6 +165,7 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
   <button type="button" class="bb-tabbtn" data-tab="exp-cst">6 · Spatiotemporal</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-games">7 · Real games</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-nav">8 · Navigation &amp; cognition</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-dig">9 · Tunnels</button>
   <button type="button" class="bb-tabbtn" data-tab="design-tab">Design notes</button>
   <button type="button" class="bb-tabbtn" data-tab="areas-tab">Brain areas</button>
   <button type="button" class="bb-tabbtn" data-tab="methods-tab">Methods</button>
@@ -213,6 +214,11 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
       <p class="bb-num">8 · Round 9</p><h3 class="bb-h3">Navigation and cognitive models, with candidate brain areas</h3>
       <p>Free movement in any direction is what navigation codes need: entorhinal grid orientation is recovered at <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=raycaster&amp;minutes=60">—</b> on the raycaster, <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b> on Betamax and <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=sanctuary&amp;minutes=60">—</b> on Animal Sanctuary, against <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=brickninja&amp;minutes=60">—</b> (chance) on the side-scrolling Brick Ninja. For The Palace's cognitive models, behaviour recovers parameters well in every game but BOLD often doesn't. Striatal learning rate follows outcomes per minute (<b data-draw="cell" data-source="round9" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=brickninja&amp;minutes=60">—</b> on Brick Ninja, <b data-draw="cell" data-source="round9" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=raycaster&amp;minutes=60">—</b> on the raycaster), and drift diffusion needs spaced, varied decisions that these games rarely provide. Betamax needs puzzle elements for path integration and map updating.</p>
       <button type="button" class="bb-open" data-open="exp-nav">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard bb-gwide" id="g-dig">
+      <p class="bb-num">9 · Round 10</p><h3 class="bb-h3">Puzzle elements: tunnels under Betamax</h3>
+      <p>Tunnels under the parking lot and the dunes make Betamax a test of navigation. Distance to goal (path vs straight line) goes from untestable to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=nav&amp;model=goal&amp;measure=w&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>. Path integration from blackout walks is recovered from behaviour (<b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=behaviour&amp;game=betamaxt&amp;minutes=60">—</b>) and partly from BOLD (<b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>). The cost: an hour of play spends <b data-draw="ctext" data-source="round10_stats" data-field="betamaxt" data-where="measure=under">—</b> below ground, so V1 SF peak falls from <b data-draw="cell" data-source="round10" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=mu&amp;source=bold&amp;game=betamax&amp;minutes=60&amp;condition=realistic">—</b> to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=mu&amp;source=bold&amp;game=betamaxt&amp;minutes=60&amp;condition=realistic">—</b>, and learning rate from striatal BOLD from <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b> to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>.</p>
+      <button type="button" class="bb-open" data-open="exp-dig">Open experiment →</button>
     </article>
   </div>
 </section>
@@ -748,6 +754,83 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
   </details>
 </section>
 
+<section class="bb-sec bb-tab" id="exp-dig" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 9 · Round 10</p><h2 class="bb-h2">Puzzle elements: The Diggings, tunnels under Betamax</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>Experiment 8 found Betamax's open beach starves the navigation and memory models. So the defenders have now dug in: a warren of timber-shored tunnels under the parking lot and behind the dune crest, reached by ladders through hatches (branch <code>diggings</code> of samuelling/betamax). The battle above is unchanged, still forward mode with no possession. Below ground:</p>
+      <ul>
+        <li><b>A braided maze</b> on a 6 m grid with several routes between any two places, and sectors painted in their own colours</li>
+        <li><b>Ammunition runs:</b> crates in magazine rooms at dead ends, carried up to the line through a crest hatch</li>
+        <li><b>Cave-ins</b> that close a corridor ahead of you, without ever cutting off part of the warren</li>
+        <li><b>Blackouts</b> that leave you a lantern's few metres of light to find your way back to the ladder</li>
+        <li><b>Figures in the gloom</b>, friend or foe, at different distances and lighting</li>
+      </ul>
+      <p>The same bot plays the same hour (12 runs of 5 minutes) and now and then takes a tunnel mission. Every earlier model is refitted and compared with the original Betamax. Three models no earlier game could test are added: path integration (The Palace's lantern model), map updating (its East Wing model), and drift diffusion for the friend-or-foe calls.</p></div>
+    <figure class="bb-card bb-fig" id="exp-dig-fig"><img data-draw="img" data-img="digplan" data-source="img_digplan" alt="Plan of the tunnels with hatches, magazines, cave-ins met and an hour of the bot's paths below ground."><figcaption>The warren from above. The bot mostly enters from the crest (red hatches) and fetches from the nearest magazines; the deep south of the lot is rarely visited.</figcaption></figure>
+  </div>
+  <figure class="bb-card bb-fig" style="margin-top: var(--cds-gap-md)"><img data-draw="img" data-img="digframes" data-source="img_digframes" alt="Four frames as the models see them: the dune, a lit tunnel, a figure in a tunnel, and a blacked-out tunnel."><figcaption>What V1 sees (192 × 144 luminance): the dune, a lit tunnel, a figure in the gloom, and a blackout. Tunnel frames are dim, low in contrast and much alike.</figcaption></figure>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
+    <p><b>The tunnels open up navigation and spatial memory.</b></p>
+    <ul>
+      <li><b>Path vs straight-line distance to goal:</b> <b data-draw="cell" data-source="round10" data-field="value" data-where="part=nav&amp;model=goal&amp;measure=w&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>, up from untestable. In the warren the two distances correlate only <b data-draw="ctext" data-source="round10_stats" data-field="betamaxt" data-where="measure=path_eucl">—</b>.</li>
+      <li><b>Distance to walls:</b> <b data-draw="cell" data-source="round10" data-field="value" data-where="part=nav&amp;model=boundary&amp;measure=d&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>, up from untestable.</li>
+      <li><b>Path integration:</b> <b data-draw="ctext" data-source="round10_stats" data-field="betamaxt" data-where="measure=homing">—</b> usable blackout walks an hour. Heading noise is recovered at <b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=behaviour&amp;game=betamaxt&amp;minutes=60">—</b> from where players think home is and <b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b> from entorhinal BOLD (agreement <b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=agree&amp;game=betamaxt&amp;minutes=60">—</b>). Distance gain (<b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=gd&amp;source=behaviour&amp;game=betamaxt&amp;minutes=60">—</b>) and leak (<b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=la&amp;source=behaviour&amp;game=betamaxt&amp;minutes=60">—</b>) come from behaviour only.</li>
+      <li><b>Place familiarity:</b> more entries and more revisits raise encoding from <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=e&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b> to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=e&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b> and forgetting from <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=f&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b> to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=f&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>.</li>
+    </ul>
+    <p><b>But they take time away from the battle.</b> The bot spends <b data-draw="ctext" data-source="round10_stats" data-field="betamaxt" data-where="measure=under">—</b> of the hour below ground, and firefight decisions fall from <b data-draw="ctext" data-source="round10_stats" data-field="betamax" data-where="measure=dec">—</b> to <b data-draw="ctext" data-source="round10_stats" data-field="betamaxt" data-where="measure=dec">—</b> a minute.</p>
+    <ul>
+      <li><b>Vision:</b> V1 SF peak falls from <b data-draw="cell" data-source="round10" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=mu&amp;source=bold&amp;game=betamax&amp;minutes=60&amp;condition=realistic">—</b> to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=mu&amp;source=bold&amp;game=betamaxt&amp;minutes=60&amp;condition=realistic">—</b>, and effective c50 from <b data-draw="cell" data-source="round10" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=c50_eff&amp;source=bold&amp;game=betamax&amp;minutes=60&amp;condition=realistic">—</b> to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=c50_eff&amp;source=bold&amp;game=betamaxt&amp;minutes=60&amp;condition=realistic">—</b>.</li>
+      <li><b>Learning rate from striatal BOLD:</b> falls from <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b> to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>, with fewer outcomes.</li>
+      <li><b>Drift diffusion from BOLD:</b> mixed. Drift scale rises from <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=v&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b> to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=v&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b> because the remaining decisions are more spaced out. Boundary falls from <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=a&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b> to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=a&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>.</li>
+    </ul>
+    <p><b>Two puzzles are too rare for BOLD.</b> Behaviour recovers them, but BOLD does not.</p>
+    <ul>
+      <li><b>Map updating:</b> the player runs into a cave-in only <b data-draw="ctext" data-source="round10_stats" data-field="betamaxt" data-where="measure=stale">—</b> times an hour. Route-choice temperature is recovered from behaviour (<b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=mapupd&amp;measure=tau&amp;source=behaviour&amp;game=betamaxt&amp;minutes=60">—</b>), update rate only partly (<b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=mapupd&amp;measure=alpha&amp;source=behaviour&amp;game=betamaxt&amp;minutes=60">—</b>), and not at all from BOLD (<b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=mapupd&amp;measure=alpha&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>).</li>
+      <li><b>Friend-or-foe calls:</b> only <b data-draw="ctext" data-source="round10_stats" data-field="betamaxt" data-where="measure=figures">—</b> an hour. Behaviour recovers drift scale (<b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=ddm_id&amp;measure=v&amp;source=behaviour&amp;game=betamaxt&amp;minutes=60">—</b>), but BOLD does not (<b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=ddm_id&amp;measure=v&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>).</li>
+    </ul>
+    <p><b>Next:</b> fewer, shorter trips below ground (about a quarter of the hour), cave-ins that stay down so they are met again, and more figures per trip.</p>
+  </div></div>
+  <div class="bb-controls bb-ctl-row">
+    <label>Play time
+      <select class="dash-select" data-param="r10min" aria-label="Play time">
+        <option value="60">60 minutes</option>
+        <option value="30">30 minutes</option>
+      </select>
+    </label>
+    <label>Cognitive models fitted from
+      <select class="dash-select" data-param="r10src" aria-label="Fitted from">
+        <option value="bold">BOLD only</option>
+        <option value="behaviour">Behaviour only</option>
+        <option value="agree">Agreement: BOLD vs behaviour</option>
+      </select>
+    </label>
+  </div>
+  <div class="bb-card">
+    <p class="bb-stat">Every model on Betamax (open circle) and on Betamax with tunnels (filled), paired.</p>
+    <div class="bb-chart" id="r10pairs-chart" data-draw="r10pairs" data-source="round10" style="min-height: 900px"></div>
+    <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>One row per parameter, grouped by kind of model. The open circle is the original Betamax (Experiments 7 and 8), the filled circle Betamax with tunnels, both from an hour of play with eye-tracker gaze. A row with only a filled circle is a model the open beach could not test. Angles are scored by phase recovery (1 = exact, about 0.08 = chance); everything else is Spearman r between planted and fitted values.</p>
+<h4>How to read it</h4><p>A line going right is a gain from the tunnels, going left a loss. Visual and navigation models are always fitted from BOLD. For the cognitive models, the menu above chooses BOLD, behaviour, or their agreement.</p>
+<h4>Caveats</h4><p>The bot decides how long to stay below ground; a person might stay more or less, which moves every gain and loss here. With 40 simulated players each cognitive r is uncertain by about ±0.15, and the 18 homing walks and 13 cave-in encounters are small samples.</p>
+</details>
+  </div>
+  <details class="bb-more" id="exp-dig-more"><summary>More detail: every number, and what the tunnels add to an hour of play</summary>
+  <div class="bb-card bb-tablewrap" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">Every model and measure at the chosen play time.</p>
+    <table class="bb-table" id="r10-table" data-source="round10">
+      <thead><tr><th>Kind</th><th>Model and measure</th><th>Candidate area</th><th>Betamax</th><th>With tunnels</th><th>Change</th></tr></thead>
+      <tbody data-draw="r10table"></tbody>
+    </table>
+  </div>
+  <div class="bb-card bb-tablewrap" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">What the tunnels add to an hour of play.</p>
+    <table class="bb-table" id="r10stats-table" data-source="round10_stats" data-row-key="measure">
+      <thead><tr><th data-field="label">Measure</th><th data-field="betamax">Betamax</th><th data-field="betamaxt">With tunnels</th></tr></thead>
+      <tbody data-draw="r10statstable"></tbody>
+    </table>
+  </div>
+  </details>
+</section>
 <section class="bb-sec bb-tab" id="areas-tab" hidden>
   <div class="bb-sec-head"><div><p class="bb-num">Reference</p><h2 class="bb-h2">Candidate brain areas for every parameter</h2>
     <p class="bb-desc">Each parameter the testbed recovers, the area its population is placed in, and the basis for that choice. Round 9 gives medial temporal areas more noise than cortex (the noise column), so the area changes how much play a parameter needs, not only where it is.</p></div></div>
@@ -778,6 +861,15 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
         <li><b>Friend-or-foe silhouettes in the haze</b></li>
         <li><b>A night phase where the flare dies and you get back to the bunker in the dark</b> (The Palace's lantern)</li>
         <li><b>An optional radio-code puzzle</b> (Dishonored 2's Jindosh lock)</li>
+      </ul>
+      <p><b>Built so far (Experiment 9):</b> tunnels with several routes, ammunition runs, cave-ins, blackouts and friend-or-foe figures. They work for navigation, but the bot spent over half the hour below ground, which cost vision and reward learning. Cave-ins and figures were met too rarely for BOLD.</p></article>
+    <article class="bb-card bb-gcard bb-gwide"><h3 class="bb-h3">Tuning the tunnels</h3><p>Tunnel time is borrowed from the battle, so keep trips short and make every one count:</p>
+      <ul>
+        <li><b>Short connectors between fights</b> rather than errands: under a quarter of the hour below ground keeps the beach's vision and reward signal</li>
+        <li><b>Cave-ins that persist</b> across lives and sit on the routes people use, so a changed layout is met again and the update rate can be estimated</li>
+        <li><b>A figure every 20–40 s below ground</b>, at mixed distances and lighting</li>
+        <li><b>Blackouts on the way back</b> from the magazine, so every one is a homing trial</li>
+        <li><b>Lit, high-contrast tunnels</b> (lamps, painted bands, daylight through the hatches) so V1 still has something to fit</li>
       </ul></article>
   </div>
 </section>
@@ -910,6 +1002,8 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 </div>
 <script src="dash-shim.js"></script>
 <script src="img_dedicated.js"></script>
+<script src="img_digframes.js"></script>
+<script src="img_digplan.js"></script>
 <script src="img_games.js"></script>
 <script src="img_hours.js"></script>
 <script src="img_models.js"></script>

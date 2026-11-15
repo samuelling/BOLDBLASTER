@@ -1,0 +1,555 @@
+diff --git a/README.md b/README.md
+index e1320d7..db50f46 100644
+--- a/README.md
++++ b/README.md
+@@ -17,6 +17,17 @@ Open `index.html` (a single self-contained file), or enable GitHub Pages on `mai
+ 
+ Reversed bullets still hurt, and every one is tracer you can see. The edges of the beach are mined.
+ 
++### The Diggings
++The defenders have dug in. Under the parking lot and the back of the dunes runs a warren of timber-shored tunnels and bunkers (`src/diggings.js`), reached by hatches: five on the lot, four on the dune crest by the fighting positions and two on its back. **E** (or USE on touch) at a hatch climbs down or up the ladder.
++
++- **Several ways through.** The tunnels are a braided maze on a 6 m grid: most junctions have more than one route to anywhere, and each sector is painted its own colour (red and blue under the lot, yellow and green behind the dunes).
++- **Ammunition for the line.** Magazine rooms at the dead ends under the lot hold crates. Take one (**E**) and carry it back up through a crest hatch: AMMUNITION UP TO THE LINE.
++- **Cave-ins.** Shelling overhead brings a corridor down now and then, usually in the direction you're heading. It never cuts off part of the warren, but the way you remember is gone.
++- **The lights go out.** A hit on the generator darkens a sector for half a minute. Your lantern lights a few metres; find your way.
++- **Figures in the gloom.** Some are your own wounded, some are Texan sappers who got in. Decide before you shoot.
++
++The beach battle itself is unchanged: soldiers stay on the surface, and above ground the tunnels are just hatches in sandbag rings.
++
+ ### The look
+ Cel-shaded after the sister game *Ashland*:
+ - Every surface takes its light in Ashland's four hard bands.
+diff --git a/src/diggings.js b/src/diggings.js
+new file mode 100644
+index 0000000..2a6cce2
+--- /dev/null
++++ b/src/diggings.js
+@@ -0,0 +1,483 @@
++// The Diggings: dug-out tunnels and bunkers under the parking lot and the back of the dunes.
++// Hatches on the lot and along the dune crest drop down ladder shafts into a braided warren of
++// timber-shored corridors (several routes to most places), with magazine rooms holding ammunition
++// for the gun line. Things go wrong down there: shelling caves in a corridor (your mental map of
++// the place is now stale), a hit on the generator puts a sector's lights out (find your way back
++// to the ladder by lantern light), and figures stand in the gloom: your own wounded, or Texan
++// sappers who got in. One flat floor, below the ground everywhere it runs; all of it pure
++// geometry on a 1.5 m grid, so the player, the bot and the analysis share exactly the same walls.
++import * as THREE from 'three';
++import { heightAt } from './terrain.js';
++import { mulberry32 } from './rng.js';
++
++export const DG = { yf: 0.2, h: 2.75, cell: 6, sub: 1.5, x0: -84, z0: -122, nx: 29, nz: 13 };
++const SPC = 4;                                  // subcells per cell side
++const SX = DG.nx * SPC, SZ = DG.nz * SPC;
++const AX0 = DG.x0 - DG.cell / 2, AZ0 = DG.z0 - DG.cell / 2;   // world x/z of subcell (0,0)'s corner
++
++const cx = (i) => DG.x0 + i * DG.cell, cz = (j) => DG.z0 + j * DG.cell;
++const cid = (i, j) => j * DG.nx + i;
++
++function allowedCell(i, j) {
++  const x = cx(i), z = cz(j);
++  if (z <= -74) return Math.abs(x) <= 42;                 // under the parking lot
++  if (z === -68) return x === -36 || x === 0 || x === 36;   // three connecting drifts north under the lot's edge
++  return Math.abs(x) <= 78;                                // galleries behind the dune crest
++}
++
++export function buildPlan(seed = 1944) {
++  const r = mulberry32(seed);
++  const ok = new Uint8Array(DG.nx * DG.nz);
++  for (let j = 0; j < DG.nz; j++) for (let i = 0; i < DG.nx; i++) {
++    if (!allowedCell(i, j)) continue;
++    // keep at least 0.5 m of ground over the ceiling everywhere this cell's corridors run
++    let mn = 1e9;
++    for (let a = -3; a <= 3; a += 1.5) for (let b = -3; b <= 3; b += 1.5) mn = Math.min(mn, heightAt(cx(i) + a, cz(j) + b));
++    if (mn >= DG.yf + DG.h + 0.5) ok[cid(i, j)] = 1;
++  }
++  // keep the largest connected group of usable cells
++  const comp = new Int32Array(DG.nx * DG.nz).fill(-1); let best = -1, bestN = 0;
++  const nb = (k) => { const i = k % DG.nx, j = (k / DG.nx) | 0, o = []; if (i > 0) o.push(k - 1); if (i < DG.nx - 1) o.push(k + 1); if (j > 0) o.push(k - DG.nx); if (j < DG.nz - 1) o.push(k + DG.nx); return o.filter((q) => ok[q]); };
++  for (let k = 0, c = 0; k < ok.length; k++) {
++    if (!ok[k] || comp[k] >= 0) continue;
++    const st = [k]; comp[k] = c; let n = 0;
++    while (st.length) { const q = st.pop(); n++; for (const w of nb(q)) if (comp[w] < 0) { comp[w] = c; st.push(w); } }
++    if (n > bestN) { bestN = n; best = c; } c++;
++  }
++  for (let k = 0; k < ok.length; k++) if (comp[k] !== best) ok[k] = 0;
++  // braided maze: a random spanning tree, then extra links so most places have more than one way in
++  const edges = new Set(), key = (a, b) => (a < b ? a + ':' + b : b + ':' + a);
++  const seen = new Uint8Array(ok.length); const start = ok.indexOf(1); const st = [start]; seen[start] = 1;
++  while (st.length) {
++    const q = st[st.length - 1]; const opts = nb(q).filter((w) => !seen[w]);
++    if (!opts.length) { st.pop(); continue; }
++    const w = opts[Math.floor(r() * opts.length)]; edges.add(key(q, w)); seen[w] = 1; st.push(w);
++  }
++  for (let k = 0; k < ok.length; k++) if (ok[k]) for (const w of nb(k)) if (w > k && !edges.has(key(k, w)) && r() < 0.3) edges.add(key(k, w));
++  const cells = []; for (let k = 0; k < ok.length; k++) if (ok[k]) cells.push(k);
++  const adj = new Map(cells.map((k) => [k, []]));
++  for (const e of edges) { const [a, b] = e.split(':').map(Number); adj.get(a).push(b); adj.get(b).push(a); }
++  const zone = (k) => { const x = cx(k % DG.nx), z = cz((k / DG.nx) | 0); return (z <= -74 ? 0 : 2) + (x < 0 ? 0 : 1); };
++  // hatches: on the lot, and on the dune crest (by the fighting positions) and its back
++  const want = [[-36, -116, 'lot'], [36, -116, 'lot'], [-36, -80, 'lot'], [36, -80, 'lot'], [-12, -98, 'lot'],
++    [-66, -50, 'line'], [-30, -50, 'line'], [30, -50, 'line'], [66, -50, 'line'], [-48, -62, 'back'], [48, -62, 'back']];
++  const hatches = [];
++  for (const [x, z, kind] of want) {
++    let bk = -1, bd = 1e9;
++    for (const k of cells) { const d = Math.hypot(cx(k % DG.nx) - x, cz((k / DG.nx) | 0) - z); if (d < bd) { bd = d; bk = k; } }
++    if (bk >= 0 && !hatches.some((h) => h.cell === bk)) hatches.push({ id: hatches.length, cell: bk, kind, x: cx(bk % DG.nx) - 0.75, z: cz((bk / DG.nx) | 0) - 0.75 });
++  }
++  // magazine rooms: the dead ends under the lot farthest from any hatch
++  const dist = bfs(adj, hatches.map((h) => h.cell));
++  const ends = cells.filter((k) => adj.get(k).length === 1 && zone(k) <= 1 && !hatches.some((h) => h.cell === k)).sort((a, b) => dist.get(b) - dist.get(a));
++  const crates = ends.slice(0, 4).map((k, n) => ({ id: n, cell: k, x: cx(k % DG.nx) + 0.75, z: cz((k / DG.nx) | 0) + 0.75 }));
++  // cave-in candidates: links that lie on a loop (cutting one never strands any part of the warren)
++  const loopEdges = [...edges].filter((e) => { const [a, b] = e.split(':').map(Number); return !isBridge(adj, a, b); });
++  // figures in the gloom
++  const free = cells.filter((k) => !hatches.some((h) => h.cell === k) && !crates.some((c) => c.cell === k));
++  const figures = [];
++  for (let n = 0; n < 14 && free.length; n++) {
++    const k = free.splice(Math.floor(r() * free.length), 1)[0];
++    figures.push({ id: n, cell: k, foe: r() < 0.5, x: cx(k % DG.nx) + (r() - 0.5) * 1.2, z: cz((k / DG.nx) | 0) + (r() - 0.5) * 1.2, yaw: r() * Math.PI * 2 });
++  }
++  return { cells, edges: [...edges], adj, hatches, crates, loopEdges, figures, zone, seed };
++}
++
++function bfs(adj, src) {
++  const d = new Map([...adj.keys()].map((k) => [k, 1e9])); const q = [...src]; for (const s of src) d.set(s, 0);
++  while (q.length) { const a = q.shift(); for (const b of adj.get(a)) if (d.get(b) > d.get(a) + 1) { d.set(b, d.get(a) + 1); q.push(b); } }
++  return d;
++}
++function isBridge(adj, a, b) {   // is b unreachable from a without the a-b link?
++  const seen = new Set([a]), q = [a];
++  while (q.length) { const x = q.pop(); for (const y of adj.get(x)) { if ((x === a && y === b) || (x === b && y === a)) continue; if (y === b) return false; if (!seen.has(y)) { seen.add(y); q.push(y); } } }
++  return true;
++}
++
++export class Diggings {
++  constructor(G, scene, hooks = {}) {
++    this.G = G; this.scene = scene; this.hooks = hooks;
++    this.P = buildPlan();
++    this.carved = new Uint8Array(SX * SZ);
++    this.rubble = new Uint8Array(SX * SZ);
++    const P = this.P;
++    for (const k of P.cells) { const i = k % DG.nx, j = (k / DG.nx) | 0; for (let a = 1; a <= 2; a++) for (let b = 1; b <= 2; b++) this.carved[(4 * j + b) * SX + 4 * i + a] = 1; }
++    for (const e of P.edges) for (const s of this.edgeSubs(e)) this.carved[s] = 1;
++    this.zoneOn = [1, 1, 1, 1];
++    this.state = { climb: null, carrying: false, cause: '', useWas: false, lights: [0, 0, 0, 0], under: 0, collapses: [], lantern: 1, nextCollapseT: 0 };
++    this.log = { descents: [], ascents: [], pickups: [], deliveries: [], collapses: [], lightsOut: [], figures: [], friendly: [] };
++    this.build();
++    this.install();
++    // underground there is no sky: no crepuscular rays or morning mist in the picture
++    const post = G.post, r0 = post.render.bind(post), me = this;
++    post.render = function (t, sunDir) {
++      const air = post.real && post.real.air && post.real.air.uniforms;
++      if (air && me.mist0 == null) me.mist0 = [air.uMist.value, air.uHaze.value];
++      if (me.deep) { if (post.rays) post.rays.uniforms.uAmt.value = 0; if (air) { air.uMist.value = 0; air.uHaze.value = 0; } return r0(t, null); }
++      if (air && me.mist0) { air.uMist.value = me.mist0[0]; air.uHaze.value = me.mist0[1]; }
++      return r0(t, sunDir);
++    };
++    this.reset();
++  }
++
++  // subcell indices that a link between two cells carves (its 2 x 2 throat)
++  edgeSubs(e) {
++    const [a, b] = (typeof e === 'string' ? e.split(':') : e).map(Number);
++    const ia = a % DG.nx, ja = (a / DG.nx) | 0, ib = b % DG.nx, jb = (b / DG.nx) | 0, out = [];
++    if (ja === jb) { const i = Math.min(ia, ib); for (const A of [4 * i + 3, 4 * i + 4]) for (const B of [4 * ja + 1, 4 * ja + 2]) out.push(B * SX + A); }
++    else { const j = Math.min(ja, jb); for (const B of [4 * j + 3, 4 * j + 4]) for (const A of [4 * ia + 1, 4 * ia + 2]) out.push(B * SX + A); }
++    return out;
++  }
++  subAt(x, z) { const A = Math.floor((x - AX0) / DG.sub), B = Math.floor((z - AZ0) / DG.sub); return A < 0 || B < 0 || A >= SX || B >= SZ ? -1 : B * SX + A; }
++  open(x, z) { const s = this.subAt(x, z); return s >= 0 && this.carved[s] && !this.rubble[s]; }
++  inBox(x, z) { return x > AX0 - 2 && x < AX0 + SX * DG.sub + 2 && z > AZ0 - 2 && z < AZ0 + SZ * DG.sub + 2; }
++  underground(y = this.G.player.pos.y) { return y < DG.yf + 1.4; }
++  cellAt(x, z) { const i = Math.round((x - DG.x0) / DG.cell), j = Math.round((z - DG.z0) / DG.cell); if (i < 0 || j < 0 || i >= DG.nx || j >= DG.nz) return -1; const k = cid(i, j); return this.P.adj.has(k) ? k : -1; }
++  cellXZ(k) { return [cx(k % DG.nx), cz((k / DG.nx) | 0)]; }
++  zoneAt(x, z) { const k = this.cellAt(x, z); return k >= 0 ? this.P.zone(k) : (z <= -74 ? 0 : 2) + (x < 0 ? 0 : 1); }
++  // distance to the nearest wall (solid subcell), for someone underground
++  wallDist(x, z) {
++    let best = 9;
++    const A0 = Math.floor((x - AX0) / DG.sub), B0 = Math.floor((z - AZ0) / DG.sub);
++    for (let B = B0 - 3; B <= B0 + 3; B++) for (let A = A0 - 3; A <= A0 + 3; A++) {
++      if (A >= 0 && B >= 0 && A < SX && B < SZ && this.carved[B * SX + A] && !this.rubble[B * SX + A]) continue;
++      const x0 = AX0 + A * DG.sub, z0 = AZ0 + B * DG.sub;
++      const dx = Math.max(x0 - x, 0, x - x0 - DG.sub), dz = Math.max(z0 - z, 0, z - z0 - DG.sub);
++      best = Math.min(best, Math.hypot(dx, dz));
++    }
++    return best;
++  }
++  // is the straight line from a to b inside open tunnel? (sight lines underground)
++  clear(ax, az, bx, bz) {
++    const n = Math.ceil(Math.hypot(bx - ax, bz - az) / 0.4);
++    for (let k = 1; k < n; k++) { const f = k / n; if (!this.open(ax + (bx - ax) * f, az + (bz - az) * f)) return false; }
++    return true;
++  }
++
++  // ---- collision and footing: wrap the world's own, active only below ground inside the warren
++  install() {
++    const O = this.G.S.obstacles, push0 = O.pushOut.bind(O), surf0 = O.surfaceY.bind(O), me = this;
++    O.pushOut = function (x, z, r, y, t, iv, hgt) {
++      if (!(y < DG.yf + 1.4 && me.inBox(x, z))) return push0(x, z, r, y, t, iv, hgt);
++      for (let it = 0; it < 2; it++) {
++        const A0 = Math.floor((x - AX0) / DG.sub), B0 = Math.floor((z - AZ0) / DG.sub);
++        for (let B = B0 - 1; B <= B0 + 1; B++) for (let A = A0 - 1; A <= A0 + 1; A++) {
++          const inside = A >= 0 && B >= 0 && A < SX && B < SZ;
++          if (inside && me.carved[B * SX + A] && !me.rubble[B * SX + A]) continue;
++          const x0 = AX0 + A * DG.sub, z0 = AZ0 + B * DG.sub, qx = Math.max(x0, Math.min(x0 + DG.sub, x)), qz = Math.max(z0, Math.min(z0 + DG.sub, z));
++          const dx = x - qx, dz = z - qz, d = Math.hypot(dx, dz);
++          if (d < r && d > 1e-5) { x = qx + dx / d * r; z = qz + dz / d * r; }
++          else if (d <= 1e-5) { x = x0 + DG.sub / 2 + (x > x0 + DG.sub / 2 ? DG.sub / 2 + r : -DG.sub / 2 - r); }
++        }
++      }
++      return [x, z];
++    };
++    O.surfaceY = function (x, z, yPrev = 1e9, t = null) {
++      if (yPrev < DG.yf + 1.4 && me.inBox(x, z)) return DG.yf;
++      return surf0(x, z, yPrev, t);
++    };
++  }
++
++  // ---- geometry
++  build() {
++    const P = this.P, pos = [], col = [], bak = [], zon = [];
++    const lamps = P.cells.map((k) => { const [x, z] = this.cellXZ(k); return [x, DG.yf + DG.h - 0.25, z, P.zone(k)]; });
++    this.lamps = lamps;
++    const r = mulberry32(77);
++    const quad = (a, b, c, d, rgb, zone) => {
++      for (const v of [a, b, c, a, c, d]) { pos.push(v[0], v[1], v[2]); col.push(rgb[0], rgb[1], rgb[2]); zon.push(zone); bak.push(this.bake(v[0], v[1], v[2])); }
++    };
++    const yf = DG.yf, yc = DG.yf + DG.h, s = DG.sub, hatchSub = new Set(P.hatches.map((h) => this.subAt(h.x, h.z)));
++    for (let B = 0; B < SZ; B++) for (let A = 0; A < SX; A++) {
++      const k = B * SX + A; if (!this.carved[k]) continue;
++      const x0 = AX0 + A * s, z0 = AZ0 + B * s, x1 = x0 + s, z1 = z0 + s, zone = this.zoneAt(x0 + s / 2, z0 + s / 2);
++      const tint = 0.85 + r() * 0.3;
++      // duckboard floor and a timbered ceiling
++      quad([x0, yf, z1], [x1, yf, z1], [x1, yf, z0], [x0, yf, z0], [0.33 * tint, 0.25 * tint, 0.17 * tint], zone);
++      if (!hatchSub.has(k)) quad([x0, yc, z0], [x1, yc, z0], [x1, yc, z1], [x0, yc, z1], [0.24 * tint, 0.19 * tint, 0.13 * tint], zone);
++      // earth walls where the next subcell is solid
++      const wall = (ax, az, bx, bz) => {
++        const t2 = 0.8 + r() * 0.4, ys = [yf, yf + 1.1, yf + 2.0, yc];
++        for (let q = 0; q < 3; q++) { const c = q === 0 ? [0.36 * t2, 0.3 * t2, 0.22 * t2] : [0.42 * t2, 0.36 * t2, 0.27 * t2]; quad([ax, ys[q], az], [bx, ys[q], bz], [bx, ys[q + 1], bz], [ax, ys[q + 1], az], c, zone); }
++      };
++      const solid = (AA, BB) => AA < 0 || BB < 0 || AA >= SX || BB >= SZ || !this.carved[BB * SX + AA];
++      if (solid(A - 1, B)) wall(x0, z1, x0, z0);
++      if (solid(A + 1, B)) wall(x1, z0, x1, z1);
++      if (solid(A, B - 1)) wall(x0, z0, x1, z0);
++      if (solid(A, B + 1)) wall(x1, z1, x0, z1);
++    }
++    // timber shoring at every cell (posts and a cap across each corridor mouth), ladders up the shafts
++    const wood = [0.3, 0.2, 0.1], box = (x, y, z, hx, hy, hz, c, zone) => {
++      const v = (a, b, cc) => [x + a * hx, y + b * hy, z + cc * hz];
++      quad(v(-1, -1, 1), v(1, -1, 1), v(1, 1, 1), v(-1, 1, 1), c, zone); quad(v(1, -1, -1), v(-1, -1, -1), v(-1, 1, -1), v(1, 1, -1), c, zone);
++      quad(v(-1, -1, -1), v(-1, -1, 1), v(-1, 1, 1), v(-1, 1, -1), c, zone); quad(v(1, -1, 1), v(1, -1, -1), v(1, 1, -1), v(1, 1, 1), c, zone);
++      quad(v(-1, 1, 1), v(1, 1, 1), v(1, 1, -1), v(-1, 1, -1), c, zone); quad(v(-1, -1, -1), v(1, -1, -1), v(1, -1, 1), v(-1, -1, 1), c, zone);
++    };
++    this.box = box;
++    for (const k of P.cells) {
++      const [x, z] = this.cellXZ(k), zone = P.zone(k);
++      for (const [dx, dz] of [[-1.42, -1.42], [1.42, -1.42], [-1.42, 1.42], [1.42, 1.42]]) {
++        if (this.open(x + dx * 1.1, z + dz * 0.3) && this.open(x + dx * 0.3, z + dz * 1.1)) continue;   // corner is open on both sides: no post
++        box(x + dx, yf + DG.h / 2, z + dz, 0.09, DG.h / 2, 0.09, wood, zone);
++      }
++      box(x, yc - 0.08, z, 1.5, 0.07, 0.09, wood, zone); box(x, yc - 0.08, z, 0.09, 0.07, 1.5, wood, zone);
++    }
++    // zone markings: a painted band per sector (and its number) so the four sectors look different
++    const paint = [[0.55, 0.12, 0.08], [0.1, 0.25, 0.55], [0.55, 0.45, 0.08], [0.12, 0.42, 0.18]];
++    for (const k of P.cells) {
++      const [x, z] = this.cellXZ(k), zn = P.zone(k);
++      for (const [dx, dz] of [[-1.48, 0], [1.48, 0], [0, -1.48], [0, 1.48]]) if (!this.open(x + dx * 1.2, z + dz * 1.2)) box(x + dx, yf + 1.3, z + dz, dz ? 1.2 : 0.012, 0.12, dx ? 1.2 : 0.012, paint[zn], zn);
++    }
++    // ladder shafts up to the hatches
++    for (const h of P.hatches) {
++      const top = heightAt(h.x, h.z) + 0.1, zone = P.zone(h.cell), x0 = h.x - 0.75, x1 = h.x + 0.75, z0 = h.z - 0.75, z1 = h.z + 0.75;
++      for (let y = yc; y < top; y += 0.5) {
++        const y1 = Math.min(top, y + 0.5), c = [0.3, 0.25, 0.18];
++        quad([x0, y, z1], [x0, y, z0], [x0, y1, z0], [x0, y1, z1], c, zone); quad([x1, y, z0], [x1, y, z1], [x1, y1, z1], [x1, y1, z0], c, zone);
++        quad([x0, y, z0], [x1, y, z0], [x1, y1, z0], [x0, y1, z0], c, zone); quad([x1, y, z1], [x0, y, z1], [x0, y1, z1], [x1, y1, z1], c, zone);
++      }
++      for (const sd of [-0.3, 0.3]) box(h.x + sd, (yf + top) / 2, h.z - 0.68, 0.035, (top - yf) / 2, 0.035, wood, zone);
++      for (let y = yf + 0.3; y < top; y += 0.3) box(h.x, y, h.z - 0.68, 0.3, 0.02, 0.025, wood, zone);
++    }
++    // magazine rooms: stacked ammunition crates
++    const crate = [0.32, 0.36, 0.2];
++    for (const c of P.crates) for (let n = 0; n < 5; n++) box(c.x + (n % 3) * 0.55 - 0.5, yf + 0.22 + Math.floor(n / 3) * 0.44, c.z + 0.6, 0.25, 0.2, 0.32, crate, P.zone(c.cell));
++    const g = new THREE.BufferGeometry();
++    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
++    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
++    g.setAttribute('baked', new THREE.Float32BufferAttribute(bak, 1));
++    g.setAttribute('zone', new THREE.Float32BufferAttribute(zon, 1));
++    this.U = { uZone: { value: [1, 1, 1, 1] }, uCam: { value: new THREE.Vector3() }, uLantern: { value: 0 } };
++    this.mat = this.makeMat();
++    this.mesh = new THREE.Mesh(g, this.mat); this.mesh.frustumCulled = false; this.mesh.visible = false;
++    this.scene.add(this.mesh);
++    // the bulbs (a mesh per sector, so a sector going dark takes its bulbs with it)
++    this.bulbs = [0, 1, 2, 3].map((zn) => {
++      const L = lamps.filter((l) => l[3] === zn), m = new THREE.InstancedMesh(new THREE.SphereGeometry(0.07, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffd9a0, fog: false }), Math.max(1, L.length));
++      const M = new THREE.Matrix4(); L.forEach((l, n) => { M.makeTranslation(l[0], l[1], l[2]); m.setMatrixAt(n, M); });
++      m.count = L.length; m.visible = false; this.scene.add(m); return m;
++    });
++    // hatches on the surface: a timber frame and trapdoor in a ring of sandbags
++    const sg = [];
++    const sb = new THREE.MeshStandardMaterial({ color: 0x8a7a58, roughness: 0.95 }), tw = new THREE.MeshStandardMaterial({ color: 0x5a4430, roughness: 0.85 });
++    this.surf = new THREE.Group(); this.scene.add(this.surf);
++    // one merged mesh for all the sandbags and one for all the timber (cheap to draw)
++    const bags = [], timber = [];
++    const put = (list, w, h2, d2, x, y, z, ry = 0) => { const g = new THREE.BoxGeometry(w, h2, d2); g.rotateY(ry); g.translate(x, y, z); list.push(g); };
++    for (const h of P.hatches) {
++      const y = heightAt(h.x, h.z);
++      put(timber, 1.7, 0.16, 1.7, h.x, y + 0.08, h.z); put(timber, 1.4, 0.06, 1.4, h.x, y + 0.19, h.z);
++      for (let a = 0; a < 10; a++) { const t = a / 10 * Math.PI * 2, bx = h.x + Math.cos(t) * 1.55, bz = h.z + Math.sin(t) * 1.55; put(bags, 0.62, 0.28, 0.34, bx, heightAt(bx, bz) + 0.14, bz, -t + Math.PI / 2); }
++    }
++    const mergeG = (list) => { let n = 0; const pos = [], nrm = [], idx = []; for (const g of list) { const pa = g.attributes.position.array, na = g.attributes.normal.array; for (const i of g.index.array) idx.push(i + n); pos.push(...pa); nrm.push(...na); n += pa.length / 3; }
++      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3)); g.setIndex(idx); return g; };
++    const mb = new THREE.Mesh(mergeG(bags), sb); mb.receiveShadow = true; this.surf.add(mb);
++    const mt = new THREE.Mesh(mergeG(timber), tw); mt.receiveShadow = true; this.surf.add(mt);
++    // figures standing in the gloom
++    this.figs = P.figures.map((f) => {
++      const fp = [], fc = [], fb = [], fz = [], zone = P.zone(f.cell);
++      const body = f.foe ? [0.5, 0.42, 0.28] : [0.27, 0.3, 0.2], helm = f.foe ? [0.2, 0.18, 0.15] : [0.3, 0.33, 0.24], skin = [0.55, 0.42, 0.33];
++      const q2 = (a, b, c, d, rgb) => { for (const v of [a, b, c, a, c, d]) { fp.push(...v); fc.push(...rgb); fz.push(zone); fb.push(1); } };
++      const bx = (x, y, z, hx, hy, hz, c) => { const v = (a, b, cc) => [x + a * hx, y + b * hy, z + cc * hz];
++        q2(v(-1, -1, 1), v(1, -1, 1), v(1, 1, 1), v(-1, 1, 1), c); q2(v(1, -1, -1), v(-1, -1, -1), v(-1, 1, -1), v(1, 1, -1), c);
++        q2(v(-1, -1, -1), v(-1, -1, 1), v(-1, 1, 1), v(-1, 1, -1), c); q2(v(1, -1, 1), v(1, -1, -1), v(1, 1, -1), v(1, 1, 1), c);
++        q2(v(-1, 1, 1), v(1, 1, 1), v(1, 1, -1), v(-1, 1, -1), c); };
++      bx(-0.11, 0.42, 0, 0.09, 0.42, 0.1, body); bx(0.11, 0.42, 0, 0.09, 0.42, 0.1, body);
++      bx(0, 1.15, 0, 0.24, 0.32, 0.13, body); bx(-0.3, 1.05, 0, 0.07, 0.3, 0.07, body); bx(0.3, 1.05, 0, 0.07, 0.3, 0.07, body);
++      bx(0, 1.6, 0, 0.1, 0.12, 0.1, skin); bx(0, 1.74, 0, 0.15, 0.06, 0.15, helm);
++      const g2 = new THREE.BufferGeometry();
++      g2.setAttribute('position', new THREE.Float32BufferAttribute(fp, 3)); g2.setAttribute('color', new THREE.Float32BufferAttribute(fc, 3));
++      g2.setAttribute('baked', new THREE.Float32BufferAttribute(fb.map(() => this.bake(f.x, DG.yf + 1.2, f.z)), 1)); g2.setAttribute('zone', new THREE.Float32BufferAttribute(fz, 1));
++      const m = new THREE.Mesh(g2, this.mat); m.position.set(f.x, DG.yf, f.z); m.rotation.y = f.yaw; m.visible = false; this.scene.add(m);
++      return { ...f, mesh: m, down: false, downT: -1e9, decided: false };
++    });
++    this.rubbleMeshes = [];
++  }
++
++  bake(x, y, z) {   // lamp light at a point, with crude occlusion by the rock
++    let L = 0;
++    for (const l of this.lamps) {
++      const d2 = (l[0] - x) ** 2 + (l[1] - y) ** 2 + (l[2] - z) ** 2; if (d2 > 130) continue;
++      const mx = x + (l[0] - x) * 0.02, mz = z + (l[2] - z) * 0.02;
++      if (!this.clearLoose(mx, mz, l[0], l[2])) continue;
++      L += 1.6 / (1 + d2 / 5);
++    }
++    return Math.min(1.6, L);
++  }
++  clearLoose(ax, az, bx, bz) {
++    const n = Math.ceil(Math.hypot(bx - ax, bz - az) / 0.6);
++    for (let k = 1; k < n; k++) { const f = k / n, s = this.subAt(ax + (bx - ax) * f, az + (bz - az) * f); if (s < 0 || !this.carved[s]) return false; }
++    return true;
++  }
++
++  makeMat() {
++    const m = new THREE.MeshBasicMaterial({ vertexColors: true, fog: false });
++    const U = this.U;
++    m.onBeforeCompile = (sh) => {
++      Object.assign(sh.uniforms, U);
++      sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute float baked; attribute float zone; varying float vBaked; varying float vZone; varying vec3 vWP;')
++        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvBaked = baked; vZone = zone; vWP = (modelMatrix * vec4(position, 1.0)).xyz;');
++      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', `#include <common>
++uniform float uZone[4]; uniform vec3 uCam; uniform float uLantern; varying float vBaked; varying float vZone; varying vec3 vWP;
++float h3(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
++float n3(vec3 p) { vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
++  return mix(mix(mix(h3(i), h3(i + vec3(1,0,0)), f.x), mix(h3(i + vec3(0,1,0)), h3(i + vec3(1,1,0)), f.x), f.y),
++             mix(mix(h3(i + vec3(0,0,1)), h3(i + vec3(1,0,1)), f.x), mix(h3(i + vec3(0,1,1)), h3(i + vec3(1,1,1)), f.x), f.y), f.z); }`)
++        .replace('#include <color_fragment>', `#include <color_fragment>
++float tex = 0.55 * n3(vWP * 1.7) + 0.3 * n3(vWP * 5.3) + 0.15 * n3(vWP * 13.0);
++diffuseColor.rgb *= 0.55 + 0.9 * tex;
++int zi = int(vZone + 0.5); float zo = zi == 0 ? uZone[0] : zi == 1 ? uZone[1] : zi == 2 ? uZone[2] : uZone[3];
++float dl = distance(vWP, uCam);
++float light = 0.006 + 0.15 * vBaked * zo + uLantern * 0.5 / (1.0 + dl * dl * 0.6);
++diffuseColor.rgb *= light;`);
++    };
++    m.customProgramCacheKey = () => 'diggings1';
++    return m;
++  }
++
++  // ---- play
++  reset() {
++    for (let s = 0; s < this.rubble.length; s++) this.rubble[s] = 0;
++    for (const m of this.rubbleMeshes) { this.scene.remove(m); m.geometry.dispose(); }
++    this.rubbleMeshes = []; this.collapsed = new Set();
++    this.zoneOn = [1, 1, 1, 1]; this.darkUntil = [0, 0, 0, 0];
++    for (const f of this.figs) { f.down = false; f.mesh.rotation.x = 0; f.mesh.position.y = DG.yf; }
++    Object.assign(this.state, { climb: null, carrying: false, under: 0, useWas: false, collapsesThisLife: 0 });
++    this.t = this.t || 0;
++  }
++
++  near(list, x, z, r) { let b = null, bd = r; for (const o of list) { const d = Math.hypot(o.x - x, o.z - z); if (d < bd) { bd = d; b = o; } } return b; }
++
++  update(dt, inp) {
++    const G = this.G, p = G.player, st = this.state; this.t += dt;
++    const useNow = !!inp.use, press = useNow && !st.useWas; st.useWas = useNow;
++    const under = this.underground(p.pos.y);
++    // climbing a ladder: carried up or down the shaft
++    if (st.climb) {
++      const c = st.climb; c.k = Math.min(1, c.k + dt / c.dur);
++      const e = c.k * c.k * (3 - 2 * c.k);
++      p.pos.set(c.x, c.y0 + (c.y1 - c.y0) * e, c.z); p.vel.set(0, 0, 0); p.onGround = true;
++      p.cam.position.set(p.pos.x, p.pos.y + p.eyeH, p.pos.z);
++      if (c.k >= 1) {
++        st.climb = null;
++        if (c.dir === 'up') {
++          const h = c.hatch; this.log.ascents.push([this.t, h.id, h.kind, st.carrying ? 1 : 0]);
++          if (st.carrying && h.kind === 'line') { st.carrying = false; this.log.deliveries.push([this.t, h.id]); this.say('AMMUNITION UP TO THE LINE'); }
++        } else this.log.descents.push([this.t, c.hatch.id, c.hatch.kind]);
++      }
++    } else {
++      // what you can do here
++      const hn = this.near(this.P.hatches, p.pos.x, p.pos.z, 1.6), cn = under && !st.carrying ? this.near(this.P.crates, p.pos.x, p.pos.z, 2.2) : null;
++      if (this.hooks.prompt && (hn || cn)) this.hooks.prompt(hn ? (under ? 'CLIMB UP' + (st.carrying && hn.kind === 'line' ? ' \u00B7 TO THE LINE' : '') : 'CLIMB DOWN') : 'TAKE AMMUNITION');
++    }
++    if (!st.climb && press) {
++      const h = this.near(this.P.hatches, p.pos.x, p.pos.z, 1.6);
++      if (h) {
++        const top = G.S.obstacles.surfaceY(h.x + 1.3, h.z, 1e9, G.tau);
++        if (!under) st.climb = { dir: 'down', hatch: h, x: h.x, z: h.z - 0.2, y0: p.pos.y, y1: DG.yf, k: 0, dur: 1.3 };
++        else st.climb = { dir: 'up', hatch: h, x: h.x + 1.3, z: h.z, y0: DG.yf, y1: top, k: 0, dur: 1.3 };
++      } else if (under && !st.carrying) {
++        const c = this.near(this.P.crates, p.pos.x, p.pos.z, 2.2);
++        if (c) { st.carrying = true; this.log.pickups.push([this.t, c.id]); this.say('AMMUNITION: TAKE IT UP TO THE LINE'); }
++      }
++    }
++    if (under && !st.climb) {
++      st.under += dt;
++      // shelling: now and then a corridor behind a loop caves in (never one that strands any part of the warren)
++      if (st.under > 8 && st.collapsesThisLife < 4 && Math.random() < dt / 28) this.caveIn(p.pos.x, p.pos.z);
++      // a hit on the generator: this sector goes dark for a while
++      const zn = this.zoneAt(p.pos.x, p.pos.z);
++      if (st.under > 10 && this.zoneOn[zn] > 0.5 && this.t > this.darkUntil[zn] + 30 && Math.random() < dt / 35) {
++        this.darkUntil[zn] = this.t + 18 + Math.random() * 14; this.zoneOn[zn] = 0; this.log.lightsOut.push([this.t, zn, this.darkUntil[zn]]); this.say('THE LIGHTS GO OUT');
++      }
++    } else st.under = 0;
++    for (let z = 0; z < 4; z++) if (this.zoneOn[z] < 0.5 && this.t > this.darkUntil[z]) this.zoneOn[z] = 1;
++    // figures get back up (new ones come in) a couple of minutes after they're dealt with
++    for (const f of this.figs) if (f.down && this.t - f.downT > 120 && Math.hypot(f.x - p.pos.x, f.z - p.pos.z) > 25) { f.down = false; f.mesh.rotation.x = 0; f.mesh.position.y = DG.yf; }
++    this.preRender();
++  }
++
++  caveIn(px, pz) {
++    const adj = this.P.adj, cand = this.P.loopEdges.filter((e) => {
++      if (this.collapsed.has(e)) return false;
++      const [a, b] = e.split(':').map(Number), [ax, az] = this.cellXZ(a), [bx, bz] = this.cellXZ(b), mx = (ax + bx) / 2, mz = (az + bz) / 2;
++      const d = Math.hypot(mx - px, mz - pz); if (d < 6 || d > 24) return false;
++      // the shelling is overhead: mostly in the direction you're heading
++      const fx = -Math.sin(this.G.player.yaw), fz = -Math.cos(this.G.player.yaw);
++      if (((mx - px) * fx + (mz - pz) * fz) / d < 0.2 && Math.random() < 0.8) return false;
++      // still connected without it (and without the earlier cave-ins)
++      return !this.cutsGraph(a, b);
++    });
++    if (!cand.length) return;
++    const e = cand[Math.floor(Math.random() * cand.length)];
++    this.collapsed.add(e);
++    for (const s of this.edgeSubs(e)) this.rubble[s] = 1;
++    const [a, b] = e.split(':').map(Number), [ax, az] = this.cellXZ(a), [bx, bz] = this.cellXZ(b), mx = (ax + bx) / 2, mz = (az + bz) / 2, zn = this.zoneAt(mx, mz);
++    // a heap of earth and broken timbers filling the throat
++    const pos = [], col = [], bak = [], zon = [], r = mulberry32(this.collapsed.size * 97);
++    const quad = (A, B, C, D, rgb) => { for (const v of [A, B, C, A, C, D]) { pos.push(...v); col.push(...rgb); zon.push(zn); bak.push(this.bake(mx, DG.yf + 1, mz)); } };
++    for (let n = 0; n < 16; n++) {
++      const x = mx + (r() - 0.5) * 2.6, z = mz + (r() - 0.5) * 2.6, y = DG.yf + r() * 2.2, hx = 0.3 + r() * 0.6, hy = 0.25 + r() * 0.5, hz = 0.3 + r() * 0.6, c = n % 4 === 0 ? [0.3, 0.2, 0.1] : [0.36 + r() * 0.1, 0.3, 0.22];
++      const v = (p, q, s) => [x + p * hx, y + q * hy, z + s * hz];
++      quad(v(-1, -1, 1), v(1, -1, 1), v(1, 1, 1), v(-1, 1, 1), c); quad(v(1, -1, -1), v(-1, -1, -1), v(-1, 1, -1), v(1, 1, -1), c);
++      quad(v(-1, -1, -1), v(-1, -1, 1), v(-1, 1, 1), v(-1, 1, -1), c); quad(v(1, -1, 1), v(1, -1, -1), v(1, 1, -1), v(1, 1, 1), c);
++      quad(v(-1, 1, 1), v(1, 1, 1), v(1, 1, -1), v(-1, 1, -1), c);
++    }
++    const g = new THREE.BufferGeometry();
++    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
++    g.setAttribute('baked', new THREE.Float32BufferAttribute(bak, 1)); g.setAttribute('zone', new THREE.Float32BufferAttribute(zon, 1));
++    const m = new THREE.Mesh(g, this.mat); m.frustumCulled = false; this.scene.add(m); this.rubbleMeshes.push(m);
++    this.state.collapsesThisLife++;
++    this.log.collapses.push([this.t, e]);
++    this.G.player.shake = Math.max(this.G.player.shake, 1.2);
++    this.say('CAVE-IN');
++  }
++  cutsGraph(a, b) {
++    const adj = this.P.adj, dead = (x, y) => this.collapsed.has(x < y ? x + ':' + y : y + ':' + x) || (x === a && y === b) || (x === b && y === a);
++    const seen = new Set([a]), q = [a];
++    while (q.length) { const x = q.pop(); for (const y of adj.get(x)) { if (dead(x, y)) continue; if (y === b) return false; if (!seen.has(y)) { seen.add(y); q.push(y); } } }
++    return true;
++  }
++  linkOpen(a, b) { return !this.collapsed.has(a < b ? a + ':' + b : b + ':' + a); }
++
++  // your own shot: does it hit a figure before the rock?
++  fire(cam) {
++    const p = this.G.player; if (!this.underground(p.pos.y)) return;
++    const o = cam.position, d = new THREE.Vector3(); cam.getWorldDirection(d);
++    let best = null, bt = 1e9;
++    for (const f of this.figs) {
++      if (f.down) continue;
++      const fx = f.x - o.x, fz = f.z - o.z, t = fx * d.x + fz * d.z; const hz = Math.hypot(d.x, d.z);
++      if (t <= 0) continue;
++      const tt = t / (hz * hz); const px = o.x + d.x * tt, pz = o.z + d.z * tt, py = o.y + d.y * tt;
++      if (Math.hypot(px - f.x, pz - f.z) > 0.32 || py < DG.yf || py > DG.yf + 1.85) continue;
++      if (tt < bt && this.clear(o.x, o.z, f.x - (f.x - o.x) * 0.05, f.z - (f.z - o.z) * 0.05)) { bt = tt; best = f; }
++    }
++    if (!best) return null;
++    best.down = true; best.downT = this.t; best.mesh.rotation.x = -Math.PI / 2; best.mesh.position.y = DG.yf + 0.15;
++    if (best.foe) this.say('SAPPER DOWN'); else { this.say('FRIENDLY FIRE'); this.log.friendly.push([this.t, best.id]); }
++    return best;
++  }
++
++  say(text) { if (this.hooks.feed) this.hooks.feed(text); }
++
++  preRender() {
++    const G = this.G, p = G.player, under = this.underground(p.pos.y) || (this.state.climb && this.state.climb.k > 0.15 && this.state.climb.k < 0.95);
++    this.mesh.visible = !!under || (this.state.climb != null);
++    for (let z = 0; z < 4; z++) { this.U.uZone.value[z] = this.zoneOn[z]; this.bulbs[z].visible = this.mesh.visible && this.zoneOn[z] > 0.5; }
++    this.U.uCam.value.copy(p.cam.position);
++    this.U.uLantern.value = under ? (this.zoneOn[this.zoneAt(p.pos.x, p.pos.z)] > 0.5 ? 0.25 : 0.45) : 0;
++    for (const f of this.figs) f.mesh.visible = this.mesh.visible;
++    for (const m of this.rubbleMeshes) m.visible = this.mesh.visible;
++    // everything above ground is out of sight behind the rock: skip drawing it (and its shadows)
++    const deep = this.underground(p.pos.y) && !this.state.climb;
++    G.world.root.visible = !deep; G.sol.mesh.visible = !deep; this.surf.visible = !deep; this.deep = deep;
++  }
++
++  // a description of the warren for logs and analysis
++  describe() {
++    return { DG, SX, SZ, AX0, AZ0, carved: Array.from(this.carved), cells: this.P.cells, edges: this.P.edges, hatches: this.P.hatches,
++      crates: this.P.crates, figures: this.P.figures.map((f) => ({ id: f.id, cell: f.cell, foe: f.foe, x: f.x, z: f.z })), loopEdges: this.P.loopEdges,
++      zones: this.P.cells.map((k) => this.P.zone(k)) };
++  }
++}
+diff --git a/src/main.js b/src/main.js
+index 00d7394..45b92ba 100644
+--- a/src/main.js
++++ b/src/main.js
+@@ -1,3 +1,4 @@
++import { Diggings } from './diggings.js';
+ import * as THREE from 'three';
+ import { simulate, MODE, T_SIM, SHOT_F } from './sim.js';
+ import { World, SUN_DIR } from './world.js';
+@@ -86,6 +87,8 @@ function boot() {
+   G = { world, S, sol, pb, player, input, audio, post, heightAt };
+   G.pick = new Pickups(scene, S, sol);
+   G.sceneId = 'beach'; G.scenes = { beach: { world, S, sol, pb, pick: G.pick } };
++  G.dig = new Diggings(G, scene, { feed: (t) => feed(t), prompt: (what) => {   // the tunnels under the lot and the dunes
++    const pk = $('pick'); pk.innerHTML = `${G.input.touch ? 'USE' : '[E]'} &nbsp;${what}`; pk.style.opacity = 1; if (G.input.touch) $('bSwap').style.display = 'flex'; } });
+   heroOutlines(world); toonShared.resY.value = innerHeight * Q.pr;
+   // brass casings + dropped magazines live in forward time
+   const brassGeo = new THREE.CylinderGeometry(0.0065, 0.0065, 0.05, 8).rotateZ(Math.PI / 2);
+@@ -881,7 +884,7 @@ function forwardFire(dt, ev) {
+ }
+ function beginForward(i, t0) {
+   const a = G.S.actors[i];
+-  G.forward = true; G.lives = [lifeOf(i)];
++  G.forward = true; G.lives = [lifeOf(i)]; if (G.dig) G.dig.reset();
+   G.fwd = { kills: 0, deaths: 0, face: new Map(), aware: new Map(), cands: [], scanT: 0 };
+   G.overrides.clear(); G.enemyHp.fill(100); G.pb.hitShots.clear(); G.pb.whizzed.clear(); clearLiveKills();
+   G.tau = t0 != null ? t0 : a.spawn + 0.05; beginPlayFromBody(i, G.tau); saveCheckpoint();
+@@ -1251,6 +1254,7 @@ function tick(dt, draw = true) {
+       for (let k = 1; k < Math.round(fast); k++) { p.update(dt, inp, S.obstacles, G.tau); if (p.jumped) { jumped2 = true; G.input.consumeJump(); } }
+       const out = p.update(dt, fast > 1 && jumped2 ? Object.assign({}, inp, { jump: false }) : inp, S.obstacles, G.tau - (fast > 1 ? dt : 0));
+       if (p.jumped || jumped2) G.input.consumeJump();
++      if (G.dig && G.sceneId === 'beach') G.dig.update(dt, inp);
+       // weapons: 1 / 2 / wheel to switch, F or E to swap with a gun on the ground
+       if (inp.slot === 1) p.switchTo('primary'); else if (inp.slot === 2) p.switchTo('sidearm'); else if (inp.slot === 3) p.switchTo(p.cur === 'primary' ? 'sidearm' : 'primary');
+       { camera.getWorldDirection(tmpV); const n = G.pick.update(G.tau, p.pos, tmpV, G.body);
+@@ -1260,7 +1264,7 @@ function tick(dt, draw = true) {
+         if (n && inp.use && p.swapT < 0) { const old = p.slots.primary.id, id = G.pick.take(p, old); if (id) { p.pickUp(id); G.audio.play(G.audio.B.tug, 0.6); G.audio.play(G.audio.B.rack, 0.4); feed(`picked up ${n.name}`); } }
+       }
+       const mz = p.tryFire(inp);
+-      if (mz) { playerFire(mz, inp); ejectBrass(); }
++      if (mz) { playerFire(mz, inp); ejectBrass(); if (G.dig && G.sceneId === 'beach') G.dig.fire(camera); }
+       handlePlayerEvents();
+       if (G.real - p.lastHit > 3.2) p.health = Math.min(100, p.health + dt * 45);
+       // minefield

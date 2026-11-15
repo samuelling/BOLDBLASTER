@@ -3,7 +3,7 @@ window.BB = (function () {
   const num = (v) => (v === null || v === undefined || v === '' ? NaN : +v);
   const f2 = d3.format('.2f');
   const V1 = ['mu', 'sig', 'c50_eff', 'q', 'k', 'tau', 'a'];
-  const DEFAULTS = { param: 'mu', design: 'long_20h', ecc: 'all', r1: 'game_eyetracker', r8cond: 'realistic', r8min: '60', r9min: '60', r9src: 'bold' };
+  const DEFAULTS = { param: 'mu', design: 'long_20h', ecc: 'all', r1: 'game_eyetracker', r8cond: 'realistic', r8min: '60', r9min: '60', r9src: 'bold', r10min: '60', r10src: 'bold' };
   const params = () => Object.assign({}, DEFAULTS, dash.params());
   // family index into dash.colors: dedicated, game, levers, battery, ten levels
   const FAM_IDX = { dedicated: 0, game: 1, levers: 2, battery: 4, long: 6 };
@@ -558,4 +558,53 @@ dash.draw('areastable', (tb) => {
     tr.append(td(String(r.round)), td(r.model), td(r.parameter), td(r.area), td(`${(+r.noise_mult || 1).toFixed(1)}×`, true), td(r.basis));
     tb.appendChild(tr);
   });
+});
+
+// ---------------------------------------------------------------- round 10: Betamax before and after the tunnels
+window.BB10 = {
+  sel: () => { const P = BB.params(); return { mins: +(P.r10min || 60), src: P.r10src || 'bold' }; },
+  PART: { vision: 'Vision (V1)', other: 'Other visual and reward', nav: 'Navigation', cog: 'Cognition', new: 'New: only testable with tunnels' },
+};
+dash.draw('r10table', (tb) => {
+  const d = dash.data('round10');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  const { mins } = BB10.sel();
+  const rows = d.data.filter((r) => +r.minutes === mins && r.condition !== 'oracle');
+  const keys = [];
+  for (const r of rows) { const k = `${r.part}|${r.model}|${r.measure}|${r.source}`; if (!keys.includes(k)) keys.push(k); }
+  const PO = Object.keys(BB10.PART); keys.sort((p1, p2) => PO.indexOf(p1.split('|')[0]) - PO.indexOf(p2.split('|')[0]));
+  const SRC = { bold: '', behaviour: ' (behaviour)', agree: ' (agreement)' };
+  for (const k of keys) {
+    const [part, model, meas, src] = k.split('|');
+    const sel = rows.filter((r) => r.part === part && r.model === model && r.measure === meas && r.source === src);
+    const v = (g) => { const r = sel.find((x) => x.game === g); return r && r.value !== '' && r.value != null ? +r.value : NaN; };
+    const a = v('betamax'), b = v('betamaxt');
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', encodeURIComponent(k));
+    tr.append(td(BB10.PART[part] || part), td(`${sel[0].model_label}: ${sel[0].measure_label}${SRC[src] || ''}`), td(sel[0].area),
+      td(isFinite(a) ? BB.f2(a) : '—', true), td(isFinite(b) ? BB.f2(b) : '—', true), td(isFinite(a) && isFinite(b) ? (b - a >= 0 ? '+' : '') + BB.f2(b - a) : '—', true));
+    tb.appendChild(tr);
+  }
+});
+dash.draw('r10statstable', (tb) => {
+  const d = dash.data('round10_stats');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  for (const r of d.data) {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', r.measure);
+    tr.append(td(r.label), td(r.betamax === '' || r.betamax == null ? '—' : String(r.betamax), true), td(r.betamaxt === '' || r.betamaxt == null ? '—' : String(r.betamaxt), true));
+    tb.appendChild(tr);
+  }
+});
+
+// raw text from a dataset row (for values such as "55%"): data-source, data-field, data-where
+dash.draw('ctext', (el) => {
+  const src = (el.getAttribute('data-source') || '').split(' ')[0];
+  const d = dash.data(src);
+  const rows = d.status === 'ok' && Array.isArray(d.data) ? d.data : [];
+  const row = rows.find((r) => BB.match(r, BB.where(el)));
+  const v = row ? row[el.getAttribute('data-field')] : null;
+  el.textContent = v === null || v === undefined || v === '' ? '—' : String(v);
 });

@@ -1,0 +1,14 @@
+measure,label,betamax,betamaxt
+under,Time below ground,0,55%
+descents,Trips down a hatch per hour,0,37
+junctions,Route choices at junctions per hour,0,529
+collapses,Cave-ins per hour,0,50
+stale,Cave-ins run into per hour,0,13
+homing,Blackout homing walks usable as trials per hour,0,18
+figures,Friend-or-foe decisions per hour,0,64
+deliveries,Ammunition deliveries per hour,0,16
+path_eucl,Path vs Euclidean distance correlation,1.00,0.77
+bounds,Event boundaries per minute,13.1,7.7
+entries,New places entered per minute,21,28
+revisit,Share of entries that are revisits,0.73,0.81
+dec,Firefight decisions per minute,38.0,14.1

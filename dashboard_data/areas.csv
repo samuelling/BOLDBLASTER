@@ -20,5 +20,6 @@ round,model,parameter,area,basis,noise_mult
 9,Drift diffusion,Drift scale and boundary,Pre-SMA / intraparietal sulcus,Evidence accumulation; boundary setting in pre-SMA,1.0
 9,Value learning,Learning rate,Ventral striatum,Reward prediction error with learned value,1.2
 9,Place familiarity,Encoding and forgetting,Hippocampus,Hippocampal novelty response,1.4
-9,Path integration (not tested),"Heading noise, distance gain, leak","Entorhinal cortex, hippocampus, RSC","The Palace's lantern model; needs homing trials, which none of these games has",1.0
-9,Map updating (not tested),"Update rate, route-choice noise","Hippocampus, prefrontal cortex",The Palace's East Wing model; needs route choices and changes to the layout,1.0
+10,Path integration,"Heading noise, distance gain, leak",Entorhinal cortex / hippocampus,"The Palace's lantern model, on Betamax blackout walks; BOLD is positional uncertainty while walking in the dark",1.5
+10,Map updating,"Update rate, route-choice temperature",Hippocampus,"The Palace's East Wing model, on Betamax junction choices after cave-ins; BOLD is surprise at a cave-in and believed distance at junctions",1.4
+10,Drift diffusion (friend or foe),"Drift scale, boundary",Pre-SMA / intraparietal sulcus,Accumulator activity for identification decisions on figures in the tunnels,1.0

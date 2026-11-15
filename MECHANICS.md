@@ -52,6 +52,32 @@ proposal below borrows from a well-known first-person game and targets one or mo
 These keep Betamax a straightforward battle (forward mode, no possession), with the puzzles
 inside the battle rather than beside it.
 
+### Built in round 10: The Diggings
+
+Items 1, 2, 4, 5 and 6 are now in Betamax as tunnels under the parking lot and the dunes
+(branch `diggings` of samuelling/betamax): a braided maze with several routes, ammunition runs
+from magazine rooms to the line, cave-ins, sector blackouts lit by a lantern, and friend-or-foe
+figures. Over an hour of bot play (Experiment 9 on the dashboard):
+
+- **Worked:** path vs Euclidean goal distance (.94, untestable on the open beach), boundary
+  distance (.73), path integration heading noise (behaviour .89, BOLD .43), place familiarity
+  (encoding .45 to .52, forgetting .66 to .70).
+- **Cost:** 55% of the hour was spent below ground. Firefight decisions fell from 38 to 14 a
+  minute, V1 SF peak from .43 to .12 (dim, uniform tunnel frames), and striatal learning rate
+  from .42 to .19.
+- **Too rare for BOLD:** 13 cave-ins met and 64 friend-or-foe calls an hour. Behaviour recovers
+  route-choice temperature (.97) and the friend-or-foe drift (.85); BOLD recovers neither the map
+  update rate nor the friend-or-foe drift.
+
+### Tuning the tunnels (next)
+
+- Short connectors between fights, not errands: under a quarter of the hour below ground.
+- Cave-ins that persist across lives and sit on well-used routes, so a changed layout is met
+  again (the update rate needs repeat encounters).
+- A figure every 20-40 s below ground, at mixed distance and lighting.
+- Blackouts timed for the way back from the magazine, so each is a homing trial.
+- Lit, high-contrast tunnels (lamps, painted bands, daylight through hatches) to keep V1 fed.
+
 ## General rules so far
 
 - Behaviour and BOLD want different things. Behaviour likes many decisions; BOLD needs them
@@ -62,3 +88,6 @@ inside the battle rather than beside it.
   models need the most minutes of the right events.
 - Measuring gaze well matters most for V1; large receptive fields and navigation codes are far
   more tolerant (round 6).
+- Puzzle time is borrowed from action time. Every minute in a maze is a minute without firefights,
+  outcomes and varied images, so puzzle elements should be short and dense, not long errands
+  (round 10).

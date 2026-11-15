@@ -19,6 +19,11 @@ Numerosity,sig,Numerosity tuning width,sanctuary,Animal Sanctuary,realistic,30,0
 Self-motion,rotation_pref,Rotation direction preference,sanctuary,Animal Sanctuary,realistic,30,0.1326
 Self-motion,expansion_frac,Expansion (forward) weight,sanctuary,Animal Sanctuary,realistic,30,0.1431
 Striatal RPE,rpe_beta,Prediction-error beta,sanctuary,Animal Sanctuary,realistic,30,0.4439
+Numerosity,mu,Preferred numerosity,betamaxt,Betamax + tunnels,realistic,30,0.9748
+Numerosity,sig,Numerosity tuning width,betamaxt,Betamax + tunnels,realistic,30,0.6147
+Self-motion,rotation_pref,Rotation direction preference,betamaxt,Betamax + tunnels,realistic,30,0.9331
+Self-motion,expansion_frac,Expansion (forward) weight,betamaxt,Betamax + tunnels,realistic,30,0.8863
+Striatal RPE,rpe_beta,Prediction-error beta,betamaxt,Betamax + tunnels,realistic,30,0.7875
 Numerosity,mu,Preferred numerosity,raycaster,Raycaster,realistic,60,0.991
 Numerosity,sig,Numerosity tuning width,raycaster,Raycaster,realistic,60,0.8944
 Self-motion,rotation_pref,Rotation direction preference,raycaster,Raycaster,realistic,60,0.8839
@@ -39,6 +44,11 @@ Numerosity,sig,Numerosity tuning width,sanctuary,Animal Sanctuary,realistic,60,0
 Self-motion,rotation_pref,Rotation direction preference,sanctuary,Animal Sanctuary,realistic,60,0.1896
 Self-motion,expansion_frac,Expansion (forward) weight,sanctuary,Animal Sanctuary,realistic,60,0.1735
 Striatal RPE,rpe_beta,Prediction-error beta,sanctuary,Animal Sanctuary,realistic,60,0.6299
+Numerosity,mu,Preferred numerosity,betamaxt,Betamax + tunnels,realistic,60,0.988
+Numerosity,sig,Numerosity tuning width,betamaxt,Betamax + tunnels,realistic,60,0.7289
+Self-motion,rotation_pref,Rotation direction preference,betamaxt,Betamax + tunnels,realistic,60,0.9657
+Self-motion,expansion_frac,Expansion (forward) weight,betamaxt,Betamax + tunnels,realistic,60,0.9371
+Striatal RPE,rpe_beta,Prediction-error beta,betamaxt,Betamax + tunnels,realistic,60,0.848
 Spatiotemporal (CST),taus,Sustained time constant,betamax,Betamax,oracle,30,0.4351
 Spatiotemporal (CST),taut,Transient time constant,betamax,Betamax,oracle,30,0.1903
 Spatiotemporal (CST),ws,Sustained-channel weight,betamax,Betamax,oracle,30,0.5481
@@ -48,6 +58,9 @@ Spatiotemporal (CST),ws,Sustained-channel weight,brickninja,Brick Ninja,oracle,3
 Spatiotemporal (CST),taus,Sustained time constant,sanctuary,Animal Sanctuary,oracle,30,0.3551
 Spatiotemporal (CST),taut,Transient time constant,sanctuary,Animal Sanctuary,oracle,30,0.145
 Spatiotemporal (CST),ws,Sustained-channel weight,sanctuary,Animal Sanctuary,oracle,30,0.3604
+Spatiotemporal (CST),taus,Sustained time constant,betamaxt,Betamax + tunnels,oracle,30,0.2666
+Spatiotemporal (CST),taut,Transient time constant,betamaxt,Betamax + tunnels,oracle,30,0.1246
+Spatiotemporal (CST),ws,Sustained-channel weight,betamaxt,Betamax + tunnels,oracle,30,0.5274
 Spatiotemporal (CST),taus,Sustained time constant,raycaster,Raycaster (mean of 20 & 40 min),oracle,30,0.2912
 Spatiotemporal (CST),taut,Transient time constant,raycaster,Raycaster (mean of 20 & 40 min),oracle,30,0.1566
 Spatiotemporal (CST),ws,Sustained-channel weight,raycaster,Raycaster (mean of 20 & 40 min),oracle,30,0.3514
@@ -60,6 +73,9 @@ Spatiotemporal (CST),ws,Sustained-channel weight,brickninja,Brick Ninja,realisti
 Spatiotemporal (CST),taus,Sustained time constant,sanctuary,Animal Sanctuary,realistic,30,0.1931
 Spatiotemporal (CST),taut,Transient time constant,sanctuary,Animal Sanctuary,realistic,30,0.004
 Spatiotemporal (CST),ws,Sustained-channel weight,sanctuary,Animal Sanctuary,realistic,30,0.3442
+Spatiotemporal (CST),taus,Sustained time constant,betamaxt,Betamax + tunnels,realistic,30,0.2687
+Spatiotemporal (CST),taut,Transient time constant,betamaxt,Betamax + tunnels,realistic,30,0.0977
+Spatiotemporal (CST),ws,Sustained-channel weight,betamaxt,Betamax + tunnels,realistic,30,0.3354
 Spatiotemporal (CST),taus,Sustained time constant,raycaster,Raycaster (mean of 20 & 40 min),realistic,30,0.2793
 Spatiotemporal (CST),taut,Transient time constant,raycaster,Raycaster (mean of 20 & 40 min),realistic,30,0.0723
 Spatiotemporal (CST),ws,Sustained-channel weight,raycaster,Raycaster (mean of 20 & 40 min),realistic,30,0.2834
@@ -72,6 +88,9 @@ Spatiotemporal (CST),ws,Sustained-channel weight,brickninja,Brick Ninja,oracle,6
 Spatiotemporal (CST),taus,Sustained time constant,sanctuary,Animal Sanctuary,oracle,60,0.4773
 Spatiotemporal (CST),taut,Transient time constant,sanctuary,Animal Sanctuary,oracle,60,0.1391
 Spatiotemporal (CST),ws,Sustained-channel weight,sanctuary,Animal Sanctuary,oracle,60,0.4902
+Spatiotemporal (CST),taus,Sustained time constant,betamaxt,Betamax + tunnels,oracle,60,0.4926
+Spatiotemporal (CST),taut,Transient time constant,betamaxt,Betamax + tunnels,oracle,60,0.2381
+Spatiotemporal (CST),ws,Sustained-channel weight,betamaxt,Betamax + tunnels,oracle,60,0.5526
 Spatiotemporal (CST),taus,Sustained time constant,raycaster,Raycaster,oracle,60,0.3661
 Spatiotemporal (CST),taut,Transient time constant,raycaster,Raycaster,oracle,60,0.1776
 Spatiotemporal (CST),ws,Sustained-channel weight,raycaster,Raycaster,oracle,60,0.471
@@ -84,6 +103,9 @@ Spatiotemporal (CST),ws,Sustained-channel weight,brickninja,Brick Ninja,realisti
 Spatiotemporal (CST),taus,Sustained time constant,sanctuary,Animal Sanctuary,realistic,60,0.3736
 Spatiotemporal (CST),taut,Transient time constant,sanctuary,Animal Sanctuary,realistic,60,0.0807
 Spatiotemporal (CST),ws,Sustained-channel weight,sanctuary,Animal Sanctuary,realistic,60,0.3586
+Spatiotemporal (CST),taus,Sustained time constant,betamaxt,Betamax + tunnels,realistic,60,0.374
+Spatiotemporal (CST),taut,Transient time constant,betamaxt,Betamax + tunnels,realistic,60,0.1087
+Spatiotemporal (CST),ws,Sustained-channel weight,betamaxt,Betamax + tunnels,realistic,60,0.4988
 Spatiotemporal (CST),taus,Sustained time constant,raycaster,Raycaster,realistic,60,0.3818
 Spatiotemporal (CST),taut,Transient time constant,raycaster,Raycaster,realistic,60,0.0841
 Spatiotemporal (CST),ws,Sustained-channel weight,raycaster,Raycaster,realistic,60,0.303

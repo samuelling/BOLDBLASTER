@@ -411,5 +411,36 @@ Dishonored, Doom, Dark Souls, Antichamber and The Palace: [MECHANICS.md](MECHANI
 `python run_round9.py all && python export_round9.py`. Results JSON: `results/round9_nav.json`,
 `results/round9_cog.json`.
 
+## Round 10: puzzle elements in Betamax (The Diggings)
+
+Round 9 found that Betamax's open beach starves the navigation and memory models, so Betamax got
+tunnels: a braided maze under the parking lot and behind the dune crest, reached by hatches, with
+ammunition runs, cave-ins, sector blackouts and friend-or-foe figures (branch `diggings` of
+samuelling/betamax; the bot and harness are in `tools/betamax/`). The bot played the same hour
+(12 x 5 min) with occasional tunnel missions, and every model was refitted (`run_round10.py`,
+`export_round10.py`, with `GAME=betamaxt python run_round8.py` for the visual models).
+
+Three models that no earlier game could test were added:
+
+- path integration on blackout homing walks (The Palace's lantern model: heading noise, distance
+  gain, leak), from where the player thinks home is and from entorhinal/hippocampal uncertainty
+- map updating on junction choices after cave-ins (The Palace's East Wing model: update rate,
+  route-choice temperature), from choices and from hippocampal surprise
+- drift diffusion on the friend-or-foe calls
+
+Results at 60 min, Betamax vs Betamax with tunnels:
+
+- Path vs Euclidean goal distance: untestable to .94 (the two distances correlate .77 in the warren).
+- Boundary distance: untestable to .73. Place familiarity encoding .45 to .52, forgetting .66 to .70.
+- Path integration heading noise: behaviour .89, BOLD .43 (agreement .30); distance gain .71 and
+  leak .86 from behaviour.
+- But the bot spent 55% of the hour below ground: firefight decisions fell from 38 to 14 a
+  minute, V1 SF peak from .43 to .12, effective c50 from .68 to .57, and striatal learning rate
+  from .42 to .19.
+- Map updating and friend-or-foe calls were too rare (13 cave-ins met, 64 calls an hour):
+  behaviour recovers route-choice temperature (.97) and drift (.85), BOLD recovers neither.
+
+Next: shorter, denser tunnel trips (MECHANICS.md). Results JSON: `results/round10_*.json`.
+
 Results JSON for every round is in `results/`; the summary and dashboard are in `docs/dashboard/`
 (enable GitHub Pages from `main` / `/docs` to serve it).
