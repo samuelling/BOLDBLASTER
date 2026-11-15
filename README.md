@@ -440,6 +440,14 @@ Results at 60 min, Betamax vs Betamax with tunnels:
 - Map updating and friend-or-foe calls were too rare (13 cave-ins met, 64 calls an hour):
   behaviour recovers route-choice temperature (.97) and drift (.85), BOLD recovers neither.
 
+How the estimates miss (`diag_round10.py`, planted vs fitted per voxel or player): behaviour
+estimates sit on the diagonal with small, explainable biases (lapses and motor jitter make drift
+read low, the boundary high and choice consistency low). BOLD estimates are rarely biased on
+average but stick to the edges of the fitted range (70% of striatal learning rates with tunnels).
+Eye-tracker error makes V1 SF peak read half an octave low; most of the tunnels' SF loss is gaze
+error, not image content. Map updating has a ceiling (no estimate above .65) because each cave-in
+is met about once.
+
 Next: shorter, denser tunnel trips (MECHANICS.md). Results JSON: `results/round10_*.json`.
 
 Results JSON for every round is in `results/`; the summary and dashboard are in `docs/dashboard/`

@@ -575,6 +575,9 @@ def best_by_r2(pred_runs_list, Yruns, Qs):
     return bi
 
 
+SAVE = {}
+
+
 def cog_game(g, n):
     rng = np.random.default_rng(31 + GAMES.index(g) * 7 + n)
     op = opportunities(g, n)
@@ -711,6 +714,7 @@ def cog_game(g, n):
             log(g, n * 5, 'subjects', sj + 1)
     T = {k: np.array(x) for k, x in true.items()}
     E = {k: np.array(x, float) for k, x in est.items()}
+    SAVE[(g, n)] = (T, E)                 # planted and fitted values per simulated player, for diagnostics
 
     def sr(a, b):
         k = np.isfinite(a) & np.isfinite(b)

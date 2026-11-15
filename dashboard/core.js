@@ -608,3 +608,13 @@ dash.draw('ctext', (el) => {
   const v = row ? row[el.getAttribute('data-field')] : null;
   el.textContent = v === null || v === undefined || v === '' ? '—' : String(v);
 });
+
+// a share from a dataset row, as a whole percentage: data-source, data-field, data-where
+dash.draw('cpct', (el) => {
+  const src = (el.getAttribute('data-source') || '').split(' ')[0];
+  const d = dash.data(src);
+  const rows = d.status === 'ok' && Array.isArray(d.data) ? d.data : [];
+  const row = rows.find((r) => BB.match(r, BB.where(el)));
+  const v = row ? +row[el.getAttribute('data-field')] : NaN;
+  el.textContent = isFinite(v) ? `${Math.round(v * 100)}%` : '—';
+});

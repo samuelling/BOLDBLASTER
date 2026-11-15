@@ -790,6 +790,28 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
     </ul>
     <p><b>Next:</b> fewer, shorter trips below ground (about a quarter of the hour), cave-ins that stay down so they are met again, and more figures per trip.</p>
   </div></div>
+  <div class="bb-card" id="exp-dig-miss" style="margin-top: var(--cds-gap-md)">
+    <h3 class="bb-h3">How the estimates miss</h3>
+    <p>A correlation only says whether voxels or players are put in the right order. These plots show every planted value against its fitted value, so the kind of error shows too: scatter, a shift (bias), a flattened trend (slope below 1), or estimates stuck at the edge of the range the fit searches. Nothing about the simulated brains differs between the games; only how well the fit recovers them.</p>
+    <figure class="bb-fig" id="exp-dig-miss-v1"><img data-draw="img" data-img="diagv1" data-source="img_diagv1" alt="Planted against fitted spatial-frequency peak and effective c50 for 300 V1 voxels, on Betamax and with tunnels, with eye-tracker and true gaze."><figcaption>
+      <ul>
+        <li><b>SF peak reads low with the eye tracker</b> (bias <b data-draw="cell" data-source="diag_round10" data-field="bias" data-where="key=v1_mu_eyetracker_betamax">—</b> octaves on Betamax). Gaze error blurs the image the model assumes reached the retina, so voxels look tuned to coarser detail. With true gaze the bias is <b data-draw="cell" data-source="diag_round10" data-field="bias" data-where="key=v1_mu_true_betamax">—</b>.</li>
+        <li><b>With tunnels and the eye tracker, SF peak flattens</b> (slope <b data-draw="cell" data-source="diag_round10" data-field="slope" data-where="key=v1_mu_eyetracker_betamaxt">—</b>): the estimates barely follow the truth. With true gaze the tunnels still give a slope of <b data-draw="cell" data-source="diag_round10" data-field="slope" data-where="key=v1_mu_true_betamaxt">—</b>, so most of the tunnel loss is gaze error, not missing image content.</li>
+        <li><b>Effective c50 is unbiased</b> with a slope near 1 in every condition (<b data-draw="cell" data-source="diag_round10" data-field="slope" data-where="key=v1_c50eff_eyetracker_betamaxt">—</b> with tunnels); the tunnels only add scatter. Bandwidth is the worst parameter: <b data-draw="cpct" data-source="diag_round10" data-field="edge_frac" data-where="key=v1_sig_eyetracker_betamaxt">—</b> of voxels sit at a limit of its range.</li>
+      </ul></figcaption></figure>
+    <figure class="bb-fig" id="exp-dig-miss-cog"><img data-draw="img" data-img="diagcog" data-source="img_diagcog" alt="Planted against fitted drift, boundary, learning rate, choice consistency and forgetting rate for 40 simulated players, from behaviour and from BOLD, on Betamax and with tunnels."><figcaption>
+      <ul>
+        <li><b>From behaviour, estimates hug the diagonal</b> with small biases that the model's blind spots explain. Drift reads low (<b data-draw="cell" data-source="diag_round10" data-field="bias" data-where="key=ddm_v_behaviour_betamaxt">—</b>) and the boundary high (<b data-draw="cell" data-source="diag_round10" data-field="bias" data-where="key=ddm_a_behaviour_betamaxt">—</b>), because motor jitter and lapses look like a slower, more cautious player. Choice consistency reads low (<b data-draw="cell" data-source="diag_round10" data-field="bias" data-where="key=rl_beta_behaviour_betamaxt">—</b>), because lapses look like random choices.</li>
+        <li><b>From BOLD, the average bias is small, but estimates stick to the edges.</b> With tunnels, <b data-draw="cpct" data-source="diag_round10" data-field="edge_frac" data-where="key=rl_alpha_bold_betamaxt">—</b> of players' learning rates from striatal BOLD sit at an edge of the searched range (<b data-draw="cpct" data-source="diag_round10" data-field="edge_frac" data-where="key=rl_alpha_bold_betamax">—</b> on Betamax). When the signal is too weak, noise picks the estimate and pushes it to an extreme.</li>
+        <li><b>Firefight drift from BOLD on Betamax is flat</b> (slope <b data-draw="cell" data-source="diag_round10" data-field="slope" data-where="key=ddm_v_bold_betamax">—</b>): almost every player reads as fast. The tunnels' sparser decisions help a little (slope <b data-draw="cell" data-source="diag_round10" data-field="slope" data-where="key=ddm_v_bold_betamaxt">—</b>).</li>
+      </ul></figcaption></figure>
+    <figure class="bb-fig" id="exp-dig-miss-new"><img data-draw="img" data-img="diagnew" data-source="img_diagnew" alt="Planted against fitted values for path integration, map updating and friend-or-foe drift for 40 simulated players, from behaviour and from BOLD."><figcaption>
+      <ul>
+        <li><b>Path integration from behaviour is on the diagonal</b> (heading noise slope <b data-draw="cell" data-source="diag_round10" data-field="slope" data-where="key=pathint_sh_behaviour_betamaxt">—</b>). From BOLD the trend is right but <b data-draw="cpct" data-source="diag_round10" data-field="edge_frac" data-where="key=pathint_sh_bold_betamaxt">—</b> of estimates are at an edge.</li>
+        <li><b>Map updating from choices has a ceiling.</b> No estimate goes above <b data-draw="cell" data-source="diag_round10" data-field="max_fit" data-where="key=mapupd_alpha_behaviour_betamaxt">—</b> although planted rates reach 0.9, and the estimates fall in two clumps. Each caved-in corridor is met about once, and any update rate above about 0.6 already makes it look blocked, so higher rates can't be told apart. The ceiling comes from the game, not the fit: meeting the same cave-in again would lift it.</li>
+        <li><b>Friend-or-foe drift</b> is recovered from behaviour (slope <b data-draw="cell" data-source="diag_round10" data-field="slope" data-where="key=ddm_id_v_behaviour_betamaxt">—</b>); from BOLD there is no trend (slope <b data-draw="cell" data-source="diag_round10" data-field="slope" data-where="key=ddm_id_v_bold_betamaxt">—</b>).</li>
+      </ul></figcaption></figure>
+  </div>
   <div class="bb-controls bb-ctl-row">
     <label>Play time
       <select class="dash-select" data-param="r10min" aria-label="Play time">
@@ -1002,6 +1024,9 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 </div>
 <script src="dash-shim.js"></script>
 <script src="img_dedicated.js"></script>
+<script src="img_diagcog.js"></script>
+<script src="img_diagnew.js"></script>
+<script src="img_diagv1.js"></script>
 <script src="img_digframes.js"></script>
 <script src="img_digplan.js"></script>
 <script src="img_games.js"></script>

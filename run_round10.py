@@ -175,6 +175,7 @@ def cog():
 
 # ------------------------------------------------------------------ new models
 NS = 40
+SAVE = {}                                 # (model, n) -> (planted, fitted) per simulated player
 
 
 def sr(a, b):
@@ -273,6 +274,7 @@ def pathint(runs, n, rng):
         E['sh_beh'].append(SH[best[0]]), E['gd_beh'].append(GD[best[1]]), E['la_beh'].append(LA[best[2]])
         Y = R9.region_bold(rng, unc_drive(sh), 60, R9.AREA['pathint'][1], ev_runs)
         E['sh_bold'].append(SH[R9.best_by_r2(cands, Y, Qs)])
+    SAVE[('pathint', n)] = (T, E)
     return dict(trials=len(trials),
                 sh=dict(behaviour=sr(T['sh'], E['sh_beh']), bold=sr(T['sh'], E['sh_bold']), agree=sr(E['sh_beh'], E['sh_bold'])),
                 gd=dict(behaviour=sr(T['gd'], E['gd_beh'])), la=dict(behaviour=sr(T['la'], E['la_beh'])))
@@ -359,6 +361,7 @@ def mapupd(runs, n, rng):
         drive = [x @ np.array([0.03, 1.0, 0.0]) for x in regs(a_near)]
         Y = R9.region_bold(rng, drive, 60, R9.AREA['mapupd'][1], ev_runs)
         E['alpha_bold'].append(AL[R9.best_by_r2(cands, Y, Qs)])
+    SAVE[('mapupd', n)] = (T, E)
     return dict(junctions=len(J), stale=len(S),
                 alpha=dict(behaviour=sr(T['alpha'], E['alpha_beh']), bold=sr(T['alpha'], E['alpha_bold']), agree=sr(E['alpha_beh'], E['alpha_bold'])),
                 tau=dict(behaviour=sr(T['tau'], E['tau_beh'])))
