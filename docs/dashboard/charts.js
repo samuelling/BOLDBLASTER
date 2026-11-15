@@ -474,3 +474,53 @@ dash.draw('r8bands', (el) => {
     gg.append('text').attr('x', 9).style('font-size', 'var(--cds-font-size-caption)').text(gl);
   });
 });
+
+// ---------------------------------------------------------------- round 9: navigation and cognitive models by game
+function r9dots(el, part) {
+  if (!BB.ready(el, ['round9'])) return;
+  el.replaceChildren();
+  const { mins, src } = BB9.sel();
+  const want = part === 'nav' ? 'bold' : src;
+  const rows = dash.data('round9').data.filter((r) => r.part === part && +r.minutes === mins && r.source === want);
+  const order = (part === 'nav' ? BB9.NAV : BB9.COG).filter(([mo, me]) => rows.some((r) => r.model === mo && r.measure === me));
+  const pick = (mo, me) => rows.filter((r) => r.model === mo && r.measure === me);
+  const lab = (mo, me) => { const r = pick(mo, me)[0]; return r ? r.measure_label : me; };
+  const area = (mo, me) => { const r = pick(mo, me)[0]; return r ? `${r.model_label} · ${r.area}` : ''; };
+  const full = (mo, me) => { const r = pick(mo, me)[0]; return r ? `${r.model_label}: ${r.measure_label}` : me; };
+  const rowH = 44, top = 52, bottom = 30, n = BB8.GAMES.length;
+  const H = top + bottom + Math.max(order.length, 1) * rowH;
+  const SRC = { bold: 'from BOLD', behaviour: 'from behaviour', agree: 'agreement between BOLD and behaviour estimates' };
+  const { s, w } = BB.svg(el, H, `${part === 'nav' ? 'Navigation models' : 'Cognitive models'}: recovery ${part === 'nav' ? 'from BOLD' : SRC[want]}, one dot per game, ${mins} minutes`);
+  if (!order.length) { s.append('text').attr('x', 0).attr('y', top).text('No values for this choice.'); return; }
+  const lw = Math.min(Math.max(BB.textWidth(s, order.map(([a, b]) => lab(a, b))), 0.8 * BB.textWidth(s, order.map(([a, b]) => area(a, b)))) + 14, w * 0.5);
+  const vals = rows.filter((r) => r.value !== '' && r.value != null).map((r) => +r.value).filter((v) => r9ok(v));
+  const x = d3.scaleLinear().domain([Math.min(-0.2, (d3.min(vals) || 0) - 0.05), 1]).range([lw, w - 16]);
+  const y = (i) => top + i * rowH + rowH / 2;
+  BB.grid(s.append('g'), x, x.ticks(5), top - 6, H - bottom + 4, false);
+  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - bottom + 4})`).call(d3.axisBottom(x).ticks(5).tickSizeOuter(0)));
+  s.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', top - 6).attr('y2', H - bottom + 4).style('stroke', 'var(--cds-chart-axis)');
+  const tip = BB.tip(el);
+  order.forEach(([mo, me], i) => {
+    const g = s.append('g').attr('transform', `translate(0,${y(i)})`);
+    g.append('text').attr('class', 'bb-lab').attr('x', 0).attr('dy', '-0.2em').text(lab(mo, me));
+    g.append('text').attr('x', 0).attr('dy', '1.05em').style('font-size', '11px').text(area(mo, me));
+    BB8.GAMES.forEach(([gm, gl], k) => {
+      const r = pick(mo, me).find((q) => q.game === gm);
+      const v = r ? +r.value : NaN;
+      if (!r || r.value === '' || r.value == null || !r9ok(v)) return;
+      g.append('circle').attr('cx', x(v)).attr('cy', (k - (n - 1) / 2) * 6.5).attr('r', 5)
+        .style('fill', BB8.color(gm)).style('stroke', 'var(--color-panel)').style('stroke-width', 1.5)
+        .on('pointermove', (evt) => tip.show(evt, [full(mo, me), gl, `${r.metric === 'phase' ? 'phase recovery' : 'Spearman r'} = ${BB.f2(v)}`, `${r.area} · ${mins} min`]))
+        .on('pointerleave', () => tip.hide());
+    });
+  });
+  const lg = s.append('g').attr('transform', `translate(${lw},${14})`);
+  BB8.GAMES.forEach(([gm, gl], i) => {
+    const gg = lg.append('g').attr('transform', `translate(${(i % 2) * 150},${Math.floor(i / 2) * 18})`);
+    gg.append('circle').attr('r', 4.5).attr('cy', -4).style('fill', BB8.color(gm));
+    gg.append('text').attr('x', 9).style('font-size', 'var(--cds-font-size-caption)').text(gl);
+  });
+}
+function r9ok(v) { return typeof v === 'number' && isFinite(v); }
+dash.draw('r9nav', (el) => r9dots(el, 'nav'));
+dash.draw('r9cog', (el) => r9dots(el, 'cog'));

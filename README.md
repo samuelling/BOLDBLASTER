@@ -2,6 +2,8 @@
 
 > **Summary and dashboard, in one place:** `docs/dashboard/` (served at https://samuelling.github.io/boldblaster/dashboard/ once GitHub Pages is on; `docs/index.html` now just points there). It opens on an Overview of all seven experiments, each a card with its headline result, and one tab per experiment with what we did, a picture of the stimulus, the result, its key chart and a folded "More detail"; a Methods tab holds the simulation, noise and voxel-level views. Rebuild with `python dashboard/standalone/build.py`. Source: [`dashboard/`](dashboard/) (page + scripts over the CSVs; stimulus pictures from `make_stimulus_figs.py`; `test_harness.js` runs it headless with jsdom). Noise assumptions: [NOISE.md](NOISE.md). Tidy CSVs of every result: [`dashboard_data/`](dashboard_data/) (regenerate with `python export_dashboard_data.py`).
 
+> **Latest (round 9):** navigation codes need free movement in every direction, not a particular game, and cognitive parameters that behaviour recovers well are often weak in BOLD; see Round 9 and [MECHANICS.md](MECHANICS.md).
+
 > **Headline (round 8):** the game matters. At a matched hour with eye-tracker gaze, all three real games beat the raycaster on contrast response (effective c50 0.43 on the raycaster, 0.68 Betamax, 0.51 Brick Ninja, 0.54 Animal Sanctuary) and on attention gain (0.10; 0.42, 0.16, 0.37). Betamax, a realistic shooter, is best overall.
 
 > **Headline (round 5):** against dedicated experiments of realistic length (30–60 min each), gameplay is not a per-parameter shortcut. At a matched 5 h budget the full dedicated battery recovers 3 of 7 V1 measures better, gameplay 1 (surround suppression), and 3 tie. Gameplay's case is breadth: one dataset serves every model at once. Earlier rounds used a 10-min dedicated baseline, which flattered gameplay.
@@ -362,6 +364,52 @@ Renders: `bash tools/betamax/queue.sh 0 12 & bash tools/betamax/queue.sh 1 12` (
 `GAME=<game> python run_round8.py all 12` for each game, `python export_round8.py` and
 `python make_stimulus_figs.py`. Results JSON: `results/round8.json`, `round8_stats.json` and
 `round8_<game>_phit.json`.
+
+## Round 9: navigation and cognitive models, driven by the games' own dynamics
+
+The Palace builds a test and dresses it as a game. Round 9 goes the other way: it takes the four
+games as they are and asks which models their dynamics can fit, with every parameter given a
+candidate brain area (`dashboard_data/areas.csv`). Medial temporal voxels get 1.4-1.6x cortical
+noise for susceptibility loss (`run_round9.py`, `export_round9.py`).
+
+*Navigation, voxel by voxel* (150 voxels per area, from logged position, heading and gaze;
+raycaster poses are regenerated from its seeds, the others come from the harness logs):
+
+- entorhinal hexadirectional codes for movement direction (Doeller 2010) and eye-movement
+  direction (Nau 2018)
+- retrosplenial facing-direction tuning
+- hippocampal path vs Euclidean distance to the current goal (Howard 2014)
+- boundary-distance tuning
+- a hippocampal event-boundary response
+
+Grid orientation is recovered wherever movement is free: phase recovery is .58 on the
+raycaster, .52 on Betamax and .46 on Animal Sanctuary, against chance (.12) on Brick Ninja,
+which only runs left or right. Facing direction is recovered at .98 with free heading.
+- The eye-movement grid code is weak everywhere (at most .35).
+- Path and Euclidean distance only come apart in the raycaster maze (path weight recovered at
+  .74, though even there the two correlate .97).
+- Event boundaries come through on Betamax (.58) but not in Animal Sanctuary (.09): its boundaries
+  are befriendings, which the arousal nuisance model removes.
+
+*Cognitive models from The Palace and Mind Arcade, player by player* (40 simulated players per
+game, planted parameters, behaviour with 4% lapses and motor jitter, region-mean BOLD with noise
+shared across voxels):
+
+- drift diffusion for each engage decision (pre-SMA / IPS accumulator)
+- Rescorla-Wagner value learning (ventral striatum RPE)
+- place familiarity with encoding and forgetting (hippocampal novelty)
+
+Behaviour recovers drift and boundary at .84-.99 in every game. BOLD recovers them at most .46,
+because the accumulator signal needs spaced decisions over a wide range of difficulty, and
+Betamax's targets barely vary in difficulty. Learning rate from striatal BOLD follows outcomes
+per minute: .68 on Brick Ninja, .42 on Betamax, .33-.36 on the raycaster and Animal Sanctuary.
+Place familiarity is recovered best with many revisits (Brick Ninja .94/.95). Path integration
+and map updating could not be tested: none of the games has homing or layout changes.
+
+Game-design side notes, including candidate puzzle elements for Betamax drawn from Prey,
+Dishonored, Doom, Dark Souls, Antichamber and The Palace: [MECHANICS.md](MECHANICS.md).
+`python run_round9.py all && python export_round9.py`. Results JSON: `results/round9_nav.json`,
+`results/round9_cog.json`.
 
 Results JSON for every round is in `results/`; the summary and dashboard are in `docs/dashboard/`
 (enable GitHub Pages from `main` / `/docs` to serve it).

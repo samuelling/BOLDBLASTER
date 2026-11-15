@@ -3,7 +3,7 @@ window.BB = (function () {
   const num = (v) => (v === null || v === undefined || v === '' ? NaN : +v);
   const f2 = d3.format('.2f');
   const V1 = ['mu', 'sig', 'c50_eff', 'q', 'k', 'tau', 'a'];
-  const DEFAULTS = { param: 'mu', design: 'long_20h', ecc: 'all', r1: 'game_eyetracker', r8cond: 'realistic', r8min: '60' };
+  const DEFAULTS = { param: 'mu', design: 'long_20h', ecc: 'all', r1: 'game_eyetracker', r8cond: 'realistic', r8min: '60', r9min: '60', r9src: 'bold' };
   const params = () => Object.assign({}, DEFAULTS, dash.params());
   // family index into dash.colors: dedicated, game, levers, battery, ten levels
   const FAM_IDX = { dedicated: 0, game: 1, levers: 2, battery: 4, long: 6 };
@@ -506,3 +506,56 @@ dash.draw('img', (el) => {
   }));
   open((location.hash || '').replace('#', '') || 'overview', false);
 })();
+
+// ---------------------------------------------------------------- round 9: navigation and cognitive models
+window.BB9 = {
+  sel: () => { const P = BB.params(); return { mins: +(P.r9min || 60), src: P.r9src || 'bold' }; },
+  NAV: [['grid_move', 'phi'], ['grid_move', 'm'], ['grid_gaze', 'phi'], ['grid_gaze', 'phi_oracle'], ['facing', 'psi'], ['facing', 'kappa'],
+    ['goal', 'w'], ['boundary', 'd'], ['evbound', 'b']],
+  COG: [['ddm', 'v'], ['ddm', 'a'], ['ddm', 'va'], ['rl', 'alpha'], ['rl', 'beta'], ['novelty', 'e'], ['novelty', 'f']],
+};
+dash.draw('r9table', (tb) => {
+  const d = dash.data('round9');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  const { mins } = BB9.sel();
+  const rows = d.data.filter((r) => +r.minutes === mins);
+  const keys = [];
+  for (const r of rows) { const k = `${r.model}|${r.measure}|${r.source}`; if (!keys.includes(k)) keys.push(k); }
+  const SRC = { bold: 'from BOLD', behaviour: 'from behaviour', agree: 'BOLD vs behaviour' };
+  for (const k of keys) {
+    const [model, meas, src] = k.split('|');
+    const sel = rows.filter((r) => r.model === model && r.measure === meas && r.source === src);
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', encodeURIComponent(k));
+    tr.append(td(sel[0].model_label), td(`${sel[0].measure_label}${sel[0].part === 'cog' ? ', ' + SRC[src] : ''}`), td(sel[0].area));
+    for (const [g] of BB8.GAMES) {
+      const r = sel.find((x) => x.game === g);
+      tr.append(td(r && r.value !== '' && r.value != null ? BB.f2(+r.value) : '—', true));
+    }
+    tb.appendChild(tr);
+  }
+});
+dash.draw('r9statstable', (tb) => {
+  const d = dash.data('round9_stats');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  for (const r of d.data) {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', r.measure);
+    tr.append(td(r.label));
+    for (const [g] of BB8.GAMES) tr.append(td(r[g] === '' || r[g] == null ? '—' : String(r[g]), true));
+    tb.appendChild(tr);
+  }
+});
+dash.draw('areastable', (tb) => {
+  const d = dash.data('areas');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  d.data.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', String(i));
+    tr.append(td(String(r.round)), td(r.model), td(r.parameter), td(r.area), td(`${(+r.noise_mult || 1).toFixed(1)}×`, true), td(r.basis));
+    tb.appendChild(tr);
+  });
+});

@@ -1,0 +1,24 @@
+round,model,parameter,area,basis,noise_mult
+1,pRF,pRF position and size,V1-V3,Retinotopic maps; pRF mapping (Dumoulin and Wandell 2008),1.0
+2-8,pSFT,SF peak and bandwidth,V1,Population SF tuning (Aghajari et al. 2020),1.0
+2-8,pCRF,"Contrast response (effective c50, exponent)",V1,Population contrast response,1.0
+2-8,Surround,Surround suppression k,V1,Divisive normalization,1.0
+2-8,Transient,Transient weight,V1 (with hMT+),Transient channels,1.0
+2-8,Attention,Attention gain,"V1, controlled from IPS / FEF",Attentional gain in early visual cortex,1.0
+6,Attention dynamics,Rise and decay time,"V1, controlled from IPS / FEF",Event-locked attention kernel,1.0
+6,Ventral category,Preferred-category weight,"Ventral occipitotemporal (FFA, PPA)","Large, foveally biased pRFs",1.0
+7,CST,Sustained/transient time constants and weight,V1-V3,Compressive spatiotemporal pRF (Kim et al. 2024),1.0
+2-8,Numerosity,Preferred numerosity and width,Posterior parietal numerosity maps,Numerosity tuning (Harvey et al. 2013),1.0
+2-8,Self-motion,"Rotation preference, expansion weight","hMT+ / MST, V6, CSv",Optic-flow selective areas,1.0
+2-8,Striatal RPE,Prediction-error weight,Ventral striatum,Reward prediction error,1.0
+9,"Grid code, movement",Grid orientation,Entorhinal cortex,Hexadirectional running-direction signal (Doeller et al. 2010),1.6
+9,"Grid code, eye movements",Grid orientation,Entorhinal cortex,Hexadirectional gaze-direction signal (Nau et al. 2018),1.6
+9,Facing direction,Preferred direction,Retrosplenial / superior parietal,Facing-direction tuning in RSC and SPL during free navigation,1.0
+9,Distance to goal,Path vs Euclidean weight,Hippocampus,Path and Euclidean distance to goal (Howard et al. 2014),1.4
+9,Boundary distance,Preferred boundary distance,Subiculum / entorhinal,Boundary vector and border cells,1.5
+9,Event boundaries,Boundary response gain,Hippocampus,Hippocampal response at event boundaries (Ben-Yakov and Henson 2018),1.4
+9,Drift diffusion,Drift scale and boundary,Pre-SMA / intraparietal sulcus,Evidence accumulation; boundary setting in pre-SMA,1.0
+9,Value learning,Learning rate,Ventral striatum,Reward prediction error with learned value,1.2
+9,Place familiarity,Encoding and forgetting,Hippocampus,Hippocampal novelty response,1.4
+9,Path integration (not tested),"Heading noise, distance gain, leak","Entorhinal cortex, hippocampus, RSC","The Palace's lantern model; needs homing trials, which none of these games has",1.0
+9,Map updating (not tested),"Update rate, route-choice noise","Hippocampus, prefrontal cortex",The Palace's East Wing model; needs route choices and changes to the layout,1.0

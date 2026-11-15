@@ -110,11 +110,14 @@
   <button type="button" class="bb-tabbtn" data-tab="exp-attn">5 · Attention</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-cst">6 · Spatiotemporal</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-games">7 · Real games</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-nav">8 · Navigation &amp; cognition</button>
+  <button type="button" class="bb-tabbtn" data-tab="design-tab">Design notes</button>
+  <button type="button" class="bb-tabbtn" data-tab="areas-tab">Brain areas</button>
   <button type="button" class="bb-tabbtn" data-tab="methods-tab">Methods</button>
 </nav>
 
 <section class="bb-sec bb-tab" id="overview">
-  <div class="bb-sec-head"><div><p class="bb-num">Overview</p><h2 class="bb-h2">Seven experiments at a glance</h2>
+  <div class="bb-sec-head"><div><p class="bb-num">Overview</p><h2 class="bb-h2">Eight experiments at a glance</h2>
     <p class="bb-desc">Every value is Spearman r between planted and fitted parameters across simulated voxels, so 1 means the voxels are put in exactly the right order. Treat differences under about 0.1 as noise. Open any experiment for what it looked like, its charts and its caveats.</p></div></div>
   <div class="bb-glance">
     <article class="bb-card bb-gcard" id="g-prf">
@@ -151,6 +154,11 @@
       <p class="bb-num">7 · Round 8</p><h3 class="bb-h3">Does the game matter? Three real games against the raycaster</h3>
       <p>Yes. At a matched hour with eye-tracker gaze, effective c50 goes from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on the raycaster to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Betamax (a realistic shooter), <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=brickninja&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Brick Ninja (a side-scroller) and <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=sanctuary&amp;condition=realistic&amp;minutes=60&amp;parameter=c50_eff">—</b> on Animal Sanctuary (top-down pixel art), and attention gain from <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=raycaster&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b> to <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=betamax&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b>, <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=brickninja&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b> and <b data-draw="cell" data-source="round8_v1" data-field="spearman" data-where="game=sanctuary&amp;condition=realistic&amp;minutes=60&amp;parameter=a">—</b>. Betamax is best overall. The 2D games can't map self-motion (they have no forward flow), and slow pixel art costs Animal Sanctuary on SF and transient tuning.</p>
       <button type="button" class="bb-open" data-open="exp-games">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard bb-gwide" id="g-nav">
+      <p class="bb-num">8 · Round 9</p><h3 class="bb-h3">Navigation and cognitive models, with candidate brain areas</h3>
+      <p>Free movement in any direction is what navigation codes need: entorhinal grid orientation is recovered at <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=raycaster&amp;minutes=60">—</b> on the raycaster, <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b> on Betamax and <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=sanctuary&amp;minutes=60">—</b> on Animal Sanctuary, against <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=brickninja&amp;minutes=60">—</b> (chance) on the side-scrolling Brick Ninja. For The Palace's cognitive models, behaviour recovers parameters well in every game but BOLD often doesn't. Striatal learning rate follows outcomes per minute (<b data-draw="cell" data-source="round9" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=brickninja&amp;minutes=60">—</b> on Brick Ninja, <b data-draw="cell" data-source="round9" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=raycaster&amp;minutes=60">—</b> on the raycaster), and drift diffusion needs spaced, varied decisions that these games rarely provide. Betamax needs puzzle elements for path integration and map updating.</p>
+      <button type="button" class="bb-open" data-open="exp-nav">Open experiment →</button>
     </article>
   </div>
 </section>
@@ -589,6 +597,135 @@
 </details>
   </div>
   </details>
+</section>
+
+<section class="bb-sec bb-tab" id="exp-nav" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 8 · Round 9</p><h2 class="bb-h2">Navigation and cognitive models, driven by the games' own dynamics</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>Instead of building a test and dressing it up as a game, as The Palace does, we take the four games as they are and ask which models their dynamics can fit. Every parameter is given a candidate brain area. Medial temporal voxels get 1.4–1.6 times cortical noise, because they lose signal near the sinuses and ear canals.</p>
+      <ul>
+        <li><b>Navigation, voxel by voxel</b> (150 voxels per area), from each game's logged position, heading and gaze:
+          <ul>
+            <li>entorhinal grid codes for direction of movement and of eye movements</li>
+            <li>retrosplenial tuning to facing direction</li>
+            <li>hippocampal coding of path and straight-line distance to the current goal</li>
+            <li>tuning to distance from walls</li>
+            <li>a hippocampal response at event boundaries</li>
+          </ul></li>
+        <li><b>Cognitive models from The Palace and Mind Arcade, player by player</b> (40 simulated players per game). Each player's planted parameters shape both their behaviour and a signal in the candidate area, at the game's own decision opportunities. We fit each parameter from behaviour alone and from BOLD alone, then compare.
+          <ul>
+            <li>drift diffusion for each engage-or-hold decision (pre-SMA, intraparietal sulcus)</li>
+            <li>value learning from outcomes (ventral striatum)</li>
+            <li>familiarity of places, with encoding and forgetting (hippocampus)</li>
+          </ul></li>
+      </ul></div>
+    <figure class="bb-card bb-fig" id="exp-nav-fig"><img data-draw="img" data-img="paths" data-source="img_paths" alt="One 5-minute run of each game: top-down paths for the raycaster (on its maze), Betamax and Animal Sanctuary, and position over time for Brick Ninja."><figcaption>One 5-minute run of each game. The raycaster, Betamax and Animal Sanctuary are seen from above (the raycaster on its maze). Brick Ninja is position over time: it only ever runs left or right.</figcaption></figure>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
+    <p><b>Navigation codes need the right kind of movement, not a particular game.</b> Recovery of each voxel's preferred angle (phase recovery, 1 = exact, about 0.08 = chance):</p>
+    <ul>
+      <li><b>Grid orientation:</b> any free 2D or 3D movement recovers it, at <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=raycaster&amp;minutes=60">—</b> on the raycaster, <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b> on Betamax and <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=sanctuary&amp;minutes=60">—</b> on Animal Sanctuary. Brick Ninja, which only runs left or right, sits at chance (<b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=brickninja&amp;minutes=60">—</b>).</li>
+      <li><b>Facing direction:</b> recovered almost perfectly wherever there is free heading (<b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=facing&amp;measure=psi&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b> on Betamax), but not on Brick Ninja (<b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=facing&amp;measure=psi&amp;source=bold&amp;game=brickninja&amp;minutes=60">—</b>).</li>
+      <li><b>Grid code from eye movements:</b> weak everywhere (at most <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=grid_gaze&amp;measure=phi&amp;source=bold&amp;game=brickninja&amp;minutes=60">—</b>).</li>
+      <li><b>Path vs straight-line distance to goal:</b> the two only come apart in the raycaster's maze (r = <b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=goal&amp;measure=w&amp;source=bold&amp;game=raycaster&amp;minutes=60">—</b>). On the open beach and in the 2D games they are the same number.</li>
+      <li><b>Event boundaries:</b> best on Betamax (<b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=evbound&amp;measure=b&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b>). Animal Sanctuary's boundaries are befriendings, which also trigger arousal, so the nuisance model removes them (<b data-draw="cell" data-source="round9" data-field="value" data-where="part=nav&amp;model=evbound&amp;measure=b&amp;source=bold&amp;game=sanctuary&amp;minutes=60">—</b>).</li>
+    </ul>
+    <p><b>Behaviour and BOLD disagree about what a good game is.</b> Behaviour recovers every cognitive parameter well in every game, for example drift scale at <b data-draw="cell" data-source="round9" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=v&amp;source=behaviour&amp;game=betamax&amp;minutes=60">—</b> on Betamax.</p>
+    <ul>
+      <li><b>Drift diffusion from BOLD:</b> at most <b data-draw="cell" data-source="round9" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=a&amp;source=bold&amp;game=raycaster&amp;minutes=60">—</b> (boundary, raycaster). The accumulator signal needs decisions spaced out and varied in difficulty, and Betamax's targets barely vary.</li>
+      <li><b>Learning rate from striatal BOLD:</b> follows the number of outcomes, <b data-draw="cell" data-source="round9" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=brickninja&amp;minutes=60">—</b> on Brick Ninja against <b data-draw="cell" data-source="round9" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=raycaster&amp;minutes=60">—</b> on the raycaster.</li>
+      <li><b>Place familiarity from hippocampal BOLD:</b> strongest where players enter many places and keep coming back (Brick Ninja: encoding <b data-draw="cell" data-source="round9" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=e&amp;source=bold&amp;game=brickninja&amp;minutes=60">—</b>, forgetting <b data-draw="cell" data-source="round9" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=f&amp;source=bold&amp;game=brickninja&amp;minutes=60">—</b>). On Betamax the bot stays near where it spawned, so encoding is poorly recovered (<b data-draw="cell" data-source="round9" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=e&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b>).</li>
+    </ul>
+    <p><b>Not testable here:</b> path integration and map updating, because none of the four games has homing or layout changes. Betamax needs puzzle elements (see Design notes).</p>
+  </div></div>
+  <div class="bb-controls bb-ctl-row">
+    <label>Play time
+      <select class="dash-select" data-param="r9min" aria-label="Play time">
+        <option value="60">60 minutes</option>
+        <option value="30">30 minutes</option>
+      </select>
+    </label>
+    <label>Cognitive models fitted from
+      <select class="dash-select" data-param="r9src" aria-label="Fitted from">
+        <option value="bold">BOLD only</option>
+        <option value="behaviour">Behaviour only</option>
+        <option value="agree">Agreement: BOLD vs behaviour</option>
+      </select>
+    </label>
+  </div>
+  <div class="bb-grid2">
+    <div class="bb-card">
+      <p class="bb-stat">Navigation models, voxel by voxel, by game.</p>
+      <div class="bb-chart" id="r9nav-chart" data-draw="r9nav" data-source="round9" style="min-height: 440px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>For each navigation model, how well each voxel's planted tuning is recovered from BOLD, one dot per game. Under each model is its candidate brain area. Angles (grid orientation, preferred facing direction) are scored by phase recovery: the length of the mean of the angular errors, so 1 means every voxel's angle is recovered exactly and about 0.08 is chance with 150 voxels. Everything else is Spearman r between planted and fitted values.</p>
+<h4>How to read it</h4><p>A missing dot means the game cannot test that model. Betamax and the 2D games have no walls the harness logs. In the open games, path and straight-line distance to the goal are identical.</p>
+<h4>Caveats</h4><p>Grid orientation is planted independently per voxel. Real entorhinal grids share one orientation, which makes a group-level test easier but this voxel-wise one meaningless. Effect sizes for medial temporal codes are assumptions: hexadirectional modulation is 10–50% of the speed response, and amplitude is about half that of visual cortex.</p>
+</details>
+    </div>
+    <div class="bb-card">
+      <p class="bb-stat">Cognitive models, player by player, by game. Pick BOLD, behaviour or their agreement above.</p>
+      <div class="bb-chart" id="r9cog-chart" data-draw="r9cog" data-source="round9" style="min-height: 380px"></div>
+      <details class="bb-explain"><summary>What am I looking at?</summary>
+<h4>What it shows</h4><p>Spearman r across 40 simulated players between each planted cognitive parameter and the value fitted from behaviour alone, from BOLD in the candidate area alone, or between the two estimates (agreement).</p>
+<ul><li><b>Decision opportunities</b> are each game's own engage events (bursts, stars, catch presses, shots), with the game's expected hit probability as the evidence strength.</li>
+<li><b>Behaviour</b> includes 4% lapses and 60 ms of motor jitter that the models don't know about.</li>
+<li><b>BOLD</b> is the mean of 60 voxels with noise partly shared between them, so averaging cannot remove it all.</li></ul>
+<h4>How to read it</h4><p>Agreement is the question "does BOLD square with behaviour": a player's parameter fitted from their brain should match the one fitted from their choices.</p>
+<h4>Caveats</h4><p>With 40 players each r is uncertain by about ±0.15. Every player plays the same recorded sessions, so only their cognitive parameters differ. Place familiarity has no behavioural readout in these games.</p>
+</details>
+    </div>
+  </div>
+  <details class="bb-more" id="exp-nav-more"><summary>More detail: every number, and what each game offers these models</summary>
+  <div class="bb-card bb-tablewrap" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">Every model and measure at the chosen play time.</p>
+    <table class="bb-table" id="r9-table" data-source="round9">
+      <thead><tr><th>Model</th><th>Measure</th><th>Candidate area</th><th>Raycaster</th><th>Betamax</th><th>Brick Ninja</th><th>Animal Sanctuary</th></tr></thead>
+      <tbody data-draw="r9table"></tbody>
+    </table>
+  </div>
+  <div class="bb-card bb-tablewrap" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">What each game offers these models, over the hour.</p>
+    <table class="bb-table" id="r9stats-table" data-source="round9_stats" data-row-key="measure">
+      <thead><tr><th data-field="label">Measure</th><th data-field="raycaster">Raycaster</th><th data-field="betamax">Betamax</th><th data-field="brickninja">Brick Ninja</th><th data-field="sanctuary">Animal Sanctuary</th></tr></thead>
+      <tbody data-draw="r9statstable"></tbody>
+    </table>
+  </div>
+  </details>
+</section>
+
+<section class="bb-sec bb-tab" id="areas-tab" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Reference</p><h2 class="bb-h2">Candidate brain areas for every parameter</h2>
+    <p class="bb-desc">Each parameter the testbed recovers, the area its population is placed in, and the basis for that choice. Round 9 gives medial temporal areas more noise than cortex (the noise column), so the area changes how much play a parameter needs, not only where it is.</p></div></div>
+  <div class="bb-card bb-tablewrap">
+    <table class="bb-table" id="areas-table" data-source="areas">
+      <thead><tr><th>Round</th><th>Model</th><th>Parameter</th><th>Candidate area</th><th>Noise vs cortex</th><th>Basis</th></tr></thead>
+      <tbody data-draw="areastable"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="bb-sec bb-tab" id="design-tab" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Side notes</p><h2 class="bb-h2">Game mechanics that help model estimates</h2>
+    <p class="bb-desc">Running notes: what limited each model, and the mechanic that would fix it. The full version, with examples from other games, is MECHANICS.md in the repository.</p></div></div>
+  <div class="bb-glance">
+    <article class="bb-card bb-gcard"><h3 class="bb-h3">Direction codes</h3><p>Grid and facing-direction codes need movement and heading in every direction. Any free 2D or 3D game works; a side-scroller does not. Grid codes from eye movements need smooth pursuit across the screen in all directions: birds, drones, tracer fire.</p></article>
+    <article class="bb-card bb-gcard"><h3 class="bb-h3">Distance to goal</h3><p>Path and straight-line distance only come apart when walls force detours. That needs goals behind obstacles, locked doors and keycards (Doom), shortcuts that open later (Dark Souls), and rooms with several ways in (Prey, Dishonored).</p></article>
+    <article class="bb-card bb-gcard"><h3 class="bb-h3">Event boundaries</h3><p>Keep them separate from rewards and explosions, or the arousal model removes them. Good boundaries are doors, room and chapter transitions, checkpoints and new objectives.</p></article>
+    <article class="bb-card bb-gcard"><h3 class="bb-h3">Decisions</h3><p>Behaviour wants many decisions, but BOLD wants them spaced out, jittered and varied in difficulty. One example is friend-or-foe silhouettes in fog at a range of distances, a few seconds apart, like The Palace's standing figures.</p></article>
+    <article class="bb-card bb-gcard"><h3 class="bb-h3">Learning</h3><p>Learning rates need many outcomes per minute, and payoffs that drift or reverse: weapons that jam, routes or loot whose value changes.</p></article>
+    <article class="bb-card bb-gcard"><h3 class="bb-h3">Memory for places</h3><p>Needs many entries into places, many of them revisits after varied delays. Backtracking through known space with something changed (Metroidvania loops, keycard returns) gives this.</p></article>
+    <article class="bb-card bb-gcard bb-gwide"><h3 class="bb-h3">Puzzle elements for Betamax</h3><p>Betamax is the best stimulus for vision, attention and reward, but its open beach starves the navigation and memory models. Candidates, each kept inside the battle (forward mode, no possession):</p>
+      <ul>
+        <li><b>Several routes to every objective</b> (Prey, Dishonored)</li>
+        <li><b>Ammunition or codebook return trips</b> (Doom keycards)</li>
+        <li><b>Shortcuts that open</b> after a house is cleared (Dark Souls)</li>
+        <li><b>A tide that closes the beach route and opens the boardwalk</b> (The Palace's Architect, Antichamber)</li>
+        <li><b>Friend-or-foe silhouettes in the haze</b></li>
+        <li><b>A night phase where the flare dies and you get back to the bunker in the dark</b> (The Palace's lantern)</li>
+        <li><b>An optional radio-code puzzle</b> (Dishonored 2's Jindosh lock)</li>
+      </ul></article>
+  </div>
 </section>
 
 <section class="bb-sec bb-tab" id="methods-tab" hidden>
