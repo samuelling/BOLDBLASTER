@@ -538,7 +538,7 @@ dash.draw('r10pairs', (el) => {
   const rowH = 30, top = 44, bottom = 30, gapH = 26;
   const parts = [...new Set(keys.map((k) => k.split('|')[0]))];
   const H = top + bottom + keys.length * rowH + parts.length * gapH;
-  const { s, w } = BB.svg(el, H, `Recovery on Betamax (open) and Betamax with tunnels (filled), ${mins} minutes; cognitive models ${({ bold: 'from BOLD', behaviour: 'from behaviour', agree: 'as agreement between BOLD and behaviour' })[src]}`);
+  const { s, w } = BB.svg(el, H, `Recovery on Betamax (open), the first tunnels (blue) and the tuned tunnels (orange), ${mins} minutes; cognitive models ${({ bold: 'from BOLD', behaviour: 'from behaviour', agree: 'as agreement between BOLD and behaviour' })[src]}`);
   const lab = (k) => { const [pt, mo, me] = k.split('|'); const r = all.find((x) => x.part === pt && x.model === mo && x.measure === me); return r ? `${r.model_label}: ${r.measure_label}` : me; };
   const lw = Math.min(BB.textWidth(s, keys.map(lab)) + 14, w * 0.5);
   const vals = all.map((r) => +r.value).filter(isFinite);
@@ -546,26 +546,29 @@ dash.draw('r10pairs', (el) => {
   BB.grid(s.append('g'), x, x.ticks(5), top - 6, H - bottom + 4, false);
   BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - bottom + 4})`).call(d3.axisBottom(x).ticks(5).tickSizeOuter(0)));
   s.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', top - 6).attr('y2', H - bottom + 4).style('stroke', 'var(--cds-chart-axis)');
-  const tip = BB.tip(el), c1 = BB8.color('betamax');
+  const tip = BB.tip(el), c1 = BB8.color('betamax'), c2 = dash.colors[1];
   let yy = top, lastPart = null;
   keys.forEach((k) => {
     const [pt, mo, me] = k.split('|');
     if (pt !== lastPart) { yy += gapH; s.append('text').attr('class', 'bb-lab').attr('x', 0).attr('y', yy - 8).style('font-weight', 600).text(BB10.PART[pt] || pt); lastPart = pt; }
     const y = yy + rowH / 2; yy += rowH;
     const get = (g) => { const r = all.find((q) => q.part === pt && q.model === mo && q.measure === me && q.game === g); return r ? +r.value : NaN; };
-    const a = get('betamax'), b = get('betamaxt');
+    const a = get('betamax'), b = get('betamaxt'), c = get('betamaxu');
     s.append('text').attr('x', 0).attr('y', y).attr('dy', '0.32em').text(lab(k));
-    if (isFinite(a) && isFinite(b)) s.append('line').attr('x1', x(a)).attr('x2', x(b)).attr('y1', y).attr('y2', y).style('stroke', c1).style('stroke-width', 2).style('opacity', 0.45);
-    const pt2 = (v, g, filled) => { if (!isFinite(v)) return;
-      s.append('circle').attr('cx', x(v)).attr('cy', y).attr('r', 5).style('fill', filled ? c1 : 'var(--color-panel)').style('stroke', filled ? 'var(--color-panel)' : 'var(--color-fg-muted)').style('stroke-width', 1.5)
-        .on('pointermove', (evt) => tip.show(evt, [lab(k), filled ? 'Betamax + tunnels' : 'Betamax', `${(all.find((q) => q.part === pt && q.model === mo && q.measure === me) || {}).metric === 'phase' ? 'phase recovery' : 'Spearman r'} = ${BB.f2(v)}`, `${mins} min`]))
+    // the line runs from the open beach to the latest version of the tunnels
+    const last = isFinite(c) ? c : b, lc = isFinite(c) ? c2 : c1;
+    if (isFinite(a) && isFinite(last)) s.append('line').attr('x1', x(a)).attr('x2', x(last)).attr('y1', y).attr('y2', y).style('stroke', lc).style('stroke-width', 2).style('opacity', 0.45);
+    const metric = (all.find((q) => q.part === pt && q.model === mo && q.measure === me) || {}).metric === 'phase' ? 'phase recovery' : 'Spearman r';
+    const pt2 = (v, name, fill, dy) => { if (!isFinite(v)) return;
+      s.append('circle').attr('cx', x(v)).attr('cy', y + dy).attr('r', 5).style('fill', fill || 'var(--color-panel)').style('stroke', fill ? 'var(--color-panel)' : 'var(--color-fg-muted)').style('stroke-width', 1.5)
+        .on('pointermove', (evt) => tip.show(evt, [lab(k), name, `${metric} = ${BB.f2(v)}`, `${mins} min`]))
         .on('pointerleave', () => tip.hide()); };
-    pt2(a, 'betamax', false); pt2(b, 'betamaxt', true);
+    pt2(a, 'Betamax', null, 0); pt2(b, 'First tunnels', c1, isFinite(c) ? -4 : 0); pt2(c, 'Tuned tunnels', c2, isFinite(b) ? 4 : 0);
   });
   const lg = s.append('g').attr('transform', `translate(${lw},${14})`);
-  [['Betamax', false], ['Betamax + tunnels', true]].forEach(([gl, f], i) => {
-    const gg = lg.append('g').attr('transform', `translate(${i * 150},0)`);
-    gg.append('circle').attr('r', 4.5).attr('cy', -4).style('fill', f ? c1 : 'var(--color-panel)').style('stroke', f ? 'none' : 'var(--color-fg-muted)').style('stroke-width', 1.5);
+  [['Betamax', null], ['First tunnels', c1], ['Tuned tunnels', c2]].filter(([gl, f]) => f !== c2 || all.some((r) => r.game === 'betamaxu')).forEach(([gl, f], i) => {
+    const gg = lg.append('g').attr('transform', `translate(${i * 130},0)`);
+    gg.append('circle').attr('r', 4.5).attr('cy', -4).style('fill', f || 'var(--color-panel)').style('stroke', f ? 'none' : 'var(--color-fg-muted)').style('stroke-width', 1.5);
     gg.append('text').attr('x', 9).style('font-size', 'var(--cds-font-size-caption)').text(gl);
   });
 });

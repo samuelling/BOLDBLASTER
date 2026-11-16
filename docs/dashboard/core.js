@@ -579,11 +579,11 @@ dash.draw('r10table', (tb) => {
     const [part, model, meas, src] = k.split('|');
     const sel = rows.filter((r) => r.part === part && r.model === model && r.measure === meas && r.source === src);
     const v = (g) => { const r = sel.find((x) => x.game === g); return r && r.value !== '' && r.value != null ? +r.value : NaN; };
-    const a = v('betamax'), b = v('betamaxt');
+    const a = v('betamax'), b = v('betamaxt'), c = v('betamaxu'), f2 = (q) => (isFinite(q) ? BB.f2(q) : '—');
     const tr = document.createElement('tr');
     tr.setAttribute('data-key', encodeURIComponent(k));
     tr.append(td(BB10.PART[part] || part), td(`${sel[0].model_label}: ${sel[0].measure_label}${SRC[src] || ''}`), td(sel[0].area),
-      td(isFinite(a) ? BB.f2(a) : '—', true), td(isFinite(b) ? BB.f2(b) : '—', true), td(isFinite(a) && isFinite(b) ? (b - a >= 0 ? '+' : '') + BB.f2(b - a) : '—', true));
+      td(f2(a), true), td(f2(b), true), td(f2(c), true));
     tb.appendChild(tr);
   }
 });
@@ -594,7 +594,8 @@ dash.draw('r10statstable', (tb) => {
   for (const r of d.data) {
     const tr = document.createElement('tr');
     tr.setAttribute('data-key', r.measure);
-    tr.append(td(r.label), td(r.betamax === '' || r.betamax == null ? '—' : String(r.betamax), true), td(r.betamaxt === '' || r.betamaxt == null ? '—' : String(r.betamaxt), true));
+    const c = (q) => (q === '' || q == null ? '—' : String(q));
+    tr.append(td(r.label), td(c(r.betamax), true), td(c(r.betamaxt), true), td(c(r.betamaxu), true));
     tb.appendChild(tr);
   }
 });

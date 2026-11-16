@@ -69,14 +69,26 @@ figures. Over an hour of bot play (Experiment 9 on the dashboard):
   route-choice temperature (.97) and the friend-or-foe drift (.85); BOLD recovers neither the map
   update rate nor the friend-or-foe drift.
 
-### Tuning the tunnels (next)
+### Tuned tunnels (built and tested)
 
-- Short connectors between fights, not errands: under a quarter of the hour below ground.
-- Cave-ins that persist across lives and sit on well-used routes, so a changed layout is met
-  again (the update rate needs repeat encounters).
-- A figure every 20-40 s below ground, at mixed distance and lighting.
-- Blackouts timed for the way back from the magazine, so each is a homing trial.
-- Lit, high-contrast tunnels (lamps, painted bands, daylight through hatches) to keep V1 fed.
+Changes: most trips are a short cut between two hatches; magazines a short way in; cave-ins stay
+down and fall on corridors you've used or the one just ahead; a figure in the corridor ahead every
+8-14 s below ground; the generator blacks out the whole warren just after a box is taken; stronger
+lamps. Over an hour (Experiment 9, tuned):
+
+- **Time below ground 55% to 31%**, firefight decisions 14 to 23 a minute (Betamax 38).
+- **Vision mostly back:** effective c50 .67 (Betamax .68, first tunnels .57), SF peak .22 (.43,
+  .12), striatal prediction-error beta .94.
+- **Navigation mostly kept:** path vs Euclidean .85 (.94), walls .63, grid orientation .61 (best of
+  all three). Place forgetting .80, the best yet.
+- **Map updating from choices lost its ceiling** (.63, estimates up to .95), though cave-ins were met
+  less often (6 an hour); the cause isn't pinned down.
+- **Still short:** homing walks fell to 9 an hour because most ammunition runs were cut short (1
+  delivery an hour), friend-or-foe and map updating stay unreadable from BOLD, and striatal
+  learning rate stays at .23 (Betamax .42).
+
+Lesson: an hour of one game can't feed every model. The rare puzzle events need more hours, or a
+dedicated block of tunnel play beside the beach.
 
 ## General rules so far
 

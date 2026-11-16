@@ -33,10 +33,13 @@ from boldblaster import fit, models as M
 
 D, p, log = V2.D, V2.p, V2.log
 FPS, NF, NTR = R9.FPS, R9.NF, R9.NTR
-G = 'betamaxt'
-R9.RAW[G] = '/home/claude/bbx/runs_dig'
-R9.PRE[G] = 'betamaxt'
-R9.LABEL[G] = 'Betamax + tunnels'
+# R10_GAME=betamaxt: the first tunnels; R10_GAME=betamaxu: the tuned tunnels (shorter trips, cave-ins
+# that stay down, figures ahead, blackouts after pickups, brighter)
+G = os.environ.get('R10_GAME', 'betamaxt')
+SUF = {'betamaxt': '', 'betamaxu': 'u'}[G]
+R9.RAW[G] = {'betamaxt': '/home/claude/bbx/runs_dig', 'betamaxu': '/home/claude/bbx/runs_dig2'}[G]
+R9.PRE[G] = G
+R9.LABEL[G] = {'betamaxt': 'Betamax + tunnels', 'betamaxu': 'Tuned tunnels'}[G]
 R9.AREA.update(pathint=('Entorhinal cortex / hippocampus', 1.5), mapupd=('Hippocampus', 1.4), ddm_id=('Pre-SMA / intraparietal sulcus', 1.0))
 N_RUNS = int(os.environ.get('R10_RUNS', 12))
 if G not in R9.GAMES:
@@ -44,8 +47,8 @@ if G not in R9.GAMES:
 
 
 def raw(i):
-    recs = [json.loads(l) for l in open(f'{R9.RAW[G]}/betamaxt{i}_log.jsonl')]
-    ev = json.load(open(f'{R9.RAW[G]}/betamaxt{i}_events.json'))
+    recs = [json.loads(l) for l in open(f'{R9.RAW[G]}/{G}{i}_log.jsonl')]
+    ev = json.load(open(f'{R9.RAW[G]}/{G}{i}_events.json'))
     t0 = recs[0]['t']
     fr = lambda t: int(np.clip(round((t - t0) * FPS), 0, NF - 1))
     return recs, ev, t0, fr
@@ -79,7 +82,7 @@ def bfs(adj, src, dead=frozenset()):
 
 def pose_betamaxt(i):
     R, ev, t0, fr = raw(i)
-    lg = np.load(p(f'betamaxt{i}_logs.npz'))
+    lg = np.load(p(f'{G}{i}_logs.npz'))
     plan = ev['plan']
     adj = plan_graph(plan)
     hat = {h['id']: h for h in plan['hatches']}
@@ -160,7 +163,7 @@ def nav():
         out[f'{G}_{mins}'] = R9.fit_nav(G, n, pop, bn, realistic=True)
         out[f'{G}_{mins}_oraclegaze'] = dict(grid_gaze=R9.fit_nav(G, n, pop, bn, realistic=False)['grid_gaze'])
         log(G, mins, json.dumps({k: {a: round(b, 2) for a, b in d.items()} for k, d in out[f'{G}_{mins}'].items()}))
-    json.dump(out, open(p('results_round10_nav.json'), 'w'), indent=1)
+    json.dump(out, open(p(f'results_round10{SUF}_nav.json'), 'w'), indent=1)
 
 
 def cog():
@@ -170,7 +173,7 @@ def cog():
             continue
         out[f'{G}_{mins}'] = R9.cog_game(G, n)
         log(G, mins, json.dumps(out[f'{G}_{mins}'])[:300])
-    json.dump(out, open(p('results_round10_cog.json'), 'w'), indent=1)
+    json.dump(out, open(p(f'results_round10{SUF}_cog.json'), 'w'), indent=1)
 
 
 # ------------------------------------------------------------------ new models
@@ -189,7 +192,7 @@ def session(n):
     runs = []
     for i in range(n):
         R, ev, t0, fr = raw(i)
-        runs.append(dict(i=i, ev=ev, fr=fr, lg=np.load(p(f'betamaxt{i}_logs.npz')), plan=ev['plan']))
+        runs.append(dict(i=i, ev=ev, fr=fr, lg=np.load(p(f'{G}{i}_logs.npz')), plan=ev['plan']))
     return runs
 
 
@@ -397,7 +400,7 @@ def new_models():
         rng = np.random.default_rng(1000 + n)
         out[f'{G}_{mins}'] = dict(pathint=pathint(runs, n, rng), mapupd=mapupd(runs, n, rng), ddm_id=ddm_id(runs, n, rng))
         log(G, mins, json.dumps(out[f'{G}_{mins}'])[:600])
-    json.dump(out, open(p('results_round10_new.json'), 'w'), indent=1)
+    json.dump(out, open(p(f'results_round10{SUF}_new.json'), 'w'), indent=1)
 
 
 if __name__ == '__main__':

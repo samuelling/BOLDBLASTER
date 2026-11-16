@@ -440,6 +440,13 @@ Results at 60 min, Betamax vs Betamax with tunnels:
 - Map updating and friend-or-foe calls were too rare (13 cave-ins met, 64 calls an hour):
   behaviour recovers route-choice temperature (.97) and drift (.85), BOLD recovers neither.
 
+Tuned tunnels (`R10_GAME=betamaxu`, renders in `runs_dig2`): short cuts between hatches, closer
+magazines, cave-ins that stay down on used routes, a figure ahead every 8-14 s, blackouts after a
+box is taken, brighter lamps. Time below ground 55% to 31%; effective c50 back to .67, SF peak .22,
+prediction-error beta .94; path vs Euclidean .85, grid orientation .61, place forgetting .80; map
+updating from choices loses its ceiling (.63). Homing walks fell to 9 an hour, and friend-or-foe and
+map updating stay unreadable from BOLD.
+
 How the estimates miss (`diag_round10.py`, planted vs fitted per voxel or player): behaviour
 estimates sit on the diagonal with small, explainable biases (lapses and motor jitter make drift
 read low, the boundary high and choice consistency low). BOLD estimates are rarely biased on

@@ -5,7 +5,7 @@ import { chromium } from '/opt/npm-tools/node_modules/playwright-core/index.mjs'
 import fs from 'fs';
 const [ri, nf, outdir] = [+process.argv[2], +process.argv[3], process.argv[4]];
 fs.mkdirSync(outdir, { recursive: true });
-const pre = `${outdir}/betamaxt${ri}`;
+const pre = `${outdir}/${process.env.PREFIX || "betamaxt"}${ri}`;
 const LP = process.env.GL === 'llvmpipe';
 const b = await chromium.launch({ executablePath: '/usr/bin/google-chrome', headless: !LP,
   args: LP ? ['--use-gl=angle', '--use-angle=gl', '--ignore-gpu-blocklist', '--enable-gpu', '--no-sandbox', '--mute-audio', '--window-size=384,288']

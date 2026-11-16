@@ -159,3 +159,35 @@ betamaxt,Betamax + tunnels,oracle,60,q,CRF exponent,0.5168,0.2575
 betamaxt,Betamax + tunnels,oracle,60,k,Surround suppression,0.4707,0.3936
 betamaxt,Betamax + tunnels,oracle,60,tau,Transient weight,0.6816,0.1583
 betamaxt,Betamax + tunnels,oracle,60,a,Attention gain,0.3507,0.1294
+betamaxu,Tuned tunnels,realistic,30,c50_eff,Effective c50,0.5625,0.4866
+betamaxu,Tuned tunnels,realistic,30,mu,SF peak (pSFT),0.2888,0.825
+betamaxu,Tuned tunnels,realistic,30,sig,SF bandwidth,0.0718,0.6632
+betamaxu,Tuned tunnels,realistic,30,c50,c50 (raw),0.4808,0.6325
+betamaxu,Tuned tunnels,realistic,30,q,CRF exponent,0.277,0.5053
+betamaxu,Tuned tunnels,realistic,30,k,Surround suppression,0.2213,0.7022
+betamaxu,Tuned tunnels,realistic,30,tau,Transient weight,0.5921,0.3178
+betamaxu,Tuned tunnels,realistic,30,a,Attention gain,0.3023,0.1802
+betamaxu,Tuned tunnels,oracle,30,c50_eff,Effective c50,0.6511,0.3226
+betamaxu,Tuned tunnels,oracle,30,mu,SF peak (pSFT),0.5602,0.5005
+betamaxu,Tuned tunnels,oracle,30,sig,SF bandwidth,0.1595,0.592
+betamaxu,Tuned tunnels,oracle,30,c50,c50 (raw),0.5805,0.4042
+betamaxu,Tuned tunnels,oracle,30,q,CRF exponent,0.3884,0.3071
+betamaxu,Tuned tunnels,oracle,30,k,Surround suppression,0.4368,0.4345
+betamaxu,Tuned tunnels,oracle,30,tau,Transient weight,0.6413,0.1801
+betamaxu,Tuned tunnels,oracle,30,a,Attention gain,0.3484,0.163
+betamaxu,Tuned tunnels,realistic,60,c50_eff,Effective c50,0.6659,0.3921
+betamaxu,Tuned tunnels,realistic,60,mu,SF peak (pSFT),0.2238,0.811
+betamaxu,Tuned tunnels,realistic,60,sig,SF bandwidth,0.0759,0.6496
+betamaxu,Tuned tunnels,realistic,60,c50,c50 (raw),0.5582,0.4468
+betamaxu,Tuned tunnels,realistic,60,q,CRF exponent,0.3847,0.4135
+betamaxu,Tuned tunnels,realistic,60,k,Surround suppression,0.2547,0.6343
+betamaxu,Tuned tunnels,realistic,60,tau,Transient weight,0.6476,0.2806
+betamaxu,Tuned tunnels,realistic,60,a,Attention gain,0.3796,0.1274
+betamaxu,Tuned tunnels,oracle,60,c50_eff,Effective c50,0.7562,0.264
+betamaxu,Tuned tunnels,oracle,60,mu,SF peak (pSFT),0.54,0.3596
+betamaxu,Tuned tunnels,oracle,60,sig,SF bandwidth,0.1908,0.4682
+betamaxu,Tuned tunnels,oracle,60,c50,c50 (raw),0.7184,0.3112
+betamaxu,Tuned tunnels,oracle,60,q,CRF exponent,0.6124,0.2206
+betamaxu,Tuned tunnels,oracle,60,k,Surround suppression,0.5533,0.3794
+betamaxu,Tuned tunnels,oracle,60,tau,Transient weight,0.7619,0.1349
+betamaxu,Tuned tunnels,oracle,60,a,Attention gain,0.5043,0.1102

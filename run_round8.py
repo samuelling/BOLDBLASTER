@@ -37,6 +37,7 @@ GAMES = {
     'sanctuary':  dict(tag='as', label='Animal Sanctuary', src='/home/claude/bbx/runs2d', near=None, fps3d=False, deg_px=24 / 208),
     # round 10: Betamax with the Diggings (tunnels under the lot and the dunes), same bot plus tunnel missions
     'betamaxt':   dict(tag='bt', label='Betamax + tunnels', src='/home/claude/bbx/runs_dig', near=60.0, fps3d=True),
+    'betamaxu':   dict(tag='bu', label='Tuned tunnels', src='/home/claude/bbx/runs_dig2', near=60.0, fps3d=True),
 }
 PRE = os.environ.get('GAME', 'betamax')
 GC = GAMES[PRE]

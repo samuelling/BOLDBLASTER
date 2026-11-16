@@ -25,12 +25,18 @@ window.BBX = (seed) => {
   const ev = { kills: [], bursts: [], cuts: [], deaths: [], junctions: [], stale: [], homing: [], figures: [], missions: [], digev: [], plan: G.dig.describe() };
   const digN = {};
   const D = G.dig, P = D.P, ek = (a, b) => (a < b ? a + ':' + b : b + ':' + a);
-  const ms = { phase: 'none', at: 0, hatch: null, home: null, known: new Set(), path: [], cur: -1, prev: -1, next: -1, goal: -1, trial: null, fig: null, figT: new Map(), stuck: 0, lastPos: null, pressUse: false, dark: false };
-  // shortest believed routes: the plan's links minus the cave-ins this soldier has run into
+  D.keepCaveIns = true;   // cave-ins stay down for the whole session, across the soldier's lives
+  const ms = { phase: 'none', at: 0, hatch: null, home: null, kind: 'ammo', exit: null, bel: new Map(), saw: new Map(), path: [], cur: -1, prev: -1, next: -1, goal: -1, trial: null, fig: null, figT: new Map(), stuck: 0, lastPos: null, pressUse: false, dark: false };
+  // what this soldier believes about each link: 1 = open. Running into a cave-in halves it, and the
+  // memory fades back toward open over a few minutes, so a caved-in corridor gets tried again.
+  const BOT_ALPHA = 0.5, FADE = 1 / 240;
+  const belief = (e) => { const b = ms.bel.get(e); if (!b) return 1; return 1 - (1 - b[0]) * Math.exp(-FADE * (st.t - b[1])); };
+  const cost = (a, b) => 1 + 20 * (1 - belief(ek(a, b)));
+  // shortest believed routes
   function dij(src) {
     const dist = new Map([[src, 0]]), q = [[0, src]];
     while (q.length) { q.sort((a, b) => a[0] - b[0]); const [d, a] = q.shift(); if (d > dist.get(a)) continue;
-      for (const b of P.adj.get(a)) { if (ms.known.has(ek(a, b))) continue; const nd = d + 1; if (nd < (dist.get(b) ?? 1e9)) { dist.set(b, nd); q.push([nd, b]); } } }
+      for (const b of P.adj.get(a)) { const nd = d + cost(a, b); if (nd < (dist.get(b) ?? 1e9)) { dist.set(b, nd); q.push([nd, b]); } } }
     return dist;
   }
   function trueDist(src) {
@@ -40,16 +46,19 @@ window.BBX = (seed) => {
   }
   function goalCell() {
     if (ms.trial) return ms.home.cell;
+    if (ms.kind === 'connector') return ms.exit.cell;
     if (!D.state.carrying) { const ds = dij(ms.cur); let b = -1, bd = 1e9; for (const c of P.crates) { const d = ds.get(c.cell) ?? 1e9; if (d < bd) { bd = d; b = c.cell; } } return b; }
     const ds = dij(ms.cur); let b = -1, bd = 1e9; for (const h of P.hatches) { if (h.kind !== 'line') continue; const d = ds.get(h.cell) ?? 1e9; if (d < bd) { bd = d; b = h.cell; } } return b;
   }
   function chooseNext() {   // at a cell centre: pick the next cell toward the goal (softmax over believed route lengths)
     ms.goal = goalCell(); if (ms.goal < 0 || ms.cur === ms.goal) return -1;
     const dg = dij(ms.goal), tg = trueDist(ms.goal);
-    let opts = P.adj.get(ms.cur).filter((b) => !ms.known.has(ek(ms.cur, b)));
+    // a heap you've just looked at is plainly there: don't walk back into it for a minute
+    let opts = P.adj.get(ms.cur).filter((b) => st.t - (ms.saw.get(ek(ms.cur, b)) ?? -1e9) > 60);
+    if (!opts.length) opts = P.adj.get(ms.cur).slice();
     if (!opts.length) return -1;
     if (opts.length > 1 && opts.includes(ms.prev)) opts = opts.filter((b) => b !== ms.prev);   // don't turn straight back unless it's a dead end
-    const L = opts.map((b) => 1 + (dg.get(b) ?? 99)), T = opts.map((b) => 1 + (tg.get(b) ?? 99));
+    const L = opts.map((b) => cost(ms.cur, b) + (dg.get(b) ?? 99)), T = opts.map((b) => 1 + (tg.get(b) ?? 99));
     const temp = ms.dark ? 1.6 : 0.35, w = L.map((l) => Math.exp(-(l - Math.min(...L)) / temp)), sw = w.reduce((a, b) => a + b, 0);
     let u = rnd() * sw, k = 0; for (; k < w.length - 1; k++) { u -= w[k]; if (u <= 0) break; }
     if (opts.length >= 2)
@@ -100,7 +109,7 @@ window.BBX = (seed) => {
       out.push([sc[0], sc[1], d, vis ? 1 : 0, i, S.actors[i].side === es ? 1 : 0]);
     }
     if (D.underground(p.pos.y)) for (const f of D.figs) {   // figures in the tunnels, standing (chest height)
-      if (f.down) continue; aim.set(f.x, 0.2 + 1.2, f.z); const d = eye.distanceTo(aim); if (d > 25) continue;
+      if (f.down || !f.active) continue; aim.set(f.x, 0.2 + 1.2, f.z); const d = eye.distanceTo(aim); if (d > 25) continue;
       const sc = screen(aim); if (!sc) continue;
       out.push([sc[0], sc[1], d, D.clear(p.pos.x, p.pos.z, f.x, f.z) ? 1 : 0, 1000 + f.id, 1]);
     }
@@ -114,9 +123,9 @@ window.BBX = (seed) => {
   }
 
   function endMission(why) {
-    if (ms.phase !== 'none') ev.missions.push([ms.t0, st.t, ms.hatch ? ms.hatch.id : -1, why]);
+    if (ms.phase !== 'none') ev.missions.push([ms.t0, st.t, ms.hatch ? ms.hatch.id : -1, why, ms.kind]);
     if (ms.trial) { ms.trial.push(st.t, p.pos.x, p.pos.z, why === 'home' ? 1 : 0); ev.homing.push(ms.trial); ms.trial = null; }
-    ms.phase = 'none'; ms.fig = null; ms.dark = false; st.anchor = p.pos.clone(); st.lookYaw = null; ms.at = st.t + 40 + rnd() * 60;
+    ms.phase = 'none'; ms.fig = null; ms.dark = false; st.anchor = p.pos.clone(); st.lookYaw = null; ms.at = st.t + 70 + rnd() * 70;
   }
   function steer(tx, tz, dt, speed) {   // turn toward a point and walk
     const yd = Math.atan2(-(tx - p.pos.x), -(tz - p.pos.z));
@@ -127,7 +136,8 @@ window.BBX = (seed) => {
   }
   function figureCheck(dt) {   // a figure ahead in the gloom: stop, look, decide
     if (ms.fig) {
-      const f = D.figs[ms.fig.id]; ms.fig.t += dt;
+      const f = D.figs.find((q) => q.id === ms.fig.id); ms.fig.t += dt;
+      if (!f) { ms.fig = null; inp.ads = false; return false; }
       const fx = f.x, fz = f.z; tmp.set(fx, 0.2 + 1.2, fz); eye.copy(cam.position);
       const yd = Math.atan2(-(fx - eye.x), -(fz - eye.z)), pd = Math.atan2(1.4 - eye.y, Math.hypot(fx - eye.x, fz - eye.z));
       const g = Math.min(1, dt * 8), sens = 0.0022 * (1 - p.ads * 0.32);
@@ -140,7 +150,7 @@ window.BBX = (seed) => {
       return true;
     }
     for (const f of D.figs) {
-      if (f.down || st.t - (ms.figT.get(f.id) ?? -1e9) < 60) continue;
+      if (f.down || !f.active || ms.figT.has(f.id)) continue;
       const d = Math.hypot(f.x - p.pos.x, f.z - p.pos.z); if (d > 13 || d < 1) continue;
       const ang = Math.abs(wrap(Math.atan2(-(f.x - p.pos.x), -(f.z - p.pos.z)) - p.yaw)); if (ang > 0.7) continue;
       if (!D.clear(p.pos.x, p.pos.z, f.x, f.z)) continue;
@@ -157,10 +167,13 @@ window.BBX = (seed) => {
     const under = D.underground(p.pos.y);
     if (D.state.climb) { inp.moveZ = 0; inp.moveX = 0; return true; }
     if (ms.phase === 'none') {
-      if (under) { ms.phase = 'route'; ms.t0 = st.t; ms.home = D.near(P.hatches, p.pos.x, p.pos.z, 99) || P.hatches[0]; ms.cur = D.cellAt(p.pos.x, p.pos.z); ms.next = -1; ms.prev = -1; return true; }
+      if (under) { ms.phase = 'route'; ms.t0 = st.t; ms.kind = 'ammo'; ms.home = D.near(P.hatches, p.pos.x, p.pos.z, 99) || P.hatches[0]; ms.cur = D.cellAt(p.pos.x, p.pos.z); ms.next = -1; ms.prev = -1; return true; }
       if (st.t < ms.at || st.tgt >= 0 && st.burst > 0) return false;
       const h = D.near(P.hatches, p.pos.x, p.pos.z, 75);
       if (!h || rnd() < 0.3) { ms.at = st.t + 30 + rnd() * 30; return false; }
+      // a short way through to another hatch (most trips), or an ammunition run
+      const hd = trueDist(h.cell), exits = P.hatches.filter((q) => q !== h && (hd.get(q.cell) ?? 99) >= 3 && (hd.get(q.cell) ?? 99) <= 8);
+      ms.kind = exits.length && rnd() < 0.5 ? 'connector' : 'ammo'; ms.exit = ms.kind === 'connector' ? exits[Math.floor(rnd() * exits.length)] : null;
       ms.phase = 'toHatch'; ms.hatch = h; ms.t0 = st.t; ms.stuck = 0; ms.lastPos = p.pos.clone(); st.tgt = -1; return true;
     }
     if (ms.phase === 'toHatch') {
@@ -176,19 +189,24 @@ window.BBX = (seed) => {
       else { if (st.t - ms.t0 > 60) endMission('lost'); inp.use = rnd() < 0.2; }
       return true;
     }
-    if (ms.phase === 'up') { if (!under) endMission(ms.trial ? 'home' : 'delivered'); return true; }
+    if (ms.phase === 'up') { if (!under) endMission(ms.trial ? 'home' : ms.kind === 'connector' ? 'through' : 'delivered'); return true; }
     // ---- underground
     if (!under) { endMission('surfaced'); return true; }
     if (ms.outbound && st.tick % 4 === 0) ms.outbound.push([st.t, p.pos.x, p.pos.z]);
     const zn = D.zoneAt(p.pos.x, p.pos.z), dark = D.zoneOn[zn] < 0.5;
     if (dark && !ms.trial) {   // the lights go: find your way back to the ladder you came down
       ms.trial = [st.t, p.pos.x, p.pos.z, ms.home.id, ms.home.x, ms.home.z, ms.outbound ? ms.outbound.slice(-400) : []];
-      ms.dark = true; ms.next = -1;
+      ms.trialZone = zn; ms.dark = true; ms.next = -1;
     }
-    if (ms.trial && !dark) {   // lights back before you reached the ladder: the trial ends where you are
+    if (ms.trial && D.zoneOn[ms.trialZone] > 0.5) {   // lights back before you reached the ladder: the trial ends where you are
       ms.trial.push(st.t, p.pos.x, p.pos.z, 2); ev.homing.push(ms.trial); ms.trial = null; ms.next = -1;
     }
     ms.dark = dark || !!ms.trial;
+    // a trip that drags on: give up and take the nearest way up
+    if (!ms.trial && ms.kind !== 'connector' && st.t - ms.t0 > 70) {
+      const ds = dij(ms.cur); let b = null, bd = 1e9; for (const h of P.hatches) { const d = ds.get(h.cell) ?? 1e9; if (d < bd) { bd = d; b = h; } }
+      if (b) { ms.kind = 'connector'; ms.exit = b; ms.next = -1; }
+    }
     if (!ms.trial && figureCheck(dt)) return true;
     const speed = ms.dark ? 0.45 : 0.85;
     if (ms.next < 0) {
@@ -197,7 +215,7 @@ window.BBX = (seed) => {
       // at the goal?
       const g = goalCell();
       if (g === ms.cur) {
-        if (ms.trial || D.state.carrying) {
+        if (ms.trial || D.state.carrying || ms.kind === 'connector') {
           const h = P.hatches.find((q) => q.cell === ms.cur);
           if (Math.hypot(h.x - p.pos.x, h.z - p.pos.z) > 1.1) { steer(h.x, h.z, dt, 0.4); return true; }
           inp.use = true; ms.phase = 'up'; return true;
@@ -209,7 +227,8 @@ window.BBX = (seed) => {
     // heading for the next cell: is the way caved in? (you see the heap a few metres off in the light)
     const [nx, nz] = D.cellXZ(ms.next), [cx1, cz1] = D.cellXZ(ms.cur), mx = (nx + cx1) / 2, mz = (nz + cz1) / 2;
     if (!D.linkOpen(ms.cur, ms.next) && Math.hypot(mx - p.pos.x, mz - p.pos.z) < (ms.dark ? 1.8 : 4.5)) {
-      ms.known.add(ek(ms.cur, ms.next)); ev.stale.push([st.t, ms.cur, ms.next, ms.dark ? 1 : 0]); ms.next = -1; return true;
+      const e = ek(ms.cur, ms.next); ms.bel.set(e, [belief(e) * (1 - BOT_ALPHA), st.t]); ms.saw.set(e, st.t);
+      ev.stale.push([st.t, ms.cur, ms.next, ms.dark ? 1 : 0]); ms.next = -1; return true;
     }
     if (Math.hypot(nx - p.pos.x, nz - p.pos.z) < 0.45) { ms.prev = ms.cur; ms.cur = ms.next; ms.next = -1; return true; }
     steer(nx, nz, dt, speed);
