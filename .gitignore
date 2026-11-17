@@ -5,4 +5,3 @@
 __pycache__/
 *.log
 figures/*.mp4
-halcyon/node_modules
