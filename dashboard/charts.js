@@ -572,3 +572,49 @@ dash.draw('r10pairs', (el) => {
     gg.append('text').attr('x', 9).style('font-size', 'var(--cds-font-size-caption)').text(gl);
   });
 });
+
+// ---------------------------------------------------------------- round 11: Halcyon against Betamax and the tuned tunnels (dot rows)
+dash.draw('r11dots', (el) => {
+  if (!BB.ready(el, ['round11'])) return;
+  el.replaceChildren();
+  const mins = 60;
+  const SRC = { bold: '', behaviour: ' · behaviour', agree: ' · agreement' };
+  const all = dash.data('round11').data.filter((r) => +r.minutes === mins && r.condition !== 'oracle' && r.value !== '' && r.value != null
+    && ['betamax', 'betamaxu', 'halcyon'].includes(r.game) && r.source !== 'agree');
+  const keys = [];
+  for (const r of all) { const k = `${r.part}|${r.model}|${r.measure}|${r.source}`; if (!keys.includes(k)) keys.push(k); }
+  const PO = Object.keys(BB11.PART); keys.sort((p1, p2) => PO.indexOf(p1.split('|')[0]) - PO.indexOf(p2.split('|')[0]));
+  const rowH = 26, top = 44, bottom = 30, gapH = 26;
+  const parts = [...new Set(keys.map((k) => k.split('|')[0]))];
+  const H = top + bottom + keys.length * rowH + parts.length * gapH;
+  const { s, w } = BB.svg(el, H, `Recovery on Betamax (open), the tuned tunnels (orange) and Halcyon (filled), ${mins} minutes, from BOLD unless marked behaviour`);
+  const lab = (k) => { const [pt, mo, me, src] = k.split('|'); const r = all.find((x) => x.part === pt && x.model === mo && x.measure === me); return r ? `${r.model_label}: ${r.measure_label}${SRC[src] || ''}` : me; };
+  const lw = Math.min(BB.textWidth(s, keys.map(lab)) + 14, w * 0.52);
+  const x = d3.scaleLinear().domain([-0.3, 1]).range([lw, w - 16]).clamp(true);
+  BB.grid(s.append('g'), x, x.ticks(5), top - 6, H - bottom + 4, false);
+  BB.styleAxis(s.append('g').attr('transform', `translate(0,${H - bottom + 4})`).call(d3.axisBottom(x).ticks(5).tickSizeOuter(0)));
+  s.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', top - 6).attr('y2', H - bottom + 4).style('stroke', 'var(--cds-chart-axis)');
+  const tip = BB.tip(el), cU = dash.colors[1], cH = BB11.color;
+  let yy = top, lastPart = null;
+  keys.forEach((k) => {
+    const [pt, mo, me, src] = k.split('|');
+    if (pt !== lastPart) { yy += gapH; s.append('text').attr('class', 'bb-lab').attr('x', 0).attr('y', yy - 8).style('font-weight', 600).text(BB11.PART[pt] || pt); lastPart = pt; }
+    const y = yy + rowH / 2; yy += rowH;
+    const get = (g) => { const r = all.find((q) => q.part === pt && q.model === mo && q.measure === me && q.source === src && q.game === g); return r ? +r.value : NaN; };
+    const a = get('betamax'), u = get('betamaxu'), h = get('halcyon');
+    s.append('text').attr('x', 0).attr('y', y).attr('dy', '0.32em').text(lab(k));
+    const best = Math.max(...[a, u].filter(isFinite), -Infinity);
+    if (isFinite(best) && isFinite(h)) s.append('line').attr('x1', x(best)).attr('x2', x(h)).attr('y1', y).attr('y2', y).style('stroke', h >= best ? cH : 'var(--color-fg-muted)').style('stroke-width', 2).style('opacity', 0.45);
+    const metric = (all.find((q) => q.part === pt && q.model === mo && q.measure === me) || {}).metric === 'phase' ? 'phase recovery' : 'Spearman r';
+    const dot = (v, name, fill, r0) => { if (!isFinite(v)) return;
+      s.append('circle').attr('cx', x(v)).attr('cy', y).attr('r', r0).style('fill', fill || 'var(--color-panel)').style('stroke', fill ? 'var(--color-panel)' : 'var(--color-fg-muted)').style('stroke-width', 1.5)
+        .on('pointermove', (evt) => tip.show(evt, [lab(k), name, `${metric} = ${BB.f2(v)}`, `${mins} min`])).on('pointerleave', () => tip.hide()); };
+    dot(a, 'Betamax', null, 5); dot(u, 'Tuned tunnels', cU, 5); dot(h, 'Halcyon', cH, 6);
+  });
+  const lg = s.append('g').attr('transform', `translate(${lw},${14})`);
+  [['Betamax', null], ['Tuned tunnels', cU], ['Halcyon', cH]].forEach(([gl, f], i) => {
+    const gg = lg.append('g').attr('transform', `translate(${i * 130},0)`);
+    gg.append('circle').attr('r', 4.5).attr('cy', -4).style('fill', f || 'var(--color-panel)').style('stroke', f ? 'none' : 'var(--color-fg-muted)').style('stroke-width', 1.5);
+    gg.append('text').attr('x', 9).style('font-size', 'var(--cds-font-size-caption)').text(gl);
+  });
+});

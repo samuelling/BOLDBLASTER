@@ -1,0 +1,15 @@
+parameter,source,spearman,bias,slope,edge_frac
+Call drift scale v,behaviour,0.957,-0.2725,0.772,0.05
+Call drift scale v,BOLD,-0.057,0.0326,0.009,0.425
+Call boundary a,behaviour,0.967,0.0967,0.83,0.05
+Call boundary a,BOLD,0.379,-0.1029,0.526,0.4
+Value learning rate,behaviour,0.911,0.0214,1.067,0.1
+Value learning rate,BOLD,0.083,0.06,0.178,0.475
+Place forgetting rate,BOLD,0.897,0.0019,1.205,0.075
+Stairwell learning rate,behaviour,0.575,-0.0035,0.745,0.15
+Stairwell learning rate,BOLD,0.081,-0.111,0.094,0.6
+Stairwell risk weight,behaviour,0.782,1.4404,0.948,0.25
+Map update rate,behaviour,0.633,0.0275,0.769,0.575
+Map update rate,BOLD,0.137,-0.1455,0.194,0.625
+Path-integration heading noise,behaviour,0.789,0.0011,0.868,0.275
+Path-integration heading noise,BOLD,0.241,0.0093,0.66,0.475

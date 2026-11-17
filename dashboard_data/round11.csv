@@ -1,0 +1,431 @@
+part,model,model_label,measure,measure_label,area,source,game,game_label,minutes,condition,value,metric
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamax,Betamax,30,realistic,0.6575,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamax,Betamax,30,realistic,0.3695,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamax,Betamax,30,realistic,0.1265,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamax,Betamax,30,realistic,0.3287,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamax,Betamax,30,realistic,0.1511,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamax,Betamax,30,realistic,0.534,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamax,Betamax,30,realistic,0.3138,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamax,Betamax,30,oracle,0.7177,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamax,Betamax,30,oracle,0.561,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamax,Betamax,30,oracle,0.2021,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamax,Betamax,30,oracle,0.4066,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamax,Betamax,30,oracle,0.3606,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamax,Betamax,30,oracle,0.5735,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamax,Betamax,30,oracle,0.3631,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamax,Betamax,60,realistic,0.6835,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamax,Betamax,60,realistic,0.4293,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamax,Betamax,60,realistic,0.2195,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamax,Betamax,60,realistic,0.4285,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamax,Betamax,60,realistic,0.2354,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamax,Betamax,60,realistic,0.6201,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamax,Betamax,60,realistic,0.4219,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamax,Betamax,60,oracle,0.8209,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamax,Betamax,60,oracle,0.6659,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamax,Betamax,60,oracle,0.3011,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamax,Betamax,60,oracle,0.58,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamax,Betamax,60,oracle,0.5357,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamax,Betamax,60,oracle,0.7049,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamax,Betamax,60,oracle,0.4753,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamaxt,Betamax + tunnels,30,realistic,0.4507,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamaxt,Betamax + tunnels,30,realistic,0.1362,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamaxt,Betamax + tunnels,30,realistic,0.1465,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamaxt,Betamax + tunnels,30,realistic,0.2479,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamaxt,Betamax + tunnels,30,realistic,0.1497,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamaxt,Betamax + tunnels,30,realistic,0.5655,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamaxt,Betamax + tunnels,30,realistic,0.3016,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamaxt,Betamax + tunnels,30,oracle,0.6058,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamaxt,Betamax + tunnels,30,oracle,0.4808,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamaxt,Betamax + tunnels,30,oracle,0.1276,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamaxt,Betamax + tunnels,30,oracle,0.3888,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamaxt,Betamax + tunnels,30,oracle,0.322,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamaxt,Betamax + tunnels,30,oracle,0.6104,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamaxt,Betamax + tunnels,30,oracle,0.3003,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamaxt,Betamax + tunnels,60,realistic,0.5739,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamaxt,Betamax + tunnels,60,realistic,0.1156,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamaxt,Betamax + tunnels,60,realistic,0.1563,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamaxt,Betamax + tunnels,60,realistic,0.2773,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamaxt,Betamax + tunnels,60,realistic,0.3341,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamaxt,Betamax + tunnels,60,realistic,0.5483,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamaxt,Betamax + tunnels,60,realistic,0.3516,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamaxt,Betamax + tunnels,60,oracle,0.7352,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamaxt,Betamax + tunnels,60,oracle,0.5204,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamaxt,Betamax + tunnels,60,oracle,0.1157,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamaxt,Betamax + tunnels,60,oracle,0.5168,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamaxt,Betamax + tunnels,60,oracle,0.4707,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamaxt,Betamax + tunnels,60,oracle,0.6816,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamaxt,Betamax + tunnels,60,oracle,0.3507,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamaxu,Tuned tunnels,30,realistic,0.5625,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamaxu,Tuned tunnels,30,realistic,0.2888,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamaxu,Tuned tunnels,30,realistic,0.0718,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamaxu,Tuned tunnels,30,realistic,0.277,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamaxu,Tuned tunnels,30,realistic,0.2213,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamaxu,Tuned tunnels,30,realistic,0.5921,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamaxu,Tuned tunnels,30,realistic,0.3023,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamaxu,Tuned tunnels,30,oracle,0.6511,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamaxu,Tuned tunnels,30,oracle,0.5602,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamaxu,Tuned tunnels,30,oracle,0.1595,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamaxu,Tuned tunnels,30,oracle,0.3884,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamaxu,Tuned tunnels,30,oracle,0.4368,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamaxu,Tuned tunnels,30,oracle,0.6413,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamaxu,Tuned tunnels,30,oracle,0.3484,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamaxu,Tuned tunnels,60,realistic,0.6659,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamaxu,Tuned tunnels,60,realistic,0.2238,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamaxu,Tuned tunnels,60,realistic,0.0759,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamaxu,Tuned tunnels,60,realistic,0.3847,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamaxu,Tuned tunnels,60,realistic,0.2547,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamaxu,Tuned tunnels,60,realistic,0.6476,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamaxu,Tuned tunnels,60,realistic,0.3796,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,betamaxu,Tuned tunnels,60,oracle,0.7562,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,betamaxu,Tuned tunnels,60,oracle,0.54,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,betamaxu,Tuned tunnels,60,oracle,0.1908,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,betamaxu,Tuned tunnels,60,oracle,0.6124,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,betamaxu,Tuned tunnels,60,oracle,0.5533,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,betamaxu,Tuned tunnels,60,oracle,0.7619,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,betamaxu,Tuned tunnels,60,oracle,0.5043,spearman
+other,Numerosity,Numerosity,mu,Preferred numerosity,Posterior parietal numerosity maps,bold,betamax,Betamax,30,realistic,0.9878,spearman
+other,Numerosity,Numerosity,sig,Numerosity tuning width,Posterior parietal numerosity maps,bold,betamax,Betamax,30,realistic,0.7963,spearman
+other,Self-motion,Self-motion,rotation_pref,Rotation direction preference,hMT+ / MST,bold,betamax,Betamax,30,realistic,0.8081,spearman
+other,Self-motion,Self-motion,expansion_frac,Expansion (forward) weight,hMT+ / MST,bold,betamax,Betamax,30,realistic,0.7993,spearman
+other,Striatal RPE,Striatal RPE,rpe_beta,Prediction-error beta,Ventral striatum,bold,betamax,Betamax,30,realistic,0.9307,spearman
+other,Numerosity,Numerosity,mu,Preferred numerosity,Posterior parietal numerosity maps,bold,betamaxt,Betamax + tunnels,30,realistic,0.9748,spearman
+other,Numerosity,Numerosity,sig,Numerosity tuning width,Posterior parietal numerosity maps,bold,betamaxt,Betamax + tunnels,30,realistic,0.6147,spearman
+other,Self-motion,Self-motion,rotation_pref,Rotation direction preference,hMT+ / MST,bold,betamaxt,Betamax + tunnels,30,realistic,0.9331,spearman
+other,Self-motion,Self-motion,expansion_frac,Expansion (forward) weight,hMT+ / MST,bold,betamaxt,Betamax + tunnels,30,realistic,0.8863,spearman
+other,Striatal RPE,Striatal RPE,rpe_beta,Prediction-error beta,Ventral striatum,bold,betamaxt,Betamax + tunnels,30,realistic,0.7875,spearman
+other,Numerosity,Numerosity,mu,Preferred numerosity,Posterior parietal numerosity maps,bold,betamaxu,Tuned tunnels,30,realistic,0.9826,spearman
+other,Numerosity,Numerosity,sig,Numerosity tuning width,Posterior parietal numerosity maps,bold,betamaxu,Tuned tunnels,30,realistic,0.6754,spearman
+other,Self-motion,Self-motion,rotation_pref,Rotation direction preference,hMT+ / MST,bold,betamaxu,Tuned tunnels,30,realistic,0.924,spearman
+other,Self-motion,Self-motion,expansion_frac,Expansion (forward) weight,hMT+ / MST,bold,betamaxu,Tuned tunnels,30,realistic,0.9267,spearman
+other,Striatal RPE,Striatal RPE,rpe_beta,Prediction-error beta,Ventral striatum,bold,betamaxu,Tuned tunnels,30,realistic,0.8894,spearman
+other,Numerosity,Numerosity,mu,Preferred numerosity,Posterior parietal numerosity maps,bold,betamax,Betamax,60,realistic,0.9918,spearman
+other,Numerosity,Numerosity,sig,Numerosity tuning width,Posterior parietal numerosity maps,bold,betamax,Betamax,60,realistic,0.8621,spearman
+other,Self-motion,Self-motion,rotation_pref,Rotation direction preference,hMT+ / MST,bold,betamax,Betamax,60,realistic,0.8743,spearman
+other,Self-motion,Self-motion,expansion_frac,Expansion (forward) weight,hMT+ / MST,bold,betamax,Betamax,60,realistic,0.9039,spearman
+other,Striatal RPE,Striatal RPE,rpe_beta,Prediction-error beta,Ventral striatum,bold,betamax,Betamax,60,realistic,0.962,spearman
+other,Numerosity,Numerosity,mu,Preferred numerosity,Posterior parietal numerosity maps,bold,betamaxt,Betamax + tunnels,60,realistic,0.988,spearman
+other,Numerosity,Numerosity,sig,Numerosity tuning width,Posterior parietal numerosity maps,bold,betamaxt,Betamax + tunnels,60,realistic,0.7289,spearman
+other,Self-motion,Self-motion,rotation_pref,Rotation direction preference,hMT+ / MST,bold,betamaxt,Betamax + tunnels,60,realistic,0.9657,spearman
+other,Self-motion,Self-motion,expansion_frac,Expansion (forward) weight,hMT+ / MST,bold,betamaxt,Betamax + tunnels,60,realistic,0.9371,spearman
+other,Striatal RPE,Striatal RPE,rpe_beta,Prediction-error beta,Ventral striatum,bold,betamaxt,Betamax + tunnels,60,realistic,0.848,spearman
+other,Numerosity,Numerosity,mu,Preferred numerosity,Posterior parietal numerosity maps,bold,betamaxu,Tuned tunnels,60,realistic,0.9916,spearman
+other,Numerosity,Numerosity,sig,Numerosity tuning width,Posterior parietal numerosity maps,bold,betamaxu,Tuned tunnels,60,realistic,0.8633,spearman
+other,Self-motion,Self-motion,rotation_pref,Rotation direction preference,hMT+ / MST,bold,betamaxu,Tuned tunnels,60,realistic,0.9515,spearman
+other,Self-motion,Self-motion,expansion_frac,Expansion (forward) weight,hMT+ / MST,bold,betamaxu,Tuned tunnels,60,realistic,0.9475,spearman
+other,Striatal RPE,Striatal RPE,rpe_beta,Prediction-error beta,Ventral striatum,bold,betamaxu,Tuned tunnels,60,realistic,0.9426,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamax,Betamax,30,oracle,0.4351,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamax,Betamax,30,oracle,0.1903,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamax,Betamax,30,oracle,0.5481,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamaxt,Betamax + tunnels,30,oracle,0.2666,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamaxt,Betamax + tunnels,30,oracle,0.1246,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamaxt,Betamax + tunnels,30,oracle,0.5274,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamaxu,Tuned tunnels,30,oracle,0.4317,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamaxu,Tuned tunnels,30,oracle,0.0928,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamaxu,Tuned tunnels,30,oracle,0.512,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamax,Betamax,30,realistic,0.2871,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamax,Betamax,30,realistic,0.1101,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamax,Betamax,30,realistic,0.4388,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamaxt,Betamax + tunnels,30,realistic,0.2687,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamaxt,Betamax + tunnels,30,realistic,0.0977,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamaxt,Betamax + tunnels,30,realistic,0.3354,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamaxu,Tuned tunnels,30,realistic,0.32,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamaxu,Tuned tunnels,30,realistic,0.1194,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamaxu,Tuned tunnels,30,realistic,0.3785,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamax,Betamax,60,oracle,0.5598,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamax,Betamax,60,oracle,0.2915,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamax,Betamax,60,oracle,0.6135,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamaxt,Betamax + tunnels,60,oracle,0.4926,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamaxt,Betamax + tunnels,60,oracle,0.2381,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamaxt,Betamax + tunnels,60,oracle,0.5526,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamaxu,Tuned tunnels,60,oracle,0.497,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamaxu,Tuned tunnels,60,oracle,0.188,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamaxu,Tuned tunnels,60,oracle,0.6142,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamax,Betamax,60,realistic,0.3635,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamax,Betamax,60,realistic,0.1871,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamax,Betamax,60,realistic,0.5312,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamaxt,Betamax + tunnels,60,realistic,0.374,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamaxt,Betamax + tunnels,60,realistic,0.1087,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamaxt,Betamax + tunnels,60,realistic,0.4988,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,betamaxu,Tuned tunnels,60,realistic,0.4491,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,betamaxu,Tuned tunnels,60,realistic,0.2165,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,betamaxu,Tuned tunnels,60,realistic,0.4513,spearman
+nav,grid_move,"Grid code, movement",phi,Grid orientation,Entorhinal cortex,bold,betamax,Betamax,30,realistic,0.4552,phase
+nav,grid_gaze,"Grid code, eye movements",phi,Grid orientation,Entorhinal cortex,bold,betamax,Betamax,30,realistic,0.2165,phase
+nav,facing,Facing direction,psi,Preferred direction,Retrosplenial / superior parietal,bold,betamax,Betamax,30,realistic,0.9575,phase
+nav,facing,Facing direction,kappa,Tuning sharpness,Retrosplenial / superior parietal,bold,betamax,Betamax,30,realistic,0.3692,spearman
+nav,goal,Distance to goal,w,Path vs Euclidean weight,Hippocampus,bold,betamax,Betamax,30,realistic,,spearman
+nav,boundary,Boundary distance,d,Preferred boundary distance,Subiculum / entorhinal,bold,betamax,Betamax,30,realistic,,spearman
+nav,evbound,Event boundaries,b,Boundary response gain,Hippocampus,bold,betamax,Betamax,30,realistic,0.3936,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,betamax,Betamax,30,realistic,0.939,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,betamax,Betamax,30,realistic,-0.0386,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,betamax,Betamax,30,realistic,0.014,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,betamax,Betamax,30,realistic,0.9818,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,betamax,Betamax,30,realistic,0.2026,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,betamax,Betamax,30,realistic,0.1795,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,behaviour,betamax,Betamax,30,realistic,0.9399,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,bold,betamax,Betamax,30,realistic,0.3954,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,agree,betamax,Betamax,30,realistic,0.3703,spearman
+cog,novelty,Place familiarity,e,Encoding strength,Hippocampus,bold,betamax,Betamax,30,realistic,0.6718,spearman
+cog,novelty,Place familiarity,f,Forgetting rate,Hippocampus,bold,betamax,Betamax,30,realistic,0.3624,spearman
+nav,grid_move,"Grid code, movement",phi,Grid orientation,Entorhinal cortex,bold,betamax,Betamax,60,realistic,0.5223,phase
+nav,grid_gaze,"Grid code, eye movements",phi,Grid orientation,Entorhinal cortex,bold,betamax,Betamax,60,realistic,0.2228,phase
+nav,facing,Facing direction,psi,Preferred direction,Retrosplenial / superior parietal,bold,betamax,Betamax,60,realistic,0.9817,phase
+nav,facing,Facing direction,kappa,Tuning sharpness,Retrosplenial / superior parietal,bold,betamax,Betamax,60,realistic,0.623,spearman
+nav,goal,Distance to goal,w,Path vs Euclidean weight,Hippocampus,bold,betamax,Betamax,60,realistic,,spearman
+nav,boundary,Boundary distance,d,Preferred boundary distance,Subiculum / entorhinal,bold,betamax,Betamax,60,realistic,,spearman
+nav,evbound,Event boundaries,b,Boundary response gain,Hippocampus,bold,betamax,Betamax,60,realistic,0.5771,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,betamax,Betamax,60,realistic,0.9758,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,betamax,Betamax,60,realistic,0.0584,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,betamax,Betamax,60,realistic,0.0505,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,betamax,Betamax,60,realistic,0.9878,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,betamax,Betamax,60,realistic,0.4582,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,betamax,Betamax,60,realistic,0.4793,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,behaviour,betamax,Betamax,60,realistic,0.9747,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,bold,betamax,Betamax,60,realistic,0.4239,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,agree,betamax,Betamax,60,realistic,0.4413,spearman
+cog,novelty,Place familiarity,e,Encoding strength,Hippocampus,bold,betamax,Betamax,60,realistic,0.4539,spearman
+cog,novelty,Place familiarity,f,Forgetting rate,Hippocampus,bold,betamax,Betamax,60,realistic,0.658,spearman
+nav,grid_move,"Grid code, movement",phi,Grid orientation,Entorhinal cortex,bold,betamaxt,Betamax + tunnels,30,realistic,0.3788,phase
+nav,grid_gaze,"Grid code, eye movements",phi,Grid orientation,Entorhinal cortex,bold,betamaxt,Betamax + tunnels,30,realistic,0.1763,phase
+nav,facing,Facing direction,psi,Preferred direction,Retrosplenial / superior parietal,bold,betamaxt,Betamax + tunnels,30,realistic,0.9503,phase
+nav,facing,Facing direction,kappa,Tuning sharpness,Retrosplenial / superior parietal,bold,betamaxt,Betamax + tunnels,30,realistic,0.3658,spearman
+nav,goal,Distance to goal,w,Path vs Euclidean weight,Hippocampus,bold,betamaxt,Betamax + tunnels,30,realistic,0.9066,spearman
+nav,boundary,Boundary distance,d,Preferred boundary distance,Subiculum / entorhinal,bold,betamaxt,Betamax + tunnels,30,realistic,0.5996,spearman
+nav,evbound,Event boundaries,b,Boundary response gain,Hippocampus,bold,betamaxt,Betamax + tunnels,30,realistic,0.4705,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,betamaxt,Betamax + tunnels,30,realistic,0.9512,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,betamaxt,Betamax + tunnels,30,realistic,0.3714,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,betamaxt,Betamax + tunnels,30,realistic,0.3095,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,betamaxt,Betamax + tunnels,30,realistic,0.9649,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,betamaxt,Betamax + tunnels,30,realistic,0.3907,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,betamaxt,Betamax + tunnels,30,realistic,0.3496,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,behaviour,betamaxt,Betamax + tunnels,30,realistic,0.9242,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,bold,betamaxt,Betamax + tunnels,30,realistic,-0.0787,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,agree,betamaxt,Betamax + tunnels,30,realistic,-0.0682,spearman
+cog,novelty,Place familiarity,e,Encoding strength,Hippocampus,bold,betamaxt,Betamax + tunnels,30,realistic,0.2629,spearman
+cog,novelty,Place familiarity,f,Forgetting rate,Hippocampus,bold,betamaxt,Betamax + tunnels,30,realistic,0.5789,spearman
+nav,grid_move,"Grid code, movement",phi,Grid orientation,Entorhinal cortex,bold,betamaxt,Betamax + tunnels,60,realistic,0.4911,phase
+nav,grid_gaze,"Grid code, eye movements",phi,Grid orientation,Entorhinal cortex,bold,betamaxt,Betamax + tunnels,60,realistic,0.2643,phase
+nav,facing,Facing direction,psi,Preferred direction,Retrosplenial / superior parietal,bold,betamaxt,Betamax + tunnels,60,realistic,0.9805,phase
+nav,facing,Facing direction,kappa,Tuning sharpness,Retrosplenial / superior parietal,bold,betamaxt,Betamax + tunnels,60,realistic,0.5647,spearman
+nav,goal,Distance to goal,w,Path vs Euclidean weight,Hippocampus,bold,betamaxt,Betamax + tunnels,60,realistic,0.9363,spearman
+nav,boundary,Boundary distance,d,Preferred boundary distance,Subiculum / entorhinal,bold,betamaxt,Betamax + tunnels,60,realistic,0.7341,spearman
+nav,evbound,Event boundaries,b,Boundary response gain,Hippocampus,bold,betamaxt,Betamax + tunnels,60,realistic,0.5928,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,betamaxt,Betamax + tunnels,60,realistic,0.9493,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,betamaxt,Betamax + tunnels,60,realistic,0.2694,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,betamaxt,Betamax + tunnels,60,realistic,0.3226,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,betamaxt,Betamax + tunnels,60,realistic,0.985,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,betamaxt,Betamax + tunnels,60,realistic,0.1168,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,betamaxt,Betamax + tunnels,60,realistic,0.1522,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,behaviour,betamaxt,Betamax + tunnels,60,realistic,0.9615,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,bold,betamaxt,Betamax + tunnels,60,realistic,0.1943,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,agree,betamaxt,Betamax + tunnels,60,realistic,0.1624,spearman
+cog,novelty,Place familiarity,e,Encoding strength,Hippocampus,bold,betamaxt,Betamax + tunnels,60,realistic,0.5182,spearman
+cog,novelty,Place familiarity,f,Forgetting rate,Hippocampus,bold,betamaxt,Betamax + tunnels,60,realistic,0.7028,spearman
+nav,grid_move,"Grid code, movement",phi,Grid orientation,Entorhinal cortex,bold,betamaxu,Tuned tunnels,30,realistic,0.5529,phase
+nav,grid_gaze,"Grid code, eye movements",phi,Grid orientation,Entorhinal cortex,bold,betamaxu,Tuned tunnels,30,realistic,0.1125,phase
+nav,facing,Facing direction,psi,Preferred direction,Retrosplenial / superior parietal,bold,betamaxu,Tuned tunnels,30,realistic,0.9672,phase
+nav,facing,Facing direction,kappa,Tuning sharpness,Retrosplenial / superior parietal,bold,betamaxu,Tuned tunnels,30,realistic,0.5811,spearman
+nav,goal,Distance to goal,w,Path vs Euclidean weight,Hippocampus,bold,betamaxu,Tuned tunnels,30,realistic,0.7418,spearman
+nav,boundary,Boundary distance,d,Preferred boundary distance,Subiculum / entorhinal,bold,betamaxu,Tuned tunnels,30,realistic,0.57,spearman
+nav,evbound,Event boundaries,b,Boundary response gain,Hippocampus,bold,betamaxu,Tuned tunnels,30,realistic,0.4941,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,betamaxu,Tuned tunnels,30,realistic,0.9816,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,betamaxu,Tuned tunnels,30,realistic,0.1486,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,betamaxu,Tuned tunnels,30,realistic,0.1718,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,betamaxu,Tuned tunnels,30,realistic,0.9805,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,betamaxu,Tuned tunnels,30,realistic,0.2648,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,betamaxu,Tuned tunnels,30,realistic,0.2981,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,behaviour,betamaxu,Tuned tunnels,30,realistic,0.9429,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,bold,betamaxu,Tuned tunnels,30,realistic,0.0775,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,agree,betamaxu,Tuned tunnels,30,realistic,0.0754,spearman
+cog,novelty,Place familiarity,e,Encoding strength,Hippocampus,bold,betamaxu,Tuned tunnels,30,realistic,0.2884,spearman
+cog,novelty,Place familiarity,f,Forgetting rate,Hippocampus,bold,betamaxu,Tuned tunnels,30,realistic,0.1209,spearman
+nav,grid_move,"Grid code, movement",phi,Grid orientation,Entorhinal cortex,bold,betamaxu,Tuned tunnels,60,realistic,0.6095,phase
+nav,grid_gaze,"Grid code, eye movements",phi,Grid orientation,Entorhinal cortex,bold,betamaxu,Tuned tunnels,60,realistic,0.1424,phase
+nav,facing,Facing direction,psi,Preferred direction,Retrosplenial / superior parietal,bold,betamaxu,Tuned tunnels,60,realistic,0.9774,phase
+nav,facing,Facing direction,kappa,Tuning sharpness,Retrosplenial / superior parietal,bold,betamaxu,Tuned tunnels,60,realistic,0.6962,spearman
+nav,goal,Distance to goal,w,Path vs Euclidean weight,Hippocampus,bold,betamaxu,Tuned tunnels,60,realistic,0.8532,spearman
+nav,boundary,Boundary distance,d,Preferred boundary distance,Subiculum / entorhinal,bold,betamaxu,Tuned tunnels,60,realistic,0.6285,spearman
+nav,evbound,Event boundaries,b,Boundary response gain,Hippocampus,bold,betamaxu,Tuned tunnels,60,realistic,0.5006,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,betamaxu,Tuned tunnels,60,realistic,0.964,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,betamaxu,Tuned tunnels,60,realistic,0.0563,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,betamaxu,Tuned tunnels,60,realistic,0.0485,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,betamaxu,Tuned tunnels,60,realistic,0.9841,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,betamaxu,Tuned tunnels,60,realistic,0.2862,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,betamaxu,Tuned tunnels,60,realistic,0.2894,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,behaviour,betamaxu,Tuned tunnels,60,realistic,0.9659,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,bold,betamaxu,Tuned tunnels,60,realistic,0.2264,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,agree,betamaxu,Tuned tunnels,60,realistic,0.2047,spearman
+cog,novelty,Place familiarity,e,Encoding strength,Hippocampus,bold,betamaxu,Tuned tunnels,60,realistic,0.5016,spearman
+cog,novelty,Place familiarity,f,Forgetting rate,Hippocampus,bold,betamaxu,Tuned tunnels,60,realistic,0.795,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,betamaxt,Betamax + tunnels,30,realistic,0.7422,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,betamaxt,Betamax + tunnels,30,realistic,0.2213,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,betamaxt,Betamax + tunnels,30,realistic,0.115,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,betamaxt,Betamax + tunnels,30,realistic,0.9008,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,betamaxt,Betamax + tunnels,30,realistic,-0.0077,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,betamaxt,Betamax + tunnels,30,realistic,0.095,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,behaviour,betamaxt,Betamax + tunnels,30,realistic,0.7851,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,bold,betamaxt,Betamax + tunnels,30,realistic,0.2265,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,agree,betamaxt,Betamax + tunnels,30,realistic,0.1387,spearman
+new,pathint,Path integration,gd,Distance gain,Entorhinal cortex / hippocampus,behaviour,betamaxt,Betamax + tunnels,30,realistic,0.7818,spearman
+new,pathint,Path integration,la,Leak,Entorhinal cortex / hippocampus,behaviour,betamaxt,Betamax + tunnels,30,realistic,0.8916,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,behaviour,betamaxt,Betamax + tunnels,30,realistic,0.2501,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,bold,betamaxt,Betamax + tunnels,30,realistic,-0.0412,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,agree,betamaxt,Betamax + tunnels,30,realistic,0.2023,spearman
+new,mapupd,Map updating,tau,Route-choice temperature,Hippocampus,behaviour,betamaxt,Betamax + tunnels,30,realistic,0.9451,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,betamaxt,Betamax + tunnels,60,realistic,0.8518,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,betamaxt,Betamax + tunnels,60,realistic,-0.1268,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,betamaxt,Betamax + tunnels,60,realistic,-0.1327,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,betamaxt,Betamax + tunnels,60,realistic,0.848,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,betamaxt,Betamax + tunnels,60,realistic,0.0799,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,betamaxt,Betamax + tunnels,60,realistic,-0.1602,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,behaviour,betamaxt,Betamax + tunnels,60,realistic,0.8877,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,bold,betamaxt,Betamax + tunnels,60,realistic,0.4263,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,agree,betamaxt,Betamax + tunnels,60,realistic,0.302,spearman
+new,pathint,Path integration,gd,Distance gain,Entorhinal cortex / hippocampus,behaviour,betamaxt,Betamax + tunnels,60,realistic,0.7135,spearman
+new,pathint,Path integration,la,Leak,Entorhinal cortex / hippocampus,behaviour,betamaxt,Betamax + tunnels,60,realistic,0.8632,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,behaviour,betamaxt,Betamax + tunnels,60,realistic,0.5233,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,bold,betamaxt,Betamax + tunnels,60,realistic,-0.1133,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,agree,betamaxt,Betamax + tunnels,60,realistic,0.1201,spearman
+new,mapupd,Map updating,tau,Route-choice temperature,Hippocampus,behaviour,betamaxt,Betamax + tunnels,60,realistic,0.9688,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,betamaxu,Tuned tunnels,30,realistic,0.6326,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,betamaxu,Tuned tunnels,30,realistic,-0.0226,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,betamaxu,Tuned tunnels,30,realistic,-0.0305,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,betamaxu,Tuned tunnels,30,realistic,0.7409,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,betamaxu,Tuned tunnels,30,realistic,-0.01,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,betamaxu,Tuned tunnels,30,realistic,-0.1224,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,behaviour,betamaxu,Tuned tunnels,30,realistic,0.8352,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,bold,betamaxu,Tuned tunnels,30,realistic,0.1799,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,agree,betamaxu,Tuned tunnels,30,realistic,0.2822,spearman
+new,pathint,Path integration,gd,Distance gain,Entorhinal cortex / hippocampus,behaviour,betamaxu,Tuned tunnels,30,realistic,0.4907,spearman
+new,pathint,Path integration,la,Leak,Entorhinal cortex / hippocampus,behaviour,betamaxu,Tuned tunnels,30,realistic,0.7841,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,behaviour,betamaxu,Tuned tunnels,30,realistic,0.1293,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,bold,betamaxu,Tuned tunnels,30,realistic,-0.0833,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,agree,betamaxu,Tuned tunnels,30,realistic,0.1135,spearman
+new,mapupd,Map updating,tau,Route-choice temperature,Hippocampus,behaviour,betamaxu,Tuned tunnels,30,realistic,0.9212,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,betamaxu,Tuned tunnels,60,realistic,0.7786,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,betamaxu,Tuned tunnels,60,realistic,0.1632,spearman
+new,ddm_id,Drift diffusion (friend or foe),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,betamaxu,Tuned tunnels,60,realistic,-0.017,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,betamaxu,Tuned tunnels,60,realistic,0.8105,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,betamaxu,Tuned tunnels,60,realistic,-0.0004,spearman
+new,ddm_id,Drift diffusion (friend or foe),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,betamaxu,Tuned tunnels,60,realistic,0.1799,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,behaviour,betamaxu,Tuned tunnels,60,realistic,0.8158,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,bold,betamaxu,Tuned tunnels,60,realistic,0.5265,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,agree,betamaxu,Tuned tunnels,60,realistic,0.4469,spearman
+new,pathint,Path integration,gd,Distance gain,Entorhinal cortex / hippocampus,behaviour,betamaxu,Tuned tunnels,60,realistic,0.4727,spearman
+new,pathint,Path integration,la,Leak,Entorhinal cortex / hippocampus,behaviour,betamaxu,Tuned tunnels,60,realistic,0.8523,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,behaviour,betamaxu,Tuned tunnels,60,realistic,0.6274,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,bold,betamaxu,Tuned tunnels,60,realistic,0.0439,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,agree,betamaxu,Tuned tunnels,60,realistic,0.0135,spearman
+new,mapupd,Map updating,tau,Route-choice temperature,Hippocampus,behaviour,betamaxu,Tuned tunnels,60,realistic,0.9609,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,halcyon,Halcyon,30,realistic,0.2438,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,halcyon,Halcyon,30,realistic,0.3938,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,halcyon,Halcyon,30,realistic,0.1517,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,halcyon,Halcyon,30,realistic,0.1023,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,halcyon,Halcyon,30,realistic,0.1715,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,halcyon,Halcyon,30,realistic,0.3924,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,halcyon,Halcyon,30,realistic,0.1236,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,halcyon,Halcyon,30,oracle,0.3772,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,halcyon,Halcyon,30,oracle,0.4504,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,halcyon,Halcyon,30,oracle,0.0615,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,halcyon,Halcyon,30,oracle,0.2156,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,halcyon,Halcyon,30,oracle,0.3031,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,halcyon,Halcyon,30,oracle,0.4526,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,halcyon,Halcyon,30,oracle,0.1688,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,halcyon,Halcyon,60,realistic,0.4821,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,halcyon,Halcyon,60,realistic,0.4576,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,halcyon,Halcyon,60,realistic,0.2085,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,halcyon,Halcyon,60,realistic,0.3876,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,halcyon,Halcyon,60,realistic,0.3309,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,halcyon,Halcyon,60,realistic,0.5925,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,halcyon,Halcyon,60,realistic,0.2745,spearman
+vision,v1,V1 tuning,c50_eff,Effective c50,V1,bold,halcyon,Halcyon,60,oracle,0.642,spearman
+vision,v1,V1 tuning,mu,SF peak (pSFT),V1,bold,halcyon,Halcyon,60,oracle,0.5255,spearman
+vision,v1,V1 tuning,sig,SF bandwidth,V1,bold,halcyon,Halcyon,60,oracle,0.2352,spearman
+vision,v1,V1 tuning,q,CRF exponent,V1,bold,halcyon,Halcyon,60,oracle,0.5129,spearman
+vision,v1,V1 tuning,k,Surround suppression,V1,bold,halcyon,Halcyon,60,oracle,0.5965,spearman
+vision,v1,V1 tuning,tau,Transient weight,V1,bold,halcyon,Halcyon,60,oracle,0.7503,spearman
+vision,v1,V1 tuning,a,Attention gain,V1,bold,halcyon,Halcyon,60,oracle,0.3269,spearman
+other,Numerosity,Numerosity,mu,Preferred numerosity,Posterior parietal numerosity maps,bold,halcyon,Halcyon,30,realistic,0.9287,spearman
+other,Numerosity,Numerosity,sig,Numerosity tuning width,Posterior parietal numerosity maps,bold,halcyon,Halcyon,30,realistic,0.4696,spearman
+other,Self-motion,Self-motion,rotation_pref,Rotation direction preference,hMT+ / MST,bold,halcyon,Halcyon,30,realistic,0.9002,spearman
+other,Self-motion,Self-motion,expansion_frac,Expansion (forward) weight,hMT+ / MST,bold,halcyon,Halcyon,30,realistic,0.8262,spearman
+other,Striatal RPE,Striatal RPE,rpe_beta,Prediction-error beta,Ventral striatum,bold,halcyon,Halcyon,30,realistic,0.831,spearman
+other,Numerosity,Numerosity,mu,Preferred numerosity,Posterior parietal numerosity maps,bold,halcyon,Halcyon,60,realistic,0.9506,spearman
+other,Numerosity,Numerosity,sig,Numerosity tuning width,Posterior parietal numerosity maps,bold,halcyon,Halcyon,60,realistic,0.702,spearman
+other,Self-motion,Self-motion,rotation_pref,Rotation direction preference,hMT+ / MST,bold,halcyon,Halcyon,60,realistic,0.9079,spearman
+other,Self-motion,Self-motion,expansion_frac,Expansion (forward) weight,hMT+ / MST,bold,halcyon,Halcyon,60,realistic,0.907,spearman
+other,Striatal RPE,Striatal RPE,rpe_beta,Prediction-error beta,Ventral striatum,bold,halcyon,Halcyon,60,realistic,0.888,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,halcyon,Halcyon,30,oracle,0.3251,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,halcyon,Halcyon,30,oracle,0.176,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,halcyon,Halcyon,30,oracle,0.4232,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,halcyon,Halcyon,30,realistic,0.3319,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,halcyon,Halcyon,30,realistic,0.1151,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,halcyon,Halcyon,30,realistic,0.2811,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,halcyon,Halcyon,60,oracle,0.504,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,halcyon,Halcyon,60,oracle,0.2484,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,halcyon,Halcyon,60,oracle,0.5763,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taus,Sustained time constant,V1-V3,bold,halcyon,Halcyon,60,realistic,0.393,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),taut,Transient time constant,V1-V3,bold,halcyon,Halcyon,60,realistic,0.1501,spearman
+other,Spatiotemporal (CST),Spatiotemporal (CST),ws,Sustained-channel weight,V1-V3,bold,halcyon,Halcyon,60,realistic,0.4668,spearman
+nav,grid_move,"Grid code, movement",phi,Grid orientation,Entorhinal cortex,bold,halcyon,Halcyon,30,realistic,0.5541,phase
+nav,grid_gaze,"Grid code, eye movements",phi,Grid orientation,Entorhinal cortex,bold,halcyon,Halcyon,30,realistic,0.158,phase
+nav,facing,Facing direction,psi,Preferred direction,Retrosplenial / superior parietal,bold,halcyon,Halcyon,30,realistic,0.9816,phase
+nav,facing,Facing direction,kappa,Tuning sharpness,Retrosplenial / superior parietal,bold,halcyon,Halcyon,30,realistic,0.4578,spearman
+nav,goal,Distance to goal,w,Path vs Euclidean weight,Hippocampus,bold,halcyon,Halcyon,30,realistic,0.822,spearman
+nav,boundary,Boundary distance,d,Preferred boundary distance,Subiculum / entorhinal,bold,halcyon,Halcyon,30,realistic,0.9344,spearman
+nav,evbound,Event boundaries,b,Boundary response gain,Hippocampus,bold,halcyon,Halcyon,30,realistic,0.5264,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,halcyon,Halcyon,30,realistic,0.861,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,halcyon,Halcyon,30,realistic,0.0431,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,halcyon,Halcyon,30,realistic,0.062,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,halcyon,Halcyon,30,realistic,0.942,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,halcyon,Halcyon,30,realistic,0.1879,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,halcyon,Halcyon,30,realistic,0.1029,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,behaviour,halcyon,Halcyon,30,realistic,0.88,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,bold,halcyon,Halcyon,30,realistic,0.1112,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,agree,halcyon,Halcyon,30,realistic,0.0504,spearman
+cog,novelty,Place familiarity,e,Encoding strength,Hippocampus,bold,halcyon,Halcyon,30,realistic,0.9028,spearman
+cog,novelty,Place familiarity,f,Forgetting rate,Hippocampus,bold,halcyon,Halcyon,30,realistic,0.8679,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,behaviour,halcyon,Halcyon,30,realistic,0.8336,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,bold,halcyon,Halcyon,30,realistic,0.4604,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,agree,halcyon,Halcyon,30,realistic,0.4096,spearman
+new,pathint,Path integration,gd,Distance gain,Entorhinal cortex / hippocampus,behaviour,halcyon,Halcyon,30,realistic,0.8393,spearman
+new,pathint,Path integration,la,Leak,Entorhinal cortex / hippocampus,behaviour,halcyon,Halcyon,30,realistic,0.7073,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,behaviour,halcyon,Halcyon,30,realistic,0.3655,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,bold,halcyon,Halcyon,30,realistic,0.0929,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,agree,halcyon,Halcyon,30,realistic,0.0478,spearman
+new,mapupd,Map updating,tau,Route-choice temperature,Hippocampus,behaviour,halcyon,Halcyon,30,realistic,0.9545,spearman
+new,bandit,Stairwell bandit,alpha,Learning rate,Ventral striatum,behaviour,halcyon,Halcyon,30,realistic,0.532,spearman
+new,bandit,Stairwell bandit,alpha,Learning rate,Ventral striatum,bold,halcyon,Halcyon,30,realistic,0.1084,spearman
+new,bandit,Stairwell bandit,alpha,Learning rate,Ventral striatum,agree,halcyon,Halcyon,30,realistic,-0.097,spearman
+new,bandit,Stairwell bandit,lam,Risk weight,Ventral striatum,behaviour,halcyon,Halcyon,30,realistic,0.1638,spearman
+nav,grid_move,"Grid code, movement",phi,Grid orientation,Entorhinal cortex,bold,halcyon,Halcyon,60,realistic,0.6537,phase
+nav,grid_gaze,"Grid code, eye movements",phi,Grid orientation,Entorhinal cortex,bold,halcyon,Halcyon,60,realistic,0.1779,phase
+nav,facing,Facing direction,psi,Preferred direction,Retrosplenial / superior parietal,bold,halcyon,Halcyon,60,realistic,0.988,phase
+nav,facing,Facing direction,kappa,Tuning sharpness,Retrosplenial / superior parietal,bold,halcyon,Halcyon,60,realistic,0.5927,spearman
+nav,goal,Distance to goal,w,Path vs Euclidean weight,Hippocampus,bold,halcyon,Halcyon,60,realistic,0.8995,spearman
+nav,boundary,Boundary distance,d,Preferred boundary distance,Subiculum / entorhinal,bold,halcyon,Halcyon,60,realistic,0.9691,spearman
+nav,evbound,Event boundaries,b,Boundary response gain,Hippocampus,bold,halcyon,Halcyon,60,realistic,0.6303,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,behaviour,halcyon,Halcyon,60,realistic,0.9568,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,bold,halcyon,Halcyon,60,realistic,-0.0571,spearman
+cog,ddm,Drift diffusion (firefight),v,Drift scale v,Pre-SMA / intraparietal sulcus,agree,halcyon,Halcyon,60,realistic,-0.0472,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,behaviour,halcyon,Halcyon,60,realistic,0.967,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,bold,halcyon,Halcyon,60,realistic,0.3793,spearman
+cog,ddm,Drift diffusion (firefight),a,Boundary a,Pre-SMA / intraparietal sulcus,agree,halcyon,Halcyon,60,realistic,0.3823,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,behaviour,halcyon,Halcyon,60,realistic,0.9108,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,bold,halcyon,Halcyon,60,realistic,0.0835,spearman
+cog,rl,Value learning,alpha,Learning rate,Ventral striatum,agree,halcyon,Halcyon,60,realistic,0.1377,spearman
+cog,novelty,Place familiarity,e,Encoding strength,Hippocampus,bold,halcyon,Halcyon,60,realistic,0.8681,spearman
+cog,novelty,Place familiarity,f,Forgetting rate,Hippocampus,bold,halcyon,Halcyon,60,realistic,0.8966,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,behaviour,halcyon,Halcyon,60,realistic,0.7889,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,bold,halcyon,Halcyon,60,realistic,0.2415,spearman
+new,pathint,Path integration,sh,Heading noise,Entorhinal cortex / hippocampus,agree,halcyon,Halcyon,60,realistic,0.0875,spearman
+new,pathint,Path integration,gd,Distance gain,Entorhinal cortex / hippocampus,behaviour,halcyon,Halcyon,60,realistic,0.8191,spearman
+new,pathint,Path integration,la,Leak,Entorhinal cortex / hippocampus,behaviour,halcyon,Halcyon,60,realistic,0.8855,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,behaviour,halcyon,Halcyon,60,realistic,0.6326,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,bold,halcyon,Halcyon,60,realistic,0.1369,spearman
+new,mapupd,Map updating,alpha,Update rate,Hippocampus,agree,halcyon,Halcyon,60,realistic,-0.0228,spearman
+new,mapupd,Map updating,tau,Route-choice temperature,Hippocampus,behaviour,halcyon,Halcyon,60,realistic,0.9482,spearman
+new,bandit,Stairwell bandit,alpha,Learning rate,Ventral striatum,behaviour,halcyon,Halcyon,60,realistic,0.5752,spearman
+new,bandit,Stairwell bandit,alpha,Learning rate,Ventral striatum,bold,halcyon,Halcyon,60,realistic,0.081,spearman
+new,bandit,Stairwell bandit,alpha,Learning rate,Ventral striatum,agree,halcyon,Halcyon,60,realistic,-0.2628,spearman
+new,bandit,Stairwell bandit,lam,Risk weight,Ventral striatum,behaviour,halcyon,Halcyon,60,realistic,0.7819,spearman

@@ -457,5 +457,39 @@ is met about once.
 
 Next: shorter, denser tunnel trips (MECHANICS.md). Results JSON: `results/round10_*.json`.
 
+## Round 11: a game built for the models (Halcyon)
+
+Instead of adding puzzles to an existing game, a new first-person shooter was built from scratch
+around the models: [samuelling/Halcyon](https://github.com/samuelling/Halcyon), a derelict seaside
+hotel held by a gang, three floors around an atrium, CC0 Poly Haven materials and props, three.js.
+You find guests and walk them out. The mechanics map onto the models (Halcyon's DESIGN.md):
+shoot-or-hold calls on people in the corridor with graded evidence (drift diffusion, value
+learning, numerosity), stairwells whose ambush risk drifts (a restless bandit, a new model here),
+security doors the gang opens and shuts (map updating), blackouts after a pickup (path
+integration), and an atrium, ballroom and terrace for the grid code. The bot (`harness/bot.js` in
+Halcyon) plays 12 x 5 min; `run_round11.py` fits the navigation, cognitive and puzzle models,
+`GAME=halcyon python run_round8.py` the visual ones, `export_round11.py` and `diag_round11.py` write
+the tables and the planted-vs-fitted figure.
+
+Results at 60 min (Betamax / tuned tunnels / Halcyon):
+
+- Navigation and memory are the best of any game: boundary distance .97 (tunnels .73 at best), grid
+  orientation .65 (.52 / .61), event boundaries .63, path vs Euclidean .90, place familiarity from
+  BOLD: encoding .87 (at most .52 before), forgetting .90 (.66 / .80).
+- Vision: SF peak .46 (.43 / .22), but effective c50 .48 (.68 / .67) and attention gain .27:
+  the hotel is dim, with a narrow contrast range, and 20% of the hour was spent in blackouts.
+- Puzzles from behaviour: map-update rate .63 (84 shut doors met an hour), route temperature .95,
+  path-integration distance gain .82 and leak .89; the stairwell bandit's learning rate .58 and risk
+  weight .78 from choices.
+- Decisions from BOLD did not improve: every person in a group became a separate call, so calls came
+  2.8 s apart (target 4-10 s) at 9.7 a minute. Drift from BOLD -.06, boundary .38; striatal
+  learning rate .08 on the calls and .08 on the stairs (82 crossings an hour); path-integration
+  heading noise from BOLD .24 from only 18 usable walks.
+
+Next: one call per group at least 6 s apart; more, shorter stair trips with an outcome on every
+landing; shorter blackouts ending at a stairwell; more time on the sunlit terrace.
+Rendering note: two software-GPU renderers plus data processing at once made Chrome stop drawing
+mid-run; the harness now aborts on a lost or frozen canvas and each run is checked for repeated frames.
+
 Results JSON for every round is in `results/`; the summary and dashboard are in `docs/dashboard/`
 (enable GitHub Pages from `main` / `/docs` to serve it).

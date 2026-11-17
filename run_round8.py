@@ -38,6 +38,8 @@ GAMES = {
     # round 10: Betamax with the Diggings (tunnels under the lot and the dunes), same bot plus tunnel missions
     'betamaxt':   dict(tag='bt', label='Betamax + tunnels', src='/home/claude/bbx/runs_dig', near=60.0, fps3d=True),
     'betamaxu':   dict(tag='bu', label='Tuned tunnels', src='/home/claude/bbx/runs_dig2', near=60.0, fps3d=True),
+    # round 11: Halcyon (samuelling/Halcyon), the hotel built around the models; indoors, so 'near' is short
+    'halcyon':    dict(tag='hx', label='Halcyon', src='/home/claude/bbx/runs_hx', near=30.0, fps3d=True, count_all=True),
 }
 PRE = os.environ.get('GAME', 'betamax')
 GC = GAMES[PRE]
@@ -97,7 +99,7 @@ def frames(i):
 def build_logs(i, w):
     recs, ev, t0, fr = load_raw(i)
     kills_at = {}
-    for t, x, y in ev['kills']:
+    for t, x, y, *_ in ev['kills']:
         kills_at.setdefault(fr(t), (x, y))
     gm = game.GazeModel(np.random.default_rng(5000 + i))
     gaze = np.zeros((NF, 2), np.float32)
@@ -105,7 +107,7 @@ def build_logs(i, w):
     salient, last_seen = [], {}
     for f, r in enumerate(recs):
         t = f / FPS
-        en = [v for v in r['vis'] if v[5]]
+        en = [v for v in r['vis'] if v[5] or GC.get('count_all')]   # Halcyon: everyone in the corridor counts (and draws the eye)
         vis = [(v[0], v[1], v[2], v[3], v[4]) for v in en]
         near = [v for v in en if v[3] and (NEAR is None or v[2] < NEAR)]
         n_items[f] = len(near) if GC['fps3d'] else r['items']
@@ -117,7 +119,7 @@ def build_logs(i, w):
         if onset is not None:
             salient.append((t, onset[0], onset[1], 1))
         gaze[f] = gm.step(vis, onset)
-    events = np.array([(fr(t) / FPS, x, y) for t, x, y in ev['kills']], np.float32).reshape(-1, 3)
+    events = np.array([(fr(t) / FPS, x, y) for t, x, y, *_ in ev['kills']], np.float32).reshape(-1, 3)
     shots = np.array([(fr(b[0]) / FPS, p_hit(w, b[1], b[2]), b[6], b[3], b[4]) for b in ev['bursts']],
                      np.float32).reshape(-1, 5)
     if GC['fps3d']:

@@ -191,3 +191,35 @@ betamaxu,Tuned tunnels,oracle,60,q,CRF exponent,0.6124,0.2206
 betamaxu,Tuned tunnels,oracle,60,k,Surround suppression,0.5533,0.3794
 betamaxu,Tuned tunnels,oracle,60,tau,Transient weight,0.7619,0.1349
 betamaxu,Tuned tunnels,oracle,60,a,Attention gain,0.5043,0.1102
+halcyon,Halcyon,realistic,30,c50_eff,Effective c50,0.2438,1.3465
+halcyon,Halcyon,realistic,30,mu,SF peak (pSFT),0.3938,1.0814
+halcyon,Halcyon,realistic,30,sig,SF bandwidth,0.1517,0.7292
+halcyon,Halcyon,realistic,30,c50,c50 (raw),0.2119,1.4308
+halcyon,Halcyon,realistic,30,q,CRF exponent,0.1023,0.7988
+halcyon,Halcyon,realistic,30,k,Surround suppression,0.1715,0.8825
+halcyon,Halcyon,realistic,30,tau,Transient weight,0.3924,0.4429
+halcyon,Halcyon,realistic,30,a,Attention gain,0.1236,0.2912
+halcyon,Halcyon,oracle,30,c50_eff,Effective c50,0.3772,0.8785
+halcyon,Halcyon,oracle,30,mu,SF peak (pSFT),0.4504,0.7657
+halcyon,Halcyon,oracle,30,sig,SF bandwidth,0.0615,0.6741
+halcyon,Halcyon,oracle,30,c50,c50 (raw),0.3634,0.9647
+halcyon,Halcyon,oracle,30,q,CRF exponent,0.2156,0.5391
+halcyon,Halcyon,oracle,30,k,Surround suppression,0.3031,0.7407
+halcyon,Halcyon,oracle,30,tau,Transient weight,0.4526,0.2977
+halcyon,Halcyon,oracle,30,a,Attention gain,0.1688,0.3457
+halcyon,Halcyon,realistic,60,c50_eff,Effective c50,0.4821,0.6398
+halcyon,Halcyon,realistic,60,mu,SF peak (pSFT),0.4576,0.7709
+halcyon,Halcyon,realistic,60,sig,SF bandwidth,0.2085,0.6052
+halcyon,Halcyon,realistic,60,c50,c50 (raw),0.3928,0.6112
+halcyon,Halcyon,realistic,60,q,CRF exponent,0.3876,0.3946
+halcyon,Halcyon,realistic,60,k,Surround suppression,0.3309,0.6526
+halcyon,Halcyon,realistic,60,tau,Transient weight,0.5925,0.2656
+halcyon,Halcyon,realistic,60,a,Attention gain,0.2745,0.1689
+halcyon,Halcyon,oracle,60,c50_eff,Effective c50,0.642,0.3143
+halcyon,Halcyon,oracle,60,mu,SF peak (pSFT),0.5255,0.3946
+halcyon,Halcyon,oracle,60,sig,SF bandwidth,0.2352,0.529
+halcyon,Halcyon,oracle,60,c50,c50 (raw),0.6082,0.3805
+halcyon,Halcyon,oracle,60,q,CRF exponent,0.5129,0.2399
+halcyon,Halcyon,oracle,60,k,Surround suppression,0.5965,0.3704
+halcyon,Halcyon,oracle,60,tau,Transient weight,0.7503,0.1449
+halcyon,Halcyon,oracle,60,a,Attention gain,0.3269,0.1791

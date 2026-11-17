@@ -1,11 +1,11 @@
-measure,label,raycaster,betamax,brickninja,sanctuary,betamaxt,betamaxu
-kills_per_min,Kills / befriends per minute,2.6,8.2,9.5,9.3,3.1,3.8
-bursts_per_min,Shots / tries per minute,9.5,38.0,41.5,12.2,14.1,22.6
-hit_rate,Hit rate,0.27,0.4,0.84,0.77,0.38,0.36
-salient_per_min,Salient onsets per minute,11.5,95.2,23.6,23.7,51.3,65.8
-items_mean,Items on screen (mean),6.2,4.6,3.4,1.2,2.1,2.9
-items_sd,Items on screen (SD),7.3,5.4,4.2,0.9,4.4,4.9
-fwd_mean,Forward speed (raycaster units),1.25,0.55,0.0,0.0,0.95,0.84
-yaw_sd,Turn / scroll rate SD (rad/s),0.44,0.8,0.09,0.05,1.53,1.19
-transient_to_sustained,Transient / sustained energy,0.29,0.28,0.31,0.28,0.3,0.29
-gaze_sd,"Gaze spread, x / y (deg SD)",3.9 / 1.9,2.7 / 1.9,3.8 / 2.6,3.5 / 2.7,3.2 / 2.2,3.1 / 2.1
+measure,label,raycaster,betamax,brickninja,sanctuary,betamaxt,betamaxu,halcyon
+kills_per_min,Kills / befriends per minute,2.6,8.2,9.5,9.3,3.1,3.8,2.8
+bursts_per_min,Shots / tries per minute,9.5,38.0,41.5,12.2,14.1,22.6,9.8
+hit_rate,Hit rate,0.27,0.4,0.84,0.77,0.38,0.36,0.73
+salient_per_min,Salient onsets per minute,11.5,95.2,23.6,23.7,51.3,65.8,25.6
+items_mean,Items on screen (mean),6.2,4.6,3.4,1.2,2.1,2.9,0.6
+items_sd,Items on screen (SD),7.3,5.4,4.2,0.9,4.4,4.9,1.2
+fwd_mean,Forward speed (raycaster units),1.25,0.55,0.0,0.0,0.95,0.84,0.84
+yaw_sd,Turn / scroll rate SD (rad/s),0.44,0.8,0.09,0.05,1.53,1.19,1.82
+transient_to_sustained,Transient / sustained energy,0.29,0.28,0.31,0.28,0.3,0.29,0.3
+gaze_sd,"Gaze spread, x / y (deg SD)",3.9 / 1.9,2.7 / 1.9,3.8 / 2.6,3.5 / 2.7,3.2 / 2.2,3.1 / 2.1,3.5 / 2.3

@@ -1,58 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BOLDBLASTER: what can gameplay fMRI recover?</title>
-<meta name="description" content="Simulation testbed for an open fMRI dataset of people playing a first-person game: which tuning models can be recovered, and how much play it takes.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2714%27 fill=%27%236250d6%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23eb6834%27/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Serif+4:wght@400&display=swap" rel="stylesheet">
-<style>
-:root {
-  --font-anthropic-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-anthropic-serif: "Source Serif 4", Georgia, serif;
-  --color-fg: #18181a; --color-fg-muted: #66656f; --color-bg: #f7f7f5; --color-panel: #ffffff;
-  --color-border-line: #e4e3df; --color-ok: #1baf7a; --color-warn: #eda100; --color-bad: #e34948;
-  --cds-font-size-caption: 12.5px; --cds-font-size-body: 15px; --cds-font-size-heading: 18px; --cds-font-size-title: 26px;
-  --cds-font-weight-medium: 600;
-  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 14px; --cds-gap-lg: 20px; --cds-gap-xl: 28px;
-  --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 18px; --cds-pad-xl: 32px;
-  --cds-radius: 12px;
-  --cds-chart-grid: #ecebe7; --cds-chart-axis: #c9c7c0; --cds-chart-reference: #9c9a92; --cds-chart-muted: #b4b2aa;
-  --cds-text-secondary: #6b6a72; --cds-surface-popover: #ffffff; --cds-border: #e4e3df;
-  --cds-shadow-popover: 0 8px 28px rgba(20, 20, 30, .14);
-  --bb-series-1: #2a78d6; --bb-series-2: #eb6834; --bb-series-3: #1baf7a; --bb-series-4: #eda100;
-  --bb-series-5: #e87ba4; --bb-series-6: #008300; --bb-series-7: #6250d6; --bb-series-8: #e34948;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-fg: #f0efec; --color-fg-muted: #a9a8b0; --color-bg: #121214; --color-panel: #1b1b1e;
-    --color-border-line: #2e2e33; --cds-chart-grid: #2a2a2f; --cds-chart-axis: #45454c; --cds-chart-reference: #77767e;
-    --cds-chart-muted: #6c6b73; --cds-text-secondary: #a3a2aa; --cds-surface-popover: #222226; --cds-border: #34343a;
-    --cds-shadow-popover: 0 8px 28px rgba(0, 0, 0, .5);
-    --bb-series-1: #3987e5; --bb-series-2: #d95926; --bb-series-3: #199e70; --bb-series-4: #c98500;
-    --bb-series-5: #d55181; --bb-series-6: #2a9a2a; --bb-series-7: #9085e9; --bb-series-8: #e66767;
-    color-scheme: dark;
-  }
-}
-html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-body); -webkit-font-smoothing: antialiased; }
-#dash-root { padding: 0 clamp(14px, 4vw, 40px) 60px; }
-.dash-select { font: inherit; font-size: 14px; color: var(--color-fg); background-color: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 8px; padding: 6px 30px 6px 10px; appearance: none; -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2388878f' stroke-width='1.5'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 10px center; min-width: 210px; }
-.dash-skeleton { position: relative; color: transparent !important; }
-.dash-skeleton::after { content: ""; position: absolute; inset: 0; border-radius: 8px; background: linear-gradient(90deg, var(--color-border-line), transparent, var(--color-border-line)); background-size: 200% 100%; opacity: .5; animation: bbsk 1.4s linear infinite; }
-@keyframes bbsk { to { background-position: -200% 0; } }
-.bb-ghbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; padding: 14px 0 0; font-size: 12.5px; color: var(--color-fg-muted); }
-.bb-ghbar a { color: var(--color-fg); text-decoration: none; border-bottom: 1px solid var(--color-border-line); }
-</style>
-<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
-</head>
-<body>
-<div class="bb-ghbar"><span>BOLDBLASTER · interactive results</span><span><a href="https://github.com/samuelling/boldblaster">Code &amp; data on GitHub</a></span></div>
-<div id="dash-root">
+<meta name="dash-one-writer">
 <style>
 .bb { font-family: var(--font-anthropic-sans); color: var(--color-fg); max-width: 1180px; margin: 0 auto; }
 .bb-hero { padding: var(--cds-pad-xl) 0 var(--cds-pad-lg); border-bottom: 1px solid var(--color-border-line); margin-bottom: var(--cds-gap-xl); }
@@ -166,6 +112,7 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
   <button type="button" class="bb-tabbtn" data-tab="exp-games">7 · Real games</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-nav">8 · Navigation &amp; cognition</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-dig">9 · Tunnels</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-hx">10 · Halcyon</button>
   <button type="button" class="bb-tabbtn" data-tab="design-tab">Design notes</button>
   <button type="button" class="bb-tabbtn" data-tab="areas-tab">Brain areas</button>
   <button type="button" class="bb-tabbtn" data-tab="methods-tab">Methods</button>
@@ -219,6 +166,11 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
       <p class="bb-num">9 · Round 10</p><h3 class="bb-h3">Puzzle elements: tunnels under Betamax</h3>
       <p>Tunnels under the parking lot and the dunes make Betamax a test of navigation, and a tuned version keeps most of the battle (<b data-draw="ctext" data-source="round10_stats" data-field="betamaxu" data-where="measure=under">—</b> of the hour below ground). Distance to goal (path vs straight line) goes from untestable to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=nav&amp;model=goal&amp;measure=w&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>. Path integration from blackout walks is recovered from behaviour (<b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=behaviour&amp;game=betamaxt&amp;minutes=60">—</b>) and partly from BOLD (<b data-draw="cell" data-source="round10" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>). The cost: an hour of play spends <b data-draw="ctext" data-source="round10_stats" data-field="betamaxt" data-where="measure=under">—</b> below ground, so V1 SF peak falls from <b data-draw="cell" data-source="round10" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=mu&amp;source=bold&amp;game=betamax&amp;minutes=60&amp;condition=realistic">—</b> to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=mu&amp;source=bold&amp;game=betamaxt&amp;minutes=60&amp;condition=realistic">—</b>, and learning rate from striatal BOLD from <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b> to <b data-draw="cell" data-source="round10" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b>.</p>
       <button type="button" class="bb-open" data-open="exp-dig">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard bb-gwide" id="g-hx">
+      <p class="bb-num">10 · Round 11</p><h3 class="bb-h3">Built for the models: Halcyon, a new FPS</h3>
+      <p>A seaside-hotel shooter designed around every model at once. Navigation and spatial memory are the best of any game so far: distance to walls <b data-draw="cell" data-source="round11" data-field="value" data-where="part=nav&amp;model=boundary&amp;measure=d&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>, grid orientation <b data-draw="cell" data-source="round11" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>, place forgetting from BOLD <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=f&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>. Decisions from BOLD did not improve: each person in a group became a call, so calls came <b data-draw="ctext" data-source="round11_stats" data-field="halcyon" data-where="measure=gap">—</b> s apart, too close for BOLD (drift <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=v&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>). That, the stairwell bandit and the time in the dark are the next tuning.</p>
+      <button type="button" class="bb-open" data-open="exp-hx">Open experiment →</button>
     </article>
   </div>
 </section>
@@ -865,6 +817,61 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
   </div>
   </details>
 </section>
+<section class="bb-sec bb-tab" id="exp-hx" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 10 · Round 11</p><h2 class="bb-h2">Built for the models: Halcyon</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>Instead of adding puzzles to someone else's game, we built a first-person shooter from scratch around the models (repository samuelling/Halcyon). A gang holds a derelict 1960s seaside hotel; you find guests and walk them out. Every mechanic runs inside the same fight, at rates set from the earlier rounds:</p>
+      <ul>
+        <li><b>Calls:</b> people step into the corridor every 4–10 s in groups of 1–5, and you shoot or hold. The evidence is graded: a pistol raised or lowered, a phone, raised hands, in good or poor light, near or far (drift diffusion, value learning, numerosity)</li>
+        <li><b>Stairwells</b> whose ambush risk drifts slowly, so choosing a flight is a restless bandit (reinforcement learning)</li>
+        <li><b>Security doors</b> the gang opens and shuts, so routes change (map updating)</li>
+        <li><b>Blackouts</b> after a guest is found, with a torch for the walk back (path integration)</li>
+        <li><b>An open atrium, a ballroom and a terrace</b> for the grid code, walls everywhere for boundary cells, and guests behind detours for distance to goal</li>
+      </ul>
+      <p>CC0 Poly Haven materials and props, baked light with ambient occlusion, and a sun, in three.js. The same kind of bot plays 12 runs of 5 minutes: belief-based routes, a Rescorla-Wagner choice of stairs, and drift diffusion on each call. Every earlier model is refitted, plus a new one for the stairwell bandit.</p></div>
+    <figure class="bb-card bb-fig" id="exp-hx-fig"><img data-draw="img" data-img="hxgame" data-source="img_hxgame" alt="Four views of Halcyon: the lobby under the atrium, a gallery with a painting and sconce, the facade from the pool terrace, and the lobby by the bar."><figcaption>Halcyon at full quality: the atrium lobby, an upper gallery, the facade from the pool terrace, and the lobby.</figcaption></figure>
+  </div>
+  <figure class="bb-card bb-fig" style="margin-top: var(--cds-gap-md)"><img data-draw="img" data-img="hxframes" data-source="img_hxframes" alt="Four 192 by 144 luminance frames from a Halcyon run, as the visual models see them."><figcaption>What V1 sees (192 × 144 luminance, the scanner render): rooms, corridors and the atrium.</figcaption></figure>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
+    <p><b>Navigation and spatial memory: the best of any game so far.</b></p>
+    <ul>
+      <li><b>Distance to walls:</b> <b data-draw="cell" data-source="round11" data-field="value" data-where="part=nav&amp;model=boundary&amp;measure=d&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> (tuned tunnels <b data-draw="cell" data-source="round11" data-field="value" data-where="part=nav&amp;model=boundary&amp;measure=d&amp;source=bold&amp;game=betamaxu&amp;minutes=60">—</b>).</li>
+      <li><b>Grid orientation from movement:</b> <b data-draw="cell" data-source="round11" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> (Betamax <b data-draw="cell" data-source="round11" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b>, tuned tunnels <b data-draw="cell" data-source="round11" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=betamaxu&amp;minutes=60">—</b>). Event boundaries <b data-draw="cell" data-source="round11" data-field="value" data-where="part=nav&amp;model=evbound&amp;measure=b&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>, and path vs straight-line distance <b data-draw="cell" data-source="round11" data-field="value" data-where="part=nav&amp;model=goal&amp;measure=w&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>.</li>
+      <li><b>Place familiarity from BOLD:</b> encoding <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=e&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> (at most <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=e&amp;source=bold&amp;game=betamaxt&amp;minutes=60">—</b> before) and forgetting <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=f&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> (tuned tunnels <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=f&amp;source=bold&amp;game=betamaxu&amp;minutes=60">—</b>). Three floors of rooms are revisited often, so familiarity builds and fades.</li>
+      <li><b>Puzzles from behaviour:</b> map-update rate <b data-draw="cell" data-source="round11" data-field="value" data-where="part=new&amp;model=mapupd&amp;measure=alpha&amp;source=behaviour&amp;game=halcyon&amp;minutes=60">—</b> with <b data-draw="ctext" data-source="round11_stats" data-field="halcyon" data-where="measure=stale">—</b> shut doors met an hour; path-integration distance gain <b data-draw="cell" data-source="round11" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=gd&amp;source=behaviour&amp;game=halcyon&amp;minutes=60">—</b> (tuned tunnels <b data-draw="cell" data-source="round11" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=gd&amp;source=behaviour&amp;game=betamaxu&amp;minutes=60">—</b>). The new stairwell bandit: learning rate <b data-draw="cell" data-source="round11" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=behaviour&amp;game=halcyon&amp;minutes=60">—</b> and risk weight <b data-draw="cell" data-source="round11" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=lam&amp;source=behaviour&amp;game=halcyon&amp;minutes=60">—</b> from choices.</li>
+      <li><b>Vision keeps SF peak:</b> <b data-draw="cell" data-source="round11" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=mu&amp;source=bold&amp;game=halcyon&amp;minutes=60&amp;condition=realistic">—</b>, against <b data-draw="cell" data-source="round11" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=mu&amp;source=bold&amp;game=betamax&amp;minutes=60&amp;condition=realistic">—</b> on Betamax and <b data-draw="cell" data-source="round11" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=mu&amp;source=bold&amp;game=betamaxu&amp;minutes=60&amp;condition=realistic">—</b> with tuned tunnels: no dark tunnels to cost it.</li>
+    </ul>
+    <p><b>Decisions from BOLD did not improve, and the reason is in the design.</b> Every person in a group became a call of their own, so calls came <b data-draw="ctext" data-source="round11_stats" data-field="halcyon" data-where="measure=gap">—</b> s apart (the target was 4–10 s) at <b data-draw="ctext" data-source="round11_stats" data-field="halcyon" data-where="measure=dec">—</b> a minute. Accumulator responses that close overlap in BOLD:</p>
+    <ul>
+      <li><b>Drift diffusion:</b> behaviour recovers drift <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=v&amp;source=behaviour&amp;game=halcyon&amp;minutes=60">—</b>, BOLD <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=v&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>; boundary from BOLD <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=a&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>.</li>
+      <li><b>Learning rate from striatal BOLD:</b> <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> on the calls (Betamax <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=betamax&amp;minutes=60">—</b>) and <b data-draw="cell" data-source="round11" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> on the stairs, with <b data-draw="ctext" data-source="round11_stats" data-field="halcyon" data-where="measure=stairs">—</b> crossings an hour.</li>
+      <li><b>Puzzles from BOLD:</b> path-integration heading noise <b data-draw="cell" data-source="round11" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> (tuned tunnels <b data-draw="cell" data-source="round11" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=bold&amp;game=betamaxu&amp;minutes=60">—</b>) from only <b data-draw="ctext" data-source="round11_stats" data-field="halcyon" data-where="measure=homing">—</b> usable walks; map updating <b data-draw="cell" data-source="round11" data-field="value" data-where="part=new&amp;model=mapupd&amp;measure=alpha&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>.</li>
+      <li><b>Contrast suffers indoors:</b> effective c50 <b data-draw="cell" data-source="round11" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=c50_eff&amp;source=bold&amp;game=halcyon&amp;minutes=60&amp;condition=realistic">—</b> (Betamax <b data-draw="cell" data-source="round11" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=c50_eff&amp;source=bold&amp;game=betamax&amp;minutes=60&amp;condition=realistic">—</b>) and attention gain <b data-draw="cell" data-source="round11" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=a&amp;source=bold&amp;game=halcyon&amp;minutes=60&amp;condition=realistic">—</b>. The hotel's contrast range is narrow, and <b data-draw="ctext" data-source="round11_stats" data-field="halcyon" data-where="measure=dark">—</b> of the hour is spent in blackouts (target under 15%), with <b data-draw="ctext" data-source="round11_stats" data-field="halcyon" data-where="measure=outdoors">—</b> on the sunlit terrace (target 10–20%).</li>
+    </ul>
+    <p><b>Next (Halcyon tuned):</b> one call per group, at least 6 s apart; more and shorter stair trips with a clear outcome on every landing; shorter blackouts that end at a stairwell, for more homing walks and less time in the dark; and more reasons to cross the sunlit terrace.</p>
+  </div></div>
+  <div class="bb-card" style="margin-top: var(--cds-gap-md)">
+    <h3 class="bb-h3">Halcyon against Betamax and the tuned tunnels, one hour</h3>
+    <p class="bb-desc">Each row is a parameter; dots are Spearman r (phase recovery for orientations) between planted and fitted values. From BOLD unless marked behaviour. The line runs from the better of the two Betamax versions to Halcyon, tinted when Halcyon is better.</p>
+    <div class="bb-chart" id="r11dots-chart" data-draw="r11dots" data-source="round11" style="min-height: 900px"></div>
+  </div>
+  <div class="bb-card bb-tablewrap" id="exp-hx-targets" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">An hour of Halcyon against the targets set before building it.</p>
+    <table class="bb-table" id="r11stats-table" data-source="round11_stats" data-row-key="measure">
+      <thead><tr><th data-field="label">Measure</th><th data-field="target">Target</th><th data-field="halcyon">Halcyon</th></tr></thead>
+      <tbody data-draw="r11statstable"></tbody>
+    </table>
+  </div>
+  <figure class="bb-card bb-fig" id="exp-hx-diag" style="margin-top: var(--cds-gap-md)"><img data-draw="img" data-img="diaghx" data-source="img_diaghx" alt="Planted against fitted values for 40 simulated players on Halcyon: call drift and boundary, value learning rate, place forgetting, stairwell learning rate and risk weight, map update rate and path-integration heading noise, from behaviour and BOLD."><figcaption>How the estimates miss on Halcyon. From behaviour (blue) most parameters follow the diagonal. From BOLD (orange), the call and learning parameters scatter and stick to the edges of the searched range: <b data-draw="cpct" data-source="diag_round11" data-field="edge_frac" data-where="parameter=Value%20learning%20rate&amp;source=BOLD">—</b> of learning rates and <b data-draw="cpct" data-source="diag_round11" data-field="edge_frac" data-where="parameter=Stairwell%20learning%20rate&amp;source=BOLD">—</b> of stairwell learning rates sit at an edge. Place forgetting from BOLD follows the truth closely, if slightly stretched (slope <b data-draw="cell" data-source="diag_round11" data-field="slope" data-where="parameter=Place%20forgetting%20rate&amp;source=BOLD">—</b>).</figcaption></figure>
+  <details class="bb-more" id="exp-hx-more"><summary>Every number: all models on all four versions, one hour</summary>
+  <div class="bb-card bb-tablewrap">
+    <table class="bb-table" id="r11-table" data-source="round11">
+      <thead><tr><th>Part</th><th>Model and parameter</th><th>Candidate area</th><th>Betamax</th><th>First tunnels</th><th>Tuned tunnels</th><th>Halcyon</th></tr></thead>
+      <tbody data-draw="r11table"></tbody>
+    </table>
+  </div>
+  </details>
+</section>
 <section class="bb-sec bb-tab" id="areas-tab" hidden>
   <div class="bb-sec-head"><div><p class="bb-num">Reference</p><h2 class="bb-h2">Candidate brain areas for every parameter</h2>
     <p class="bb-desc">Each parameter the testbed recovers, the area its population is placed in, and the basis for that choice. Round 9 gives medial temporal areas more noise than cortex (the noise column), so the area changes how much play a parameter needs, not only where it is.</p></div></div>
@@ -1032,24 +1039,5 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 </section>
 </div>
 
-
-</div>
-<script src="dash-shim.js"></script>
-<script src="img_dedicated.js"></script>
-<script src="img_diagcog.js"></script>
-<script src="img_diagnew.js"></script>
-<script src="img_diagv1.js"></script>
-<script src="img_digframes.js"></script>
-<script src="img_digplan.js"></script>
-<script src="img_games.js"></script>
-<script src="img_hours.js"></script>
-<script src="img_models.js"></script>
-<script src="img_paths.js"></script>
-<script src="img_prf.js"></script>
-<script src="img_seqsim.js"></script>
-<script src="img_ventral.js"></script>
 <script src="core.js"></script>
 <script src="charts.js"></script>
-<script>window.__bbStart();</script>
-</body>
-</html>

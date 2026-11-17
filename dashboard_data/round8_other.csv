@@ -29,6 +29,11 @@ Numerosity,sig,Numerosity tuning width,betamaxu,Tuned tunnels,realistic,30,0.675
 Self-motion,rotation_pref,Rotation direction preference,betamaxu,Tuned tunnels,realistic,30,0.924
 Self-motion,expansion_frac,Expansion (forward) weight,betamaxu,Tuned tunnels,realistic,30,0.9267
 Striatal RPE,rpe_beta,Prediction-error beta,betamaxu,Tuned tunnels,realistic,30,0.8894
+Numerosity,mu,Preferred numerosity,halcyon,Halcyon,realistic,30,0.9287
+Numerosity,sig,Numerosity tuning width,halcyon,Halcyon,realistic,30,0.4696
+Self-motion,rotation_pref,Rotation direction preference,halcyon,Halcyon,realistic,30,0.9002
+Self-motion,expansion_frac,Expansion (forward) weight,halcyon,Halcyon,realistic,30,0.8262
+Striatal RPE,rpe_beta,Prediction-error beta,halcyon,Halcyon,realistic,30,0.831
 Numerosity,mu,Preferred numerosity,raycaster,Raycaster,realistic,60,0.991
 Numerosity,sig,Numerosity tuning width,raycaster,Raycaster,realistic,60,0.8944
 Self-motion,rotation_pref,Rotation direction preference,raycaster,Raycaster,realistic,60,0.8839
@@ -59,6 +64,11 @@ Numerosity,sig,Numerosity tuning width,betamaxu,Tuned tunnels,realistic,60,0.863
 Self-motion,rotation_pref,Rotation direction preference,betamaxu,Tuned tunnels,realistic,60,0.9515
 Self-motion,expansion_frac,Expansion (forward) weight,betamaxu,Tuned tunnels,realistic,60,0.9475
 Striatal RPE,rpe_beta,Prediction-error beta,betamaxu,Tuned tunnels,realistic,60,0.9426
+Numerosity,mu,Preferred numerosity,halcyon,Halcyon,realistic,60,0.9506
+Numerosity,sig,Numerosity tuning width,halcyon,Halcyon,realistic,60,0.702
+Self-motion,rotation_pref,Rotation direction preference,halcyon,Halcyon,realistic,60,0.9079
+Self-motion,expansion_frac,Expansion (forward) weight,halcyon,Halcyon,realistic,60,0.907
+Striatal RPE,rpe_beta,Prediction-error beta,halcyon,Halcyon,realistic,60,0.888
 Spatiotemporal (CST),taus,Sustained time constant,betamax,Betamax,oracle,30,0.4351
 Spatiotemporal (CST),taut,Transient time constant,betamax,Betamax,oracle,30,0.1903
 Spatiotemporal (CST),ws,Sustained-channel weight,betamax,Betamax,oracle,30,0.5481
@@ -74,6 +84,9 @@ Spatiotemporal (CST),ws,Sustained-channel weight,betamaxt,Betamax + tunnels,orac
 Spatiotemporal (CST),taus,Sustained time constant,betamaxu,Tuned tunnels,oracle,30,0.4317
 Spatiotemporal (CST),taut,Transient time constant,betamaxu,Tuned tunnels,oracle,30,0.0928
 Spatiotemporal (CST),ws,Sustained-channel weight,betamaxu,Tuned tunnels,oracle,30,0.512
+Spatiotemporal (CST),taus,Sustained time constant,halcyon,Halcyon,oracle,30,0.3251
+Spatiotemporal (CST),taut,Transient time constant,halcyon,Halcyon,oracle,30,0.176
+Spatiotemporal (CST),ws,Sustained-channel weight,halcyon,Halcyon,oracle,30,0.4232
 Spatiotemporal (CST),taus,Sustained time constant,raycaster,Raycaster (mean of 20 & 40 min),oracle,30,0.2912
 Spatiotemporal (CST),taut,Transient time constant,raycaster,Raycaster (mean of 20 & 40 min),oracle,30,0.1566
 Spatiotemporal (CST),ws,Sustained-channel weight,raycaster,Raycaster (mean of 20 & 40 min),oracle,30,0.3514
@@ -92,6 +105,9 @@ Spatiotemporal (CST),ws,Sustained-channel weight,betamaxt,Betamax + tunnels,real
 Spatiotemporal (CST),taus,Sustained time constant,betamaxu,Tuned tunnels,realistic,30,0.32
 Spatiotemporal (CST),taut,Transient time constant,betamaxu,Tuned tunnels,realistic,30,0.1194
 Spatiotemporal (CST),ws,Sustained-channel weight,betamaxu,Tuned tunnels,realistic,30,0.3785
+Spatiotemporal (CST),taus,Sustained time constant,halcyon,Halcyon,realistic,30,0.3319
+Spatiotemporal (CST),taut,Transient time constant,halcyon,Halcyon,realistic,30,0.1151
+Spatiotemporal (CST),ws,Sustained-channel weight,halcyon,Halcyon,realistic,30,0.2811
 Spatiotemporal (CST),taus,Sustained time constant,raycaster,Raycaster (mean of 20 & 40 min),realistic,30,0.2793
 Spatiotemporal (CST),taut,Transient time constant,raycaster,Raycaster (mean of 20 & 40 min),realistic,30,0.0723
 Spatiotemporal (CST),ws,Sustained-channel weight,raycaster,Raycaster (mean of 20 & 40 min),realistic,30,0.2834
@@ -110,6 +126,9 @@ Spatiotemporal (CST),ws,Sustained-channel weight,betamaxt,Betamax + tunnels,orac
 Spatiotemporal (CST),taus,Sustained time constant,betamaxu,Tuned tunnels,oracle,60,0.497
 Spatiotemporal (CST),taut,Transient time constant,betamaxu,Tuned tunnels,oracle,60,0.188
 Spatiotemporal (CST),ws,Sustained-channel weight,betamaxu,Tuned tunnels,oracle,60,0.6142
+Spatiotemporal (CST),taus,Sustained time constant,halcyon,Halcyon,oracle,60,0.504
+Spatiotemporal (CST),taut,Transient time constant,halcyon,Halcyon,oracle,60,0.2484
+Spatiotemporal (CST),ws,Sustained-channel weight,halcyon,Halcyon,oracle,60,0.5763
 Spatiotemporal (CST),taus,Sustained time constant,raycaster,Raycaster,oracle,60,0.3661
 Spatiotemporal (CST),taut,Transient time constant,raycaster,Raycaster,oracle,60,0.1776
 Spatiotemporal (CST),ws,Sustained-channel weight,raycaster,Raycaster,oracle,60,0.471
@@ -128,6 +147,9 @@ Spatiotemporal (CST),ws,Sustained-channel weight,betamaxt,Betamax + tunnels,real
 Spatiotemporal (CST),taus,Sustained time constant,betamaxu,Tuned tunnels,realistic,60,0.4491
 Spatiotemporal (CST),taut,Transient time constant,betamaxu,Tuned tunnels,realistic,60,0.2165
 Spatiotemporal (CST),ws,Sustained-channel weight,betamaxu,Tuned tunnels,realistic,60,0.4513
+Spatiotemporal (CST),taus,Sustained time constant,halcyon,Halcyon,realistic,60,0.393
+Spatiotemporal (CST),taut,Transient time constant,halcyon,Halcyon,realistic,60,0.1501
+Spatiotemporal (CST),ws,Sustained-channel weight,halcyon,Halcyon,realistic,60,0.4668
 Spatiotemporal (CST),taus,Sustained time constant,raycaster,Raycaster,realistic,60,0.3818
 Spatiotemporal (CST),taut,Transient time constant,raycaster,Raycaster,realistic,60,0.0841
 Spatiotemporal (CST),ws,Sustained-channel weight,raycaster,Raycaster,realistic,60,0.303

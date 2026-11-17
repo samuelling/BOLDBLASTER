@@ -23,3 +23,4 @@ round,model,parameter,area,basis,noise_mult
 10,Path integration,"Heading noise, distance gain, leak",Entorhinal cortex / hippocampus,"The Palace's lantern model, on Betamax blackout walks; BOLD is positional uncertainty while walking in the dark",1.5
 10,Map updating,"Update rate, route-choice temperature",Hippocampus,"The Palace's East Wing model, on Betamax junction choices after cave-ins; BOLD is surprise at a cave-in and believed distance at junctions",1.4
 10,Drift diffusion (friend or foe),"Drift scale, boundary",Pre-SMA / intraparietal sulcus,Accumulator activity for identification decisions on figures in the tunnels,1.0
+11,Stairwell bandit,"Learning rate, risk weight",Ventral striatum,Halcyon's stair choices: each flight's ambush risk drifts; BOLD is the prediction error on reaching the landing,1.3

@@ -103,3 +103,10 @@ dedicated block of tunnel play beside the beach.
 - Puzzle time is borrowed from action time. Every minute in a maze is a minute without firefights,
   outcomes and varied images, so puzzle elements should be short and dense, not long errands
   (round 10).
+- Building the game around the models works for navigation and memory: walls everywhere, rooms
+  revisited on three floors, and detours to every goal gave the best boundary, grid, event and
+  familiarity recovery yet (round 11, Halcyon).
+- Count decisions per encounter, not per person. A group of five people is one decision for BOLD;
+  treating each as a call put them 2.8 s apart and erased drift diffusion and value learning from
+  BOLD (round 11).
+- Indoor scenes need a wide contrast range and some daylight; a dim hotel cost effective c50.
