@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Halcyon</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#eee}
+  canvas{display:block;width:100%;height:100%}
+  #hud{position:fixed;inset:0;pointer-events:none}
+  #xh{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px}
+  #xh:before,#xh:after{content:"";position:absolute;background:rgba(255,255,255,.85);box-shadow:0 0 2px #000}
+  #xh:before{left:8px;top:0;width:2px;height:18px}#xh:after{top:8px;left:0;height:2px;width:18px}
+  #obj{position:absolute;left:24px;top:20px;font-size:15px;letter-spacing:.04em;text-shadow:0 1px 3px #000;max-width:46vw}
+  #obj b{color:#f2c46d;font-weight:600}
+  #stat{position:absolute;right:24px;bottom:20px;font-size:22px;text-align:right;text-shadow:0 1px 3px #000}
+  #stat small{display:block;font-size:12px;opacity:.75;letter-spacing:.08em}
+  #msg{position:absolute;left:50%;top:62%;transform:translateX(-50%);font-size:16px;letter-spacing:.12em;text-shadow:0 1px 4px #000;opacity:0;transition:opacity .3s}
+  #pick{position:absolute;left:50%;top:56%;transform:translateX(-50%);font-size:14px;opacity:0;text-shadow:0 1px 3px #000}
+  #hurt{position:absolute;inset:0;box-shadow:inset 0 0 160px rgba(160,0,0,.0);transition:box-shadow .25s}
+  #title{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(#0b1418,#000);z-index:5;cursor:pointer}
+  #title h1{font-weight:300;letter-spacing:.5em;font-size:54px;margin:0 0 6px}
+  #title p{opacity:.75;max-width:560px;text-align:center;line-height:1.5}
+  #title .k{opacity:.6;font-size:13px;margin-top:22px;letter-spacing:.06em}
+</style></head>
+<body>
+<div id="hud"><div id="xh"></div><div id="obj"></div><div id="stat"></div><div id="msg"></div><div id="pick"></div><div id="hurt"></div></div>
+<div id="title"><h1>HALCYON</h1><p>The gang has the old seaside hotel. Find the guests and walk them out. Not everyone in a corridor is the enemy: look before you shoot.</p>
+<p class="k" id="tkeys">Click to start · WASD move · mouse look · click fire · R reload · E use · Shift run · F torch</p><p class="k" id="load">loading…</p></div>
+<script>/*BUNDLE*/</script>
+</body></html>
