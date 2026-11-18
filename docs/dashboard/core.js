@@ -658,3 +658,38 @@ dash.draw('r11statstable', (tb) => {
     tb.appendChild(tr);
   }
 });
+// ---------------------------------------------------------------- round 12: Halcyon rebuilt in Godot
+dash.draw('r12table', (tb) => {
+  const d = dash.data('round12');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  const rows = d.data.filter((r) => +r.minutes === 60 && r.condition !== 'oracle' && (r.game === 'halcyon' || r.game === 'halcyon_gd'));
+  const keys = [];
+  for (const r of rows) { const k = `${r.part}|${r.model}|${r.measure}|${r.source}`; if (!keys.includes(k)) keys.push(k); }
+  const PO = Object.keys(BB11.PART); keys.sort((p1, p2) => PO.indexOf(p1.split('|')[0]) - PO.indexOf(p2.split('|')[0]));
+  const SRC = { bold: '', behaviour: ' (behaviour)', agree: ' (agreement)' };
+  for (const k of keys) {
+    const [part, model, meas, src] = k.split('|');
+    const sel = rows.filter((r) => r.part === part && r.model === model && r.measure === meas && r.source === src);
+    const v = (g) => { const r = sel.find((x) => x.game === g); return r && r.value !== '' && r.value != null ? +r.value : NaN; };
+    const f2 = (q) => (isFinite(q) ? BB.f2(q) : '—');
+    const a = v('halcyon'), b = v('halcyon_gd');
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', encodeURIComponent(k));
+    tr.append(td(BB11.PART[part] || part), td(`${sel[0].model_label}: ${sel[0].measure_label}${SRC[src] || ''}`), td(sel[0].area),
+      td(f2(a), true), td(f2(b), true), td(isFinite(a) && isFinite(b) ? (b - a >= 0 ? '+' : '−') + BB.f2(Math.abs(b - a)) : '—', true));
+    tb.appendChild(tr);
+  }
+});
+dash.draw('r12statstable', (tb) => {
+  const d = dash.data('round12_stats');
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  for (const r of d.data) {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', r.measure);
+    const c = (q) => (q === '' || q == null ? '—' : String(q));
+    tr.append(td(r.label), td(c(r.target), true), td(c(r.halcyon), true), td(c(r.halcyon_gd), true));
+    tb.appendChild(tr);
+  }
+});

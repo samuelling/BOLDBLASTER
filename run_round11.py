@@ -35,11 +35,12 @@ from boldblaster import fit
 
 D, p, log = V2.D, V2.p, V2.log
 FPS, NF, NTR = R9.FPS, R9.NF, R9.NTR
-G = 'halcyon'
+G = os.environ.get('R11_GAME', 'halcyon')     # round 12 reruns this file with R11_GAME=halcyon_gd (the Godot build)
+OUT = os.environ.get('R11_OUT', 'round11')
 R10.G = G                                   # the round-10 model code reads its game from here
-R9.RAW[G] = '/home/claude/bbx/runs_hx'
+R9.RAW[G] = os.environ.get('R11_RAW', '/home/claude/bbx/runs_hx')
 R9.PRE[G] = G
-R9.LABEL[G] = 'Halcyon'
+R9.LABEL[G] = os.environ.get('R11_LABEL', 'Halcyon')
 R9.AREA.update(bandit=('Ventral striatum', 1.3))
 N_RUNS = int(os.environ.get('R11_RUNS', 12))
 R10.N_RUNS = N_RUNS
@@ -48,6 +49,7 @@ if G not in R9.GAMES:
 raw = R10.raw
 LH = 4.2
 EXITS = [(-1.0, -19.0), (1.0, -19.0), (-7.0, 25.0), (7.0, 25.0)]   # front doors and the terrace (ground floor)
+EXITS_BY = dict(front=[(-1.0, -19.0), (1.0, -19.0)], terrace=[(-3.0, 31.0), (3.0, 31.0)])   # the Godot build names the way out per rescue
 
 
 def pose_halcyon(i):
@@ -66,9 +68,12 @@ def pose_halcyon(i):
     # goals: the guest being looked for (its cell), then the nearest way out; floors apart add a
     # flight's length. Path length is approximated as 1.3 x the straight line plus the stairs.
     tgt = np.full((NF, 3), np.nan)
+    way = [None] * NF
     for o in ev['objectives']:
         if o[1] == 'new':
             f0 = fr(o[0]); tgt[f0:] = [gx0 + (o[4] + 0.5) * C, gz0 + (o[5] + 0.5) * C, o[3]]
+            if len(o) > 7:
+                way[f0:] = [o[7]] * (NF - f0)
     phase = [r['phase'] for r in R]
     ge, gp, has = np.zeros(NF), np.zeros(NF), np.zeros(NF, bool)
     for f in range(NF):
@@ -77,7 +82,7 @@ def pose_halcyon(i):
             d = np.hypot(tgt[f, 0] - pos[f, 0], tgt[f, 1] - pos[f, 1])
             ge[f] = np.hypot(d, dz * LH); gp[f] = 1.3 * d + dz * 14.0; has[f] = True
         elif phase[f] == 'escort':
-            d = min(np.hypot(x - pos[f, 0], z - pos[f, 1]) for x, z in EXITS)
+            d = min(np.hypot(x - pos[f, 0], z - pos[f, 1]) for x, z in EXITS_BY.get(way[f], EXITS))
             ge[f] = np.hypot(d, Lf[f] * LH); gp[f] = 1.3 * d + Lf[f] * 14.0; has[f] = True
     bd = np.array([r['wall'] for r in R], float)
     bt = [o[0] for o in ev['objectives']] + [q[0] for q in ev['pickups']] + [q[0] for q in ev['outcomes']]
@@ -217,7 +222,7 @@ def nav():
         out[f'{G}_{mins}'] = R9.fit_nav(G, n, pop, bn, realistic=True)
         out[f'{G}_{mins}_oraclegaze'] = dict(grid_gaze=R9.fit_nav(G, n, pop, bn, realistic=False)['grid_gaze'])
         log(G, mins, json.dumps({k: {a: round(b, 2) for a, b in d.items()} for k, d in out[f'{G}_{mins}'].items()}))
-    json.dump(out, open(p('results_round11_nav.json'), 'w'), indent=1)
+    json.dump(out, open(p('results_' + OUT + '_nav.json'), 'w'), indent=1)
 
 
 def cog():
@@ -227,8 +232,8 @@ def cog():
             continue
         out[f'{G}_{mins}'] = R9.cog_game(G, n)
         log(G, mins, json.dumps(out[f'{G}_{mins}'])[:300])
-    json.dump(out, open(p('results_round11_cog.json'), 'w'), indent=1)
-    pickle.dump({k: v for k, v in R9.SAVE.items() if k[0] == G}, open(p('diag_round11_cog.pkl'), 'wb'))   # every player's planted and fitted values
+    json.dump(out, open(p('results_' + OUT + '_cog.json'), 'w'), indent=1)
+    pickle.dump({k: v for k, v in R9.SAVE.items() if k[0] == G}, open(p('diag_' + OUT + '_cog.pkl'), 'wb'))   # every player's planted and fitted values
 
 
 def new_models():
@@ -240,8 +245,8 @@ def new_models():
         rng = np.random.default_rng(1100 + n)
         out[f'{G}_{mins}'] = dict(pathint=R10.pathint(runs, n, rng), mapupd=R10.mapupd(runs, n, rng), bandit=bandit(runs, n, rng))
         log(G, mins, json.dumps(out[f'{G}_{mins}'])[:600])
-    json.dump(out, open(p('results_round11_new.json'), 'w'), indent=1)
-    pickle.dump(dict(R10.SAVE), open(p('diag_round11_new.pkl'), 'wb'))
+    json.dump(out, open(p('results_' + OUT + '_new.json'), 'w'), indent=1)
+    pickle.dump(dict(R10.SAVE), open(p('diag_' + OUT + '_new.pkl'), 'wb'))
 
 
 def rates(n=N_RUNS):
@@ -256,7 +261,7 @@ def rates(n=N_RUNS):
         tot['dark'] += np.mean([r['dark'] for r in R]); tot['outdoors'] += np.mean([r['room'] >= 0 and r['L'] == 0 and r['z'] > 20 for r in R])
     h = n * 5 / 60
     out = {k: (v / h if k not in ('dark', 'outdoors') else v / n) for k, v in tot.items()}
-    json.dump(out, open(p('results_round11_rates.json'), 'w'), indent=1)
+    json.dump(out, open(p('results_' + OUT + '_rates.json'), 'w'), indent=1)
     log('rates per hour', json.dumps({k: round(v, 3) for k, v in out.items()}))
     return out
 

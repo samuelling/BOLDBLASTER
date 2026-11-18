@@ -223,3 +223,35 @@ halcyon,Halcyon,oracle,60,q,CRF exponent,0.5129,0.2399
 halcyon,Halcyon,oracle,60,k,Surround suppression,0.5965,0.3704
 halcyon,Halcyon,oracle,60,tau,Transient weight,0.7503,0.1449
 halcyon,Halcyon,oracle,60,a,Attention gain,0.3269,0.1791
+halcyon_gd,Halcyon (Godot),realistic,30,c50_eff,Effective c50,0.4445,0.7041
+halcyon_gd,Halcyon (Godot),realistic,30,mu,SF peak (pSFT),0.3043,0.8103
+halcyon_gd,Halcyon (Godot),realistic,30,sig,SF bandwidth,0.1169,0.7193
+halcyon_gd,Halcyon (Godot),realistic,30,c50,c50 (raw),0.341,0.8611
+halcyon_gd,Halcyon (Godot),realistic,30,q,CRF exponent,0.2441,0.6221
+halcyon_gd,Halcyon (Godot),realistic,30,k,Surround suppression,0.2554,0.7599
+halcyon_gd,Halcyon (Godot),realistic,30,tau,Transient weight,0.4411,0.3543
+halcyon_gd,Halcyon (Godot),realistic,30,a,Attention gain,0.1573,0.3248
+halcyon_gd,Halcyon (Godot),oracle,30,c50_eff,Effective c50,0.4811,0.4585
+halcyon_gd,Halcyon (Godot),oracle,30,mu,SF peak (pSFT),0.4027,0.539
+halcyon_gd,Halcyon (Godot),oracle,30,sig,SF bandwidth,0.1247,0.6771
+halcyon_gd,Halcyon (Godot),oracle,30,c50,c50 (raw),0.391,0.5709
+halcyon_gd,Halcyon (Godot),oracle,30,q,CRF exponent,0.3619,0.3996
+halcyon_gd,Halcyon (Godot),oracle,30,k,Surround suppression,0.3874,0.5558
+halcyon_gd,Halcyon (Godot),oracle,30,tau,Transient weight,0.4617,0.2846
+halcyon_gd,Halcyon (Godot),oracle,30,a,Attention gain,0.1775,0.2905
+halcyon_gd,Halcyon (Godot),realistic,60,c50_eff,Effective c50,0.493,0.5841
+halcyon_gd,Halcyon (Godot),realistic,60,mu,SF peak (pSFT),0.2854,0.7104
+halcyon_gd,Halcyon (Godot),realistic,60,sig,SF bandwidth,0.1511,0.6632
+halcyon_gd,Halcyon (Godot),realistic,60,c50,c50 (raw),0.4257,0.6503
+halcyon_gd,Halcyon (Godot),realistic,60,q,CRF exponent,0.3723,0.5087
+halcyon_gd,Halcyon (Godot),realistic,60,k,Surround suppression,0.2948,0.6681
+halcyon_gd,Halcyon (Godot),realistic,60,tau,Transient weight,0.6507,0.2294
+halcyon_gd,Halcyon (Godot),realistic,60,a,Attention gain,0.2555,0.2301
+halcyon_gd,Halcyon (Godot),oracle,60,c50_eff,Effective c50,0.6552,0.3816
+halcyon_gd,Halcyon (Godot),oracle,60,mu,SF peak (pSFT),0.4751,0.4647
+halcyon_gd,Halcyon (Godot),oracle,60,sig,SF bandwidth,0.1348,0.5803
+halcyon_gd,Halcyon (Godot),oracle,60,c50,c50 (raw),0.5503,0.4756
+halcyon_gd,Halcyon (Godot),oracle,60,q,CRF exponent,0.4586,0.2305
+halcyon_gd,Halcyon (Godot),oracle,60,k,Surround suppression,0.4476,0.4981
+halcyon_gd,Halcyon (Godot),oracle,60,tau,Transient weight,0.6723,0.1686
+halcyon_gd,Halcyon (Godot),oracle,60,a,Attention gain,0.3098,0.2688

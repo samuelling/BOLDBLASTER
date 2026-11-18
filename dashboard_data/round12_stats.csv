@@ -1,0 +1,15 @@
+measure,label,target,halcyon,halcyon_gd
+calls,Shoot-or-hold calls per hour,300+,582,297
+stairs,Stair crossings (bandit trials) per hour,100+,82,99
+stale,Shut security doors run into per hour,60+,84,69
+homing,Blackout walks usable as homing trials per hour,25+,18,23
+pickups,Guests reached per hour,30+,55,40
+rescued,Guests walked out per hour,,30,29
+junctions,Route choices at junctions per hour,,338,355
+dark,Time in the dark,under 15%,20%,11%
+outdoors,Time on the terrace,10-20%,6%,13%
+deaths,Deaths per hour,,49,6
+dec,Decisions per minute (DDM opportunities),,9.7,5.0
+gap,Median gap between decisions (s),6+,2.8,9.4
+entries,New places entered per minute,,66,59
+bounds,Event boundaries per minute,,9.6,8.5

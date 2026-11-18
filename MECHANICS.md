@@ -110,3 +110,11 @@ dedicated block of tunnel play beside the beach.
   treating each as a call put them 2.8 s apart and erased drift diffusion and value learning from
   BOLD (round 11).
 - Indoor scenes need a wide contrast range and some daylight; a dim hotel cost effective c50.
+
+### Round 12 addendum
+
+- Spacing decisions out is not enough by itself: going from 2.8 s to 9.4 s between calls halved the
+  calls per hour and BOLD-based decision parameters got worse. Trial count and spacing have to be
+  tuned together; about 6 s is the next thing to try.
+- A hidden, slowly drifting risk with a clear outcome at a fixed place (the stair landing) is
+  recoverable from striatal BOLD once there are about 100 trials an hour (r 0.43).

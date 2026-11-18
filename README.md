@@ -493,3 +493,45 @@ mid-run; the harness now aborts on a lost or frozen canvas and each run is check
 
 Results JSON for every round is in `results/`; the summary and dashboard are in `docs/dashboard/`
 (enable GitHub Pages from `main` / `/docs` to serve it).
+
+## Round 12: Halcyon rebuilt in Godot, and retuned
+
+Halcyon was ported to Godot 4.7 (repository samuelling/Halcyon): real lamps, a dusk sun, neon and
+volumetric light instead of baked lighting, clothed and animated people, the player's own arms on the
+pistol. The play was retuned on round 11's findings: one call per group, every rescue starting
+upstairs, blackouts that end at the stairs, exits alternating between the front doors and the
+terrace. The same bot played 12 runs of 5 minutes (`/home/claude/bbx/run_gd.sh`, then `run12.sh`;
+`run_round11.py` now takes `R11_GAME=halcyon_gd R11_OUT=round12`).
+
+One caveat on the stimulus: the renders come from a software rasteriser, so the scanner frames use a
+lighter preset (no bounced light, no lamp shadows or reflections) than the game a person plays.
+
+An hour against the targets (round 11 → round 12):
+
+| Measure | Target | Round 11 | Round 12 |
+|---|---|---|---|
+| Calls per hour | 300+ | 582 | 297 |
+| Median gap between decisions (s) | 6+ | 2.8 | 9.4 |
+| Stair crossings per hour | 100+ | 82 | 99 |
+| Usable homing walks per hour | 25+ | 18 | 23 |
+| Time in the dark | under 15% | 20% | 11% |
+| Time on the terrace | 10-20% | 6% | 13% |
+| Deaths per hour | | 49 | 6 |
+
+Recovery at one hour (Spearman r, planted vs fitted; round 11 → round 12):
+
+- **Better:** stairwell learning rate from striatal BOLD 0.08 → 0.43 (agreement with behaviour
+  -0.26 → 0.40); path-integration heading noise from behaviour 0.79 → 0.94; map-update rate from
+  behaviour 0.63 → 0.84; event boundaries 0.63 → 0.71.
+- **Held:** distance to walls 0.97 → 0.97, grid orientation 0.65 → 0.67, distance to goal 0.90 → 0.87,
+  place forgetting 0.90 → 0.94.
+- **Worse:** drift-diffusion boundary from BOLD 0.38 → 0.02; value learning rate from BOLD
+  0.08 → -0.32 (over half the estimates at the edge of the range); V1 spatial-frequency peak
+  0.46 → 0.29; path integration from BOLD 0.24 → -0.12. Effective c50 did not move (0.48 → 0.49).
+
+Reading: spacing the calls did not rescue decisions from BOLD. The gap went from 2.8 s to 9.4 s but
+the number of calls halved, and fewer trials cost more than the spacing gained. The spatial-frequency
+drop is unexplained; the softer renders and the arms filling the lower field are candidates, untested.
+
+Next: keep one call per group but bring groups to about 6 s apart; re-render with the view model
+hidden and with the full-quality preset to find what moved spatial frequency.

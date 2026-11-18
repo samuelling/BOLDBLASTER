@@ -40,6 +40,7 @@ GAMES = {
     'betamaxu':   dict(tag='bu', label='Tuned tunnels', src='/home/claude/bbx/runs_dig2', near=60.0, fps3d=True),
     # round 11: Halcyon (samuelling/Halcyon), the hotel built around the models; indoors, so 'near' is short
     'halcyon':    dict(tag='hx', label='Halcyon', src='/home/claude/bbx/runs_hx', near=30.0, fps3d=True, count_all=True),
+    'halcyon_gd': dict(tag='hg', label='Halcyon (Godot)', src='/home/claude/bbx/runs_gd', near=30.0, fps3d=True, count_all=True),
 }
 PRE = os.environ.get('GAME', 'betamax')
 GC = GAMES[PRE]

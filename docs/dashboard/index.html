@@ -113,6 +113,7 @@
   <button type="button" class="bb-tabbtn" data-tab="exp-nav">8 · Navigation &amp; cognition</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-dig">9 · Tunnels</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-hx">10 · Halcyon</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-gd">11 · Halcyon in Godot</button>
   <button type="button" class="bb-tabbtn" data-tab="design-tab">Design notes</button>
   <button type="button" class="bb-tabbtn" data-tab="areas-tab">Brain areas</button>
   <button type="button" class="bb-tabbtn" data-tab="methods-tab">Methods</button>
@@ -171,6 +172,11 @@
       <p class="bb-num">10 · Round 11</p><h3 class="bb-h3">Built for the models: Halcyon, a new FPS</h3>
       <p>A seaside-hotel shooter designed around every model at once. Navigation and spatial memory are the best of any game so far: distance to walls <b data-draw="cell" data-source="round11" data-field="value" data-where="part=nav&amp;model=boundary&amp;measure=d&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>, grid orientation <b data-draw="cell" data-source="round11" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>, place forgetting from BOLD <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=novelty&amp;measure=f&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>. Decisions from BOLD did not improve: each person in a group became a call, so calls came <b data-draw="ctext" data-source="round11_stats" data-field="halcyon" data-where="measure=gap">—</b> s apart, too close for BOLD (drift <b data-draw="cell" data-source="round11" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=v&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b>). That, the stairwell bandit and the time in the dark are the next tuning.</p>
       <button type="button" class="bb-open" data-open="exp-hx">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard bb-gwide" id="g-gd">
+      <p class="bb-num">11 · Round 12</p><h3 class="bb-h3">Halcyon rebuilt in Godot, and retuned</h3>
+      <p>Real lighting, animated people, hands on the pistol, and the play retuned from round 11. Calls are now <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=gap">—</b> s apart (were <b data-draw="ctext" data-source="round12_stats" data-field="halcyon" data-where="measure=gap">—</b>) and the dark share fell to <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=dark">—</b>. Stairwell learning from striatal BOLD rose (<b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>), but spacing the calls halved their number and decisions from BOLD got worse, not better.</p>
+      <button type="button" class="bb-open" data-open="exp-gd">Open experiment →</button>
     </article>
   </div>
 </section>
@@ -868,6 +874,53 @@
     <table class="bb-table" id="r11-table" data-source="round11">
       <thead><tr><th>Part</th><th>Model and parameter</th><th>Candidate area</th><th>Betamax</th><th>First tunnels</th><th>Tuned tunnels</th><th>Halcyon</th></tr></thead>
       <tbody data-draw="r11table"></tbody>
+    </table>
+  </div>
+  </details>
+</section>
+<section class="bb-sec bb-tab" id="exp-gd" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 11 · Round 12</p><h2 class="bb-h2">Halcyon rebuilt in Godot, and retuned</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>The same hotel and rules, rebuilt in the Godot engine (repository samuelling/Halcyon) and retuned on what round 11 found.</p>
+      <ul>
+        <li><b>Looks:</b> real lamps, a dusk sun, neon, shadows and volumetric light in place of baked lighting; clothed people with motion-capture-style animation; your own arms on the pistol</li>
+        <li><b>Calls:</b> a group is one decision (all armed or none), with one unseen group at a time, so calls are spaced out</li>
+        <li><b>Stairs:</b> every guest waits upstairs, and every landing ends in an ambush or a supply crate</li>
+        <li><b>Blackouts:</b> start just after a pickup and end at the flight you came up by</li>
+        <li><b>Ways out:</b> alternate between the front doors and the far end of the terrace</li>
+      </ul>
+      <p>The same bot plays 12 runs of 5 minutes and every model is refitted. One caveat: this machine has no graphics card, so the scanner frames use a lighter preset (no bounced light, no lamp shadows or reflections) than the game a person plays.</p></div>
+    <figure class="bb-card bb-fig" id="exp-gd-fig"><img data-draw="img" data-img="gdgame" data-source="img_gdgame" alt="Six views of the Godot build: the lobby under the atrium, the galleries with cyan and pink light lines, the terrace at dusk with long shadows, the ballroom, a corridor in a blackout lit by torch and red emergency light, and the hotel front with a pink neon sign."><figcaption>The Godot build at full quality: lobby, galleries, terrace at dusk, ballroom, a blackout by torchlight, the front.</figcaption></figure>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
+    <p><b>The retune hit its pacing targets and navigation held, but decisions from BOLD got worse.</b></p>
+    <ul>
+      <li><b>Stairwell learning from striatal BOLD now works:</b> <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>, with behaviour and BOLD agreeing (<b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=agree&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=agree&amp;game=halcyon_gd&amp;minutes=60">—</b>)</li>
+      <li><b>Puzzles from behaviour improved:</b> path-integration heading noise <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=behaviour&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=behaviour&amp;game=halcyon_gd&amp;minutes=60">—</b>, map-update rate <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=mapupd&amp;measure=alpha&amp;source=behaviour&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=mapupd&amp;measure=alpha&amp;source=behaviour&amp;game=halcyon_gd&amp;minutes=60">—</b></li>
+      <li><b>Navigation held:</b> distance to walls <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=boundary&amp;measure=d&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=boundary&amp;measure=d&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>, grid orientation <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>, event boundaries <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=evbound&amp;measure=b&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=evbound&amp;measure=b&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b></li>
+    </ul>
+    <p><b>Spacing the calls did not rescue decisions from BOLD.</b> Calls went from <b data-draw="ctext" data-source="round12_stats" data-field="halcyon" data-where="measure=gap">—</b> s to <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=gap">—</b> s apart, but their number halved (<b data-draw="ctext" data-source="round12_stats" data-field="halcyon" data-where="measure=calls">—</b> → <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=calls">—</b> an hour), and fewer trials cost more than the spacing gained.</p>
+    <ul>
+      <li><b>Drift-diffusion boundary from BOLD:</b> <b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=a&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=a&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>; drift from BOLD stays at zero (<b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=v&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=v&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>)</li>
+      <li><b>Value learning rate from BOLD:</b> <b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>, with over half the estimates at the edge of the searched range</li>
+      <li><b>V1 spatial-frequency peak:</b> <b data-draw="cell" data-source="round12" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=mu&amp;source=bold&amp;condition=realistic&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=mu&amp;source=bold&amp;condition=realistic&amp;game=halcyon_gd&amp;minutes=60">—</b>. Effective c50 did not move (<b data-draw="cell" data-source="round12" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=c50_eff&amp;source=bold&amp;condition=realistic&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=vision&amp;model=v1&amp;measure=c50_eff&amp;source=bold&amp;condition=realistic&amp;game=halcyon_gd&amp;minutes=60">—</b>) although frame contrast rose. The cause is untested; candidates are the softer, hazier renders and the arms always filling the lower field</li>
+      <li><b>Path integration from BOLD:</b> <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>, still not recoverable</li>
+    </ul>
+    <p><b>Next:</b> keep groups as single calls but bring them closer together (about 6 s) to recover the trial count; test whether the lighter scanner preset or the view model explains the spatial-frequency drop by re-rendering with each removed.</p>
+  </div></div>
+  <div class="bb-card bb-tablewrap" id="exp-gd-targets" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">An hour of the Godot build against the targets, beside round 11.</p>
+    <table class="bb-table" id="r12stats-table" data-source="round12_stats" data-row-key="measure">
+      <thead><tr><th data-field="label">Measure</th><th data-field="target">Target</th><th data-field="halcyon">Round 11 (browser)</th><th data-field="halcyon_gd">Round 12 (Godot)</th></tr></thead>
+      <tbody data-draw="r12statstable"></tbody>
+    </table>
+  </div>
+  <figure class="bb-card bb-fig" id="exp-gd-diag" style="margin-top: var(--cds-gap-md)"><img data-draw="img" data-img="diaggd" data-source="img_diaggd" alt="Planted against fitted values for 40 simulated players on the Godot build, one panel per parameter, from behaviour in blue and from BOLD in orange."><figcaption>Planted against fitted, one hour, 40 simulated players. Behaviour (blue) tracks the diagonal; BOLD (orange) does so only for place forgetting and the stairwell learning rate.</figcaption></figure>
+  <details class="bb-more" id="exp-gd-more"><summary>Every number: all models, round 11 against round 12, one hour</summary>
+  <div class="bb-card bb-tablewrap">
+    <table class="bb-table" id="r12-table" data-source="round12">
+      <thead><tr><th>Part</th><th>Model and parameter</th><th>Candidate area</th><th>Halcyon (browser)</th><th>Halcyon (Godot)</th><th>Change</th></tr></thead>
+      <tbody data-draw="r12table"></tbody>
     </table>
   </div>
   </details>
