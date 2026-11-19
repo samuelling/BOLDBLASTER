@@ -126,4 +126,5 @@ dedicated block of tunnel play beside the beach.
 - Spacing decisions out does not help their recovery from BOLD; the number of decisions and the
   number of hours do. Dense calls and several hours per person.
 - Haze (volumetric fog, bloom) costs about a quarter of the frame contrast in every band and some of
-  the spatial-frequency fit. A view model (arms, weapon) costs nothing measurable.
+  the spatial-frequency fit. A view model (arms, weapon) costs nothing measurable. Halving the haze
+  gives back a little under half of that contrast (14% of 31-38%) while keeping the look.

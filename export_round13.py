@@ -57,7 +57,7 @@ with open(f'{O}/round13_hours.csv', 'w', newline='') as f:
 r8 = json.load(open(f'{D}/results_round8.json'))
 VL = dict(c50_eff='Effective c50', mu='Spatial-frequency peak', sig='Spatial-frequency bandwidth', q='Surround exponent',
           k='Surround strength', tau='Temporal constant', a='Attention gain')
-cols = [('_va_20m', 'normal'), ('_vb_20m', 'no_arms'), ('_vc_20m', 'no_haze'), ('hg_30m', 'godot_r12_30m'), ('hx_30m', 'browser_r11_30m')]   # the three renders: 20 minutes each, the same four playthroughs
+cols = [('_va_20m', 'normal'), ('_vb_20m', 'no_arms'), ('_vc_20m', 'no_haze'), ('_vd_20m', 'half_haze'), ('hg_30m', 'godot_r12_30m'), ('hx_30m', 'browser_r11_30m')]   # the three renders: 20 minutes each, the same four playthroughs
 if all(k in r8 for k, _ in cols):
     with open(f'{O}/round13_vision.csv', 'w', newline='') as f:
         w = csv.writer(f); w.writerow(['parameter'] + [c for _, c in cols])
@@ -83,7 +83,8 @@ def bands(path):
 
 BL = ['0.125-0.25', '0.25-0.5', '0.5-1', '1-2', '2-4']
 src = [('browser_r11', '/home/claude/bbx/runs_hx/halcyon0_lum.u16'), ('godot_r12', '/home/claude/bbx/runs_gd/halcyon0_lum.u16'),
-       ('normal', '/home/claude/bbx/runs_v/halcyon_va0_lum.u16'), ('no_arms', '/home/claude/bbx/runs_v/halcyon_vb0_lum.u16'), ('no_haze', '/home/claude/bbx/runs_v/halcyon_vc0_lum.u16')]
+       ('normal', '/home/claude/bbx/runs_v/halcyon_va0_lum.u16'), ('no_arms', '/home/claude/bbx/runs_v/halcyon_vb0_lum.u16'), ('no_haze', '/home/claude/bbx/runs_v/halcyon_vc0_lum.u16'),
+       ('half_haze', '/home/claude/bbx/runs_v/halcyon_vd0_lum.u16'), ('old_haze_ctl', '/home/claude/bbx/runs_v/halcyon_ve0_lum.u16')]   # half_haze: fog and bloom halved (the game from here on); old_haze_ctl: the same build with the old fog and bloom restored (fogk=2 glowk=2)
 if all(os.path.exists(q) for _, q in src):
     B = {k: bands(q) for k, q in src}
     with open(f'{O}/round13_bands.csv', 'w', newline='') as f:

@@ -573,3 +573,19 @@ a third in every band (0.235 to 0.308 at the lowest, 0.133 to 0.181 at the highe
 recovery from 0.20 to 0.26. The browser build still has 25-40% more contrast, and bands that move
 more independently. The tone curve and automatic exposure are the next suspects, untested. These are
 single 20-minute fits without a spread estimate: a difference of 0.05 is a hint.
+
+**Half the haze** (Halcyon 0bac731): fog density and bloom were then halved in all three levels and
+the same four playthroughs rendered again (`run_var.sh vd 0 3`).
+
+| | As played (round 13) | Half fog and bloom | No fog or bloom |
+|---|---|---|---|
+| Contrast, 0.125-0.25 c/deg | 0.235 | 0.265 | 0.308 |
+| Contrast, 2-4 c/deg | 0.133 | 0.151 | 0.181 |
+| Spatial-frequency peak (r) | 0.20 | 0.22 | 0.26 |
+| Effective c50 (r) | 0.44 | 0.41 | 0.43 |
+
+Half the haze gives 14% more contrast in every band, a little under half of what removing it gives
+(31-38%), and the peak's recovery sits between the two, inside the noise of a single 20-minute fit.
+A control run of the current build with the old fog and bloom restored (`fogk=2 glowk=2`) matches the
+round 13 frames to within 2% (0.233 against 0.235), so the closed-hands fix made between the two
+renders is not part of the gain. This is the game from here on.
