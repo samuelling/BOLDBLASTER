@@ -589,3 +589,9 @@ Half the haze gives 14% more contrast in every band, a little under half of what
 A control run of the current build with the old fog and bloom restored (`fogk=2 glowk=2`) matches the
 round 13 frames to within 2% (0.233 against 0.235), so the closed-hands fix made between the two
 renders is not part of the gain. This is the game from here on.
+
+**First-person hands rebuilt** (Halcyon b828f2b, after these renders): a two-handed grip built from the
+pistol's shape, forearms that roll with the hands, the pistol tilted up at the hip, the arms drawn
+through a narrower lens than the world (58 against 72 degrees), and the player in shirt sleeves
+instead of a suit jacket. The hands and sleeves now take up a different part of the lower frame, so the
+"no arms" comparison above applies to the old hands only. Re-run it before the next vision round.
