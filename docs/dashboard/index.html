@@ -114,6 +114,7 @@
   <button type="button" class="bb-tabbtn" data-tab="exp-dig">9 · Tunnels</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-hx">10 · Halcyon</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-gd">11 · Halcyon in Godot</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-r13">12 · Pacing and hours</button>
   <button type="button" class="bb-tabbtn" data-tab="design-tab">Design notes</button>
   <button type="button" class="bb-tabbtn" data-tab="areas-tab">Brain areas</button>
   <button type="button" class="bb-tabbtn" data-tab="methods-tab">Methods</button>
@@ -175,8 +176,13 @@
     </article>
     <article class="bb-card bb-gcard bb-gwide" id="g-gd">
       <p class="bb-num">11 · Round 12</p><h3 class="bb-h3">Halcyon rebuilt in Godot, and retuned</h3>
-      <p>Real lighting, animated people, hands on the pistol, and the play retuned from round 11. Calls are now <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=gap">—</b> s apart (were <b data-draw="ctext" data-source="round12_stats" data-field="halcyon" data-where="measure=gap">—</b>) and the dark share fell to <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=dark">—</b>. Stairwell learning from striatal BOLD rose (<b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>), but spacing the calls halved their number and decisions from BOLD got worse, not better.</p>
+      <p>Real lighting, animated people, hands on the pistol, and the play retuned from round 11. Calls are now <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=gap">—</b> s apart (were <b data-draw="ctext" data-source="round12_stats" data-field="halcyon" data-where="measure=gap">—</b>) and the dark share fell to <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=dark">—</b>. Stairwell learning from striatal BOLD rose (<b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>), but spacing the calls halved their number and decisions from BOLD did not improve.</p>
       <button type="button" class="bb-open" data-open="exp-gd">Open experiment →</button>
+    </article>
+    <article class="bb-card bb-gcard bb-gwide" id="g-r13">
+      <p class="bb-num">12 · Round 13</p><h3 class="bb-h3">How often to send a group, and how many hours</h3>
+      <p>Three pacings, three separate hours each. Bringing calls to 6 s apart does not recover the call boundary from BOLD (0.20 ± 0.15 against 0.11 ± 0.14). One hour is a noisy ruler: these numbers move by about 0.15 from hour to hour. Three hours lift path integration from BOLD to about 0.75.</p>
+      <button type="button" class="bb-open" data-open="exp-r13">Open experiment →</button>
     </article>
   </div>
 </section>
@@ -893,13 +899,13 @@
     <figure class="bb-card bb-fig" id="exp-gd-fig"><img data-draw="img" data-img="gdgame" data-source="img_gdgame" alt="Six views of the Godot build: the lobby under the atrium, the galleries with cyan and pink light lines, the terrace at dusk with long shadows, the ballroom, a corridor in a blackout lit by torch and red emergency light, and the hotel front with a pink neon sign."><figcaption>The Godot build at full quality: lobby, galleries, terrace at dusk, ballroom, a blackout by torchlight, the front.</figcaption></figure>
   </div>
   <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
-    <p><b>The retune hit its pacing targets and navigation held, but decisions from BOLD got worse.</b></p>
+    <p><b>The retune hit its pacing targets and navigation held, but decisions from BOLD did not improve.</b></p>
     <ul>
       <li><b>Stairwell learning from striatal BOLD now works:</b> <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>, with behaviour and BOLD agreeing (<b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=agree&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=bandit&amp;measure=alpha&amp;source=agree&amp;game=halcyon_gd&amp;minutes=60">—</b>)</li>
       <li><b>Puzzles from behaviour improved:</b> path-integration heading noise <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=behaviour&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=pathint&amp;measure=sh&amp;source=behaviour&amp;game=halcyon_gd&amp;minutes=60">—</b>, map-update rate <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=mapupd&amp;measure=alpha&amp;source=behaviour&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=new&amp;model=mapupd&amp;measure=alpha&amp;source=behaviour&amp;game=halcyon_gd&amp;minutes=60">—</b></li>
       <li><b>Navigation held:</b> distance to walls <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=boundary&amp;measure=d&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=boundary&amp;measure=d&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>, grid orientation <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=grid_move&amp;measure=phi&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>, event boundaries <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=evbound&amp;measure=b&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=nav&amp;model=evbound&amp;measure=b&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b></li>
     </ul>
-    <p><b>Spacing the calls did not rescue decisions from BOLD.</b> Calls went from <b data-draw="ctext" data-source="round12_stats" data-field="halcyon" data-where="measure=gap">—</b> s to <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=gap">—</b> s apart, but their number halved (<b data-draw="ctext" data-source="round12_stats" data-field="halcyon" data-where="measure=calls">—</b> → <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=calls">—</b> an hour), and fewer trials cost more than the spacing gained.</p>
+    <p><b>Spacing the calls did not rescue decisions from BOLD.</b> Calls went from <b data-draw="ctext" data-source="round12_stats" data-field="halcyon" data-where="measure=gap">—</b> s to <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=gap">—</b> s apart, but their number halved (<b data-draw="ctext" data-source="round12_stats" data-field="halcyon" data-where="measure=calls">—</b> → <b data-draw="ctext" data-source="round12_stats" data-field="halcyon_gd" data-where="measure=calls">—</b> an hour), so there are fewer trials to fit. Round 13 puts the hour-to-hour spread of these BOLD numbers at about ±0.15, so the single-hour changes listed here are not reliable declines.</p>
     <ul>
       <li><b>Drift-diffusion boundary from BOLD:</b> <b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=a&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=a&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>; drift from BOLD stays at zero (<b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=v&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=ddm&amp;measure=v&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>)</li>
       <li><b>Value learning rate from BOLD:</b> <b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=halcyon&amp;minutes=60">—</b> → <b data-draw="cell" data-source="round12" data-field="value" data-where="part=cog&amp;model=rl&amp;measure=alpha&amp;source=bold&amp;game=halcyon_gd&amp;minutes=60">—</b>, with over half the estimates at the edge of the searched range</li>
@@ -924,6 +930,43 @@
     </table>
   </div>
   </details>
+</section>
+<section class="bb-sec bb-tab" id="exp-r13" hidden>
+  <div class="bb-sec-head"><div><p class="bb-num">Experiment 12 · Round 13</p><h2 class="bb-h2">How often to send a group, and how many hours</h2></div></div>
+  <div class="bb-intro">
+    <div class="bb-card bb-did"><h3 class="bb-h3">What we did</h3><p>Round 12 left one question: would bringing the calls back to about 6 s apart recover the decision parameters from BOLD?</p>
+      <ul>
+        <li><b>Pacing:</b> three settings of the Godot Halcyon, each played for three separate hours, so every number has a spread</li>
+        <li><b>Hours:</b> the spaced and the dense setting again, each for three hours in one piece</li>
+        <li><b>No rendering:</b> the bot plays the plan and the director only, which is all the navigation, cognitive and puzzle models read; an hour takes about 90 seconds</li>
+      </ul>
+      <p>The settings: one unjudged group in the building at a time (round 12's pacing), a new group about every 6 s (now the game's default), and dense.</p></div>
+  </div>
+  <div class="bb-tldr"><span class="bb-tldr-tag">RESULT</span><div>
+    <p><b>Pacing does not rescue decisions from BOLD; hours do, slowly.</b></p>
+    <ul>
+      <li><b>Call boundary from BOLD is flat across pacing:</b> 0.11 ± 0.14 at 9.7 s, 0.20 ± 0.15 at 6.0 s, 0.19 ± 0.09 at 4.7 s. The differences are inside the spread</li>
+      <li><b>One hour is a noisy ruler:</b> the same game on a different hour moves these BOLD numbers by about 0.15. Round 12's apparent drop in the boundary (0.38 to 0.02, one hour each) cannot be read as a decline</li>
+      <li><b>Denser calls cost the stairwell model within an hour:</b> its learning rate from behaviour falls from 0.66 to 0.44, and from BOLD from 0.24 to 0.12</li>
+      <li><b>Three hours change the picture:</b> path-integration heading noise from BOLD rises from about 0.35 to 0.72–0.76, and stairwell learning to 0.34–0.40, at either pacing</li>
+      <li><b>Decisions stay the hardest:</b> at three hours the boundary reaches 0.21 (spaced) or 0.33 (dense); the value learning rate reaches 0.48 only when calls are dense</li>
+    </ul>
+    <p><b>What this means for a study:</b> plan for several hours per person and keep calls dense. The stairwell cost of dense calls is gone by three hours; the decision models need every trial they can get.</p>
+  </div></div>
+  <div class="bb-card bb-tablewrap" id="exp-r13-pacing" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">Recovery at one hour under three pacings (Spearman r, mean ± spread over three separate hours).</p>
+    <table class="bb-table" id="r13-pacing-table" data-source="round13_pacing">
+      <thead><tr><th data-field="measure">Measure</th><th data-field="from">From</th><th data-field="t0">One group at a time</th><th data-field="t3">About 6 s (default)</th><th data-field="t2">Dense</th></tr></thead>
+      <tbody data-draw="csvtable"></tbody>
+    </table>
+  </div>
+  <div class="bb-card bb-tablewrap" id="exp-r13-hours" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">One hour against three (Spearman r; one dataset each, so read differences under about 0.3 with care).</p>
+    <table class="bb-table" id="r13-hours-table" data-source="round13_hours">
+      <thead><tr><th data-field="measure">Measure</th><th data-field="from">From</th><th data-field="spaced_1h">Spaced, 1 h</th><th data-field="spaced_3h">Spaced, 3 h</th><th data-field="dense_1h">Dense, 1 h</th><th data-field="dense_3h">Dense, 3 h</th></tr></thead>
+      <tbody data-draw="csvtable"></tbody>
+    </table>
+  </div>
 </section>
 <section class="bb-sec bb-tab" id="areas-tab" hidden>
   <div class="bb-sec-head"><div><p class="bb-num">Reference</p><h2 class="bb-h2">Candidate brain areas for every parameter</h2>

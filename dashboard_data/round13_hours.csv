@@ -1,0 +1,12 @@
+measure,from,spaced_1h,spaced_3h,dense_1h,dense_3h
+Call boundary a,BOLD,0.17,0.21,0.13,0.33
+Call drift v,BOLD,-0.17,0.05,0.14,0.24
+Value learning rate,BOLD,0.04,0.08,0.00,0.48
+Stairwell learning rate,BOLD,0.16,0.40,0.15,0.34
+Path-integration heading noise,BOLD,0.37,0.76,0.33,0.72
+Map update rate,BOLD,0.02,0.22,0.04,0.20
+Place forgetting rate,BOLD,0.93,0.94,0.90,0.95
+Call boundary a,behaviour,0.94,0.99,0.97,0.99
+Call drift v,behaviour,0.90,0.96,0.93,0.98
+Stairwell learning rate,behaviour,0.67,0.87,0.52,0.86
+Path-integration heading noise,behaviour,0.92,0.98,0.95,0.96

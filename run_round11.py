@@ -44,6 +44,7 @@ R9.LABEL[G] = os.environ.get('R11_LABEL', 'Halcyon')
 R9.AREA.update(bandit=('Ventral striatum', 1.3))
 N_RUNS = int(os.environ.get('R11_RUNS', 12))
 R10.N_RUNS = N_RUNS
+DURS = ((30, 6), (60, 12), (180, 36))            # 36 runs = three hours, for the how-much-data question (R11_RUNS=36)
 if G not in R9.GAMES:
     R9.GAMES.append(G)
 raw = R10.raw
@@ -216,7 +217,7 @@ def nav():
     pop = R9.nav_population()
     out = {}
     bn = R9.bdist_norm(G)
-    for mins, n in ((30, 6), (60, 12)):
+    for mins, n in DURS:
         if n > N_RUNS:
             continue
         out[f'{G}_{mins}'] = R9.fit_nav(G, n, pop, bn, realistic=True)
@@ -227,7 +228,7 @@ def nav():
 
 def cog():
     out = {}
-    for mins, n in ((30, 6), (60, 12)):
+    for mins, n in DURS:
         if n > N_RUNS:
             continue
         out[f'{G}_{mins}'] = R9.cog_game(G, n)
@@ -238,7 +239,7 @@ def cog():
 
 def new_models():
     out = {}
-    for mins, n in ((30, 6), (60, 12)):
+    for mins, n in DURS:
         if n > N_RUNS:
             continue
         runs = R10.session(n)

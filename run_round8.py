@@ -43,7 +43,7 @@ GAMES = {
     'halcyon_gd': dict(tag='hg', label='Halcyon (Godot)', src='/home/claude/bbx/runs_gd', near=30.0, fps3d=True, count_all=True),
 }
 PRE = os.environ.get('GAME', 'betamax')
-GC = GAMES[PRE]
+GC = GAMES.get(PRE) or dict(GAMES['halcyon_gd'], tag=PRE[-3:], label=PRE)   # sweep variants of the Godot Halcyon (halcyon_*)
 SRC = os.environ.get('GAME_RUNS', GC['src'])
 TAG = GC['tag']
 NEAR = GC['near']
@@ -188,6 +188,18 @@ def make_run(i, pop, G, w):
         f'items/frame {lg["n_coins"].mean():.1f}, deaths {len(lg["deaths"])}')
 
 
+def logs_only(n):
+    """Logs without frames: enough for the navigation, cognitive and puzzle fits (run_round11). Used for
+    logic-only sweeps of the Godot build, where nothing is rendered."""
+    bt = burst_table()
+    w = logistic(bt[:, :2], bt[:, 2])
+    json.dump(dict(w=w.tolist(), n=len(bt), hit_rate=float(bt[:, 2].mean())), open(p(f'{PRE}_phit.json'), 'w'))
+    for i in range(n):
+        lg = build_logs(i, w)
+        et = R1.eyetracker(lg['gaze'], np.random.default_rng(700 + i))
+        np.savez(p(f'{PRE}{i}_logs'), et=et, **lg)
+
+
 def data(n):
     pop = V2.populations()
     if os.path.exists(p(f'{PRE}_phit.json')):          # calibrated once, then held fixed for every run
@@ -210,8 +222,8 @@ def fits(n_avail):
     res = json.load(open(out_path)) if os.path.exists(out_path) else {}
     allp = list(M.PNAMES)
     plan = []
-    for mins, n in ((30, 6), (60, 12)):
-        if n > n_avail:
+    for mins, n in ((20, 4), (30, 6), (60, 12)):
+        if n > n_avail or (mins == 20 and n_avail >= 6):
             continue
         for oracle in (False, True):
             tag = '_oracle' if oracle else ''
@@ -354,6 +366,8 @@ if __name__ == '__main__':
     V2.calibrate()     # band energy in contrast units, the scale every raycaster run used
     stage = sys.argv[1] if len(sys.argv) > 1 else 'all'
     n = int(sys.argv[2]) if len(sys.argv) > 2 else N_RUNS
+    if stage == 'logs':
+        logs_only(n)
     if stage in ('data', 'all'):
         data(n)
     if stage in ('fit', 'all'):

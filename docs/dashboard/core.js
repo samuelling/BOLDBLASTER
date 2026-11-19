@@ -681,6 +681,20 @@ dash.draw('r12table', (tb) => {
     tb.appendChild(tr);
   }
 });
+// a plain table straight from a CSV dataset: the table names the source, each th names its column
+dash.draw('csvtable', (tb) => {
+  const table = tb.closest('table');
+  const d = dash.data(table.dataset.source);
+  tb.replaceChildren();
+  if (d.status !== 'ok') return;
+  const fields = [...table.querySelectorAll('thead th')].map((th) => th.dataset.field);
+  d.data.forEach((r, n) => {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', String(n));
+    fields.forEach((f, c) => tr.append(td(r[f] == null || r[f] === '' ? '—' : String(r[f]), c > 1)));
+    tb.appendChild(tr);
+  });
+});
 dash.draw('r12statstable', (tb) => {
   const d = dash.data('round12_stats');
   tb.replaceChildren();
