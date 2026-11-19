@@ -118,3 +118,12 @@ dedicated block of tunnel play beside the beach.
   tuned together; about 6 s is the next thing to try.
 - A hidden, slowly drifting risk with a clear outcome at a fixed place (the stair landing) is
   recoverable from striatal BOLD once there are about 100 trials an hour (r 0.43).
+
+### Round 13 addendum
+
+- One hour is a noisy ruler for BOLD-based recovery of sparse events: the same game on another hour
+  moves r by about 0.15. Compare designs on replicate hours, not single ones.
+- Spacing decisions out does not help their recovery from BOLD; the number of decisions and the
+  number of hours do. Dense calls and several hours per person.
+- Haze (volumetric fog, bloom) costs about a quarter of the frame contrast in every band and some of
+  the spatial-frequency fit. A view model (arms, weapon) costs nothing measurable.

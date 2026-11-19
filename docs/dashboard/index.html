@@ -114,7 +114,7 @@
   <button type="button" class="bb-tabbtn" data-tab="exp-dig">9 · Tunnels</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-hx">10 · Halcyon</button>
   <button type="button" class="bb-tabbtn" data-tab="exp-gd">11 · Halcyon in Godot</button>
-  <button type="button" class="bb-tabbtn" data-tab="exp-r13">12 · Pacing and hours</button>
+  <button type="button" class="bb-tabbtn" data-tab="exp-r13">12 · Pacing, hours, haze</button>
   <button type="button" class="bb-tabbtn" data-tab="design-tab">Design notes</button>
   <button type="button" class="bb-tabbtn" data-tab="areas-tab">Brain areas</button>
   <button type="button" class="bb-tabbtn" data-tab="methods-tab">Methods</button>
@@ -964,6 +964,30 @@
     <p class="bb-stat">One hour against three (Spearman r; one dataset each, so read differences under about 0.3 with care).</p>
     <table class="bb-table" id="r13-hours-table" data-source="round13_hours">
       <thead><tr><th data-field="measure">Measure</th><th data-field="from">From</th><th data-field="spaced_1h">Spaced, 1 h</th><th data-field="spaced_3h">Spaced, 3 h</th><th data-field="dense_1h">Dense, 1 h</th><th data-field="dense_3h">Dense, 3 h</th></tr></thead>
+      <tbody data-draw="csvtable"></tbody>
+    </table>
+  </div>
+  <div class="bb-tldr" style="margin-top: var(--cds-gap-md)"><span class="bb-tldr-tag">VISION</span><div>
+    <p><b>What moved the V1 spatial-frequency fit: haze in part, the arms not at all.</b> The same four playthroughs (20 minutes, identical to the frame) were rendered three ways: as played, without the arms and pistol, and without fog and bloom.</p>
+    <ul>
+      <li><b>Arms and pistol:</b> not the cause. Without them the spatial-frequency peak recovers no better (0.15 against 0.20)</li>
+      <li><b>Fog and bloom:</b> part of it. Removing them raises frame contrast by about a third in every band and the peak's recovery from 0.20 to 0.26</li>
+      <li><b>Still short of the browser build:</b> its frames have 25–40% more contrast again, and its bands move more independently (r 0.20 against 0.33–0.39)</li>
+      <li><b>Not yet tested:</b> the film-style tone curve and the automatic exposure, which both compress contrast</li>
+    </ul>
+    <p>These are single 20-minute fits with no spread estimate, so a difference of 0.05 is a hint, not a finding. Everything else in the V1 model (contrast gain, surround, timing) is unchanged across the three renders.</p>
+  </div></div>
+  <div class="bb-card bb-tablewrap" id="exp-r13-vision" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">V1 recovery under three renders of the same play (Spearman r, 20 minutes), with rounds 12 and 11 at 30 minutes for reference.</p>
+    <table class="bb-table" id="r13-vision-table" data-source="round13_vision">
+      <thead><tr><th data-field="parameter">Parameter</th><th data-field="normal">As played</th><th data-field="no_arms">No arms or pistol</th><th data-field="no_haze">No fog or bloom</th><th data-field="godot_r12_30m">Round 12, 30 min</th><th data-field="browser_r11_30m">Browser build, 30 min</th></tr></thead>
+      <tbody data-draw="csvtable"></tbody>
+    </table>
+  </div>
+  <div class="bb-card bb-tablewrap" id="exp-r13-bands" style="margin-top: var(--cds-gap-md)">
+    <p class="bb-stat">Contrast in the frames by spatial-frequency band (one run of each; 8 pixels per degree).</p>
+    <table class="bb-table" id="r13-bands-table" data-source="round13_bands">
+      <thead><tr><th data-field="band">Band</th><th data-field="unit"></th><th data-field="browser_r11">Browser build</th><th data-field="godot_r12">Round 12</th><th data-field="normal">As played</th><th data-field="no_arms">No arms or pistol</th><th data-field="no_haze">No fog or bloom</th></tr></thead>
       <tbody data-draw="csvtable"></tbody>
     </table>
   </div>

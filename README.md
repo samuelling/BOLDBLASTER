@@ -535,3 +535,41 @@ drop is unexplained; the softer renders and the arms filling the lower field are
 
 Next: keep one call per group but bring groups to about 6 s apart; re-render with the view model
 hidden and with the full-quality preset to find what moved spatial frequency.
+
+## Round 13: pacing, hours, and what moved spatial frequency
+
+Three follow-ups to round 12, on the Godot Halcyon.
+
+**Pacing** (`/home/claude/bbx/sweep.sh`; logic only, no rendering; three separate hours per setting).
+`run_round8.py logs` builds the logs without frames, which is all `run_round11.py` reads.
+
+| Pacing | Calls/h | Median gap | Call boundary from BOLD | Value learning rate from BOLD | Stairwell learning rate, behaviour / BOLD |
+|---|---|---|---|---|---|
+| One unjudged group at a time | 270 | 9.7 s | 0.11 ± 0.14 | 0.10 ± 0.06 | 0.66 ± 0.08 / 0.24 ± 0.03 |
+| About 6 s (now the default) | 421 | 6.0 s | 0.20 ± 0.15 | 0.13 ± 0.18 | 0.44 ± 0.03 / 0.12 ± 0.19 |
+| Dense | 488 | 4.7 s | 0.19 ± 0.09 | 0.21 ± 0.01 | 0.47 ± 0.06 / 0.07 ± 0.08 |
+
+Pacing does not rescue decisions from BOLD. The spread between hours (about 0.15 for the BOLD-based
+recoveries) is as large as the differences, and it means round 12's single-hour "drop" in the
+boundary (0.38 to 0.02) cannot be read as a decline. Denser calls do cost the stairwell model within
+an hour.
+
+**Hours** (36 runs in one piece, `R11_RUNS=36`): at three hours path-integration heading noise from
+BOLD reaches 0.72-0.76 (from about 0.35), stairwell learning 0.34-0.40, the call boundary 0.21
+(spaced) or 0.33 (dense), and the value learning rate 0.48 only with dense calls. Plan for several
+hours per person and keep calls dense.
+
+**Spatial frequency** (`/home/claude/bbx/run_var.sh`; the same four playthroughs, identical to the
+frame, rendered three ways; 20 minutes each):
+
+| V1 parameter | As played | No arms or pistol | No fog or bloom |
+|---|---|---|---|
+| Spatial-frequency peak | 0.20 | 0.15 | 0.26 |
+| Effective c50 | 0.44 | 0.47 | 0.43 |
+| Temporal constant | 0.43 | 0.42 | 0.48 |
+
+The arms are not the cause. Fog and bloom are part of it: without them frame contrast rises by about
+a third in every band (0.235 to 0.308 at the lowest, 0.133 to 0.181 at the highest) and the peak's
+recovery from 0.20 to 0.26. The browser build still has 25-40% more contrast, and bands that move
+more independently. The tone curve and automatic exposure are the next suspects, untested. These are
+single 20-minute fits without a spread estimate: a difference of 0.05 is a hint.

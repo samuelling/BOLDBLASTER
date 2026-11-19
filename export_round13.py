@@ -57,7 +57,7 @@ with open(f'{O}/round13_hours.csv', 'w', newline='') as f:
 r8 = json.load(open(f'{D}/results_round8.json'))
 VL = dict(c50_eff='Effective c50', mu='Spatial-frequency peak', sig='Spatial-frequency bandwidth', q='Surround exponent',
           k='Surround strength', tau='Temporal constant', a='Attention gain')
-cols = [('hx_30m', 'browser'), ('hg_30m', 'godot_r12'), ('_va_30m', 'normal'), ('_vb_30m', 'no_arms'), ('_vc_30m', 'no_haze')]
+cols = [('_va_20m', 'normal'), ('_vb_20m', 'no_arms'), ('_vc_20m', 'no_haze'), ('hg_30m', 'godot_r12_30m'), ('hx_30m', 'browser_r11_30m')]   # the three renders: 20 minutes each, the same four playthroughs
 if all(k in r8 for k, _ in cols):
     with open(f'{O}/round13_vision.csv', 'w', newline='') as f:
         w = csv.writer(f); w.writerow(['parameter'] + [c for _, c in cols])
@@ -65,3 +65,30 @@ if all(k in r8 for k, _ in cols):
             w.writerow([lab] + [f"{r8[k]['scores'][p_]['spearman']:.2f}" for k, _ in cols])
     print('vision written')
 print(open(f'{O}/round13_pacing.csv').read()); print(open(f'{O}/round13_hours.csv').read())
+
+
+# contrast by spatial-frequency band in the frames (run 0 of each; 8 pixels per degree)
+def bands(path):
+    a = np.fromfile(path, '<u2').reshape(-1, 144, 192).astype(np.float32) / 65535
+    H, W, ppd = 144, 192, 8.0
+    fr = np.hypot(np.fft.fftfreq(W)[None, :] * ppd, np.fft.fftfreq(H)[:, None] * ppd)
+    win = np.hanning(H)[:, None] * np.hanning(W)[None, :]
+    E = [0.125, 0.25, 0.5, 1, 2, 4]; out = []
+    for f in a[::5]:
+        m = f.mean(); F = np.abs(np.fft.fft2((f - m) / max(m, 1e-3) * win)) ** 2
+        out.append([np.sqrt(F[(fr >= lo) & (fr < hi)].sum()) / (H * W) * 4 for lo, hi in zip(E[:-1], E[1:])])
+    b = np.array(out); c = np.corrcoef(np.log(b + 1e-6).T)
+    return b.mean(0), c[0, 4]
+
+
+BL = ['0.125-0.25', '0.25-0.5', '0.5-1', '1-2', '2-4']
+src = [('browser_r11', '/home/claude/bbx/runs_hx/halcyon0_lum.u16'), ('godot_r12', '/home/claude/bbx/runs_gd/halcyon0_lum.u16'),
+       ('normal', '/home/claude/bbx/runs_v/halcyon_va0_lum.u16'), ('no_arms', '/home/claude/bbx/runs_v/halcyon_vb0_lum.u16'), ('no_haze', '/home/claude/bbx/runs_v/halcyon_vc0_lum.u16')]
+if all(os.path.exists(q) for _, q in src):
+    B = {k: bands(q) for k, q in src}
+    with open(f'{O}/round13_bands.csv', 'w', newline='') as f:
+        w = csv.writer(f); w.writerow(['band', 'unit'] + [k for k, _ in src])
+        for n, lab in enumerate(BL):
+            w.writerow([f'Contrast at {lab} cycles per degree', ''] + [f'{B[k][0][n]:.3f}' for k, _ in src])
+        w.writerow(['Lowest and highest band rise and fall together', 'r'] + [f'{B[k][1]:.2f}' for k, _ in src])
+    print(open(f'{O}/round13_bands.csv').read())

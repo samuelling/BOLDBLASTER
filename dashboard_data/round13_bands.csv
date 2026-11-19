@@ -1,0 +1,7 @@
+band,unit,browser_r11,godot_r12,normal,no_arms,no_haze
+Contrast at 0.125-0.25 cycles per degree,,0.431,0.247,0.235,0.228,0.308
+Contrast at 0.25-0.5 cycles per degree,,0.426,0.218,0.208,0.195,0.287
+Contrast at 0.5-1 cycles per degree,,0.338,0.191,0.182,0.169,0.252
+Contrast at 1-2 cycles per degree,,0.270,0.161,0.156,0.146,0.213
+Contrast at 2-4 cycles per degree,,0.227,0.137,0.133,0.124,0.181
+Lowest and highest band rise and fall together,r,0.20,0.39,0.39,0.37,0.33
